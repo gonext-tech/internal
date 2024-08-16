@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/ramyjaber1/internal/models"
+	"github.com/gonext-tech/internal/models"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )

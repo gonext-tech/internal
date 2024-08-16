@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
-	"github.com/ramyjaber1/internal/models"
-	"github.com/ramyjaber1/internal/views/donor_views"
+	"github.com/gonext-tech/internal/models"
+	"github.com/gonext-tech/internal/views/donor_views"
 )
 
 type DonorService interface {

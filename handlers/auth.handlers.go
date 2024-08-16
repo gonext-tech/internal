@@ -9,9 +9,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ramyjaber1/internal/models"
-	"github.com/ramyjaber1/internal/views/auth_views"
-	"github.com/ramyjaber1/internal/views/components"
+	"github.com/gonext-tech/internal/models"
+	"github.com/gonext-tech/internal/views/auth_views"
+	"github.com/gonext-tech/internal/views/components"
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/gorilla/sessions"
