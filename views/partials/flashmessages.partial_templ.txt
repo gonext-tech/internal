@@ -1,0 +1,10 @@
+<div class=\"fixed top-20 right-5\">
+<!-- Error --> <div class=\"join rounded-box\"><div class=\"join-item p-4 bg-error text-error-content text-xl\"><i class=\"fa-solid fa-bolt\"></i></div><div class=\"join-item flex flex-col py-2 px-4 bg-base-200\"><h3 class=\"text-error font-bold\">Error</h3><span class=\"text-sm\">
+<span>
+</span>
+</span></div><button class=\"join-item text-3xl font-black bg-base-200 py-2 px-4\" _=\"on click remove the closest &lt;div/&gt;\">×</button></div>
+<!-- Success --> <div class=\"join rounded-box\"><div class=\"join-item p-4 bg-success text-success-content text-xl\"><i class=\"fa-solid fa-circle-check\"></i></div><div class=\"join-item flex flex-col py-2 px-4 bg-base-200\"><h3 class=\"text-success font-bold\">Success</h3><span class=\"text-sm\">
+<span>
+</span>
+</span></div><button class=\"join-item text-3xl font-black bg-base-200 py-2 px-4\" _=\"on click remove the closest &lt;div/&gt;\">×</button></div>
+</div>

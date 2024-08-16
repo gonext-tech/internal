@@ -1,0 +1,61 @@
+package ticket_views
+
+import (
+	"strings"
+
+	"github.com/ramyjaber1/internal/models"
+	"github.com/ramyjaber1/internal/views/layout"
+)
+
+templ List(titlePage string, tickets []models.Ticket,meta models.Meta) {
+	<div class="flex justify-between max-w-2xl mx-auto border-b border-b-slate-600 mb-8 pb-2">
+		<h1 class="text-2xl font-bold text-center">
+			{ strings.Trim(titlePage, "| ") }
+		</h1>
+		<a hx-swap="transition:true" class="badge badge-info p-4 hover:scale-[1.1]" href="/ticket/create">
+			New
+		</a>
+	</div>
+	<input class="input input-bordered h-9 input-primary bg-slate-800" type="search" 
+       name="searchTerm" placeholder="Search by title..." 
+       hx-get="/ticket/search" 
+       hx-trigger="input changed delay:500ms, search" 
+       hx-target="#search-results" 
+       />
+	<section class="overflow-auto mt-2  max-w-full mx-auto bg-slate-600 rounded-lg shadow-xl">
+
+		<table class="table table-zebra">
+			<!-- head -->
+			<thead class="bg-slate-700">
+				<tr>
+					<th>Project</th>
+					<th>Name</th>
+					<th>Description</th>
+					<th>Status</th>
+					<th>Type</th>
+					<th>Priority</th>
+					<th>Assign To</th>
+					<th>Created At</th>
+					<th>Updated At</th>
+					<th class="text-center">Options</th>
+				</tr>
+			</thead>
+				<tbody id="search-results">
+				@TableRows(tickets)
+				</tbody>
+		</table>
+	</section>
+}
+
+templ Index(
+    title,
+    email string,
+    fromProtected bool,
+    isError bool,
+	errMsgs, sucMsgs []string,
+    cmp templ.Component,
+    ) {
+@layout.Base(title, email, fromProtected, isError, errMsgs, sucMsgs) {
+		@cmp
+	}
+}

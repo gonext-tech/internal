@@ -1,0 +1,28 @@
+<script>
+ const currentTime = new Date();
+ const notifications = document.getElementById("notifications");
+ console.log("notifications", notifications);
+ if (!notifications) return;
+ notificationItems.forEach((item) => {
+  // Get the value of the data-value attribute
+  const timeValue = item.getAttribute("data-value");
+  console.log("timeValue", timeValue);
+  // Parse the time value into a Date object
+  const notificationTime = new Date(timeValue);
+
+  // Calculate the time difference in milliseconds
+  const timeDiff = currentTime - notificationTime;
+
+  // Convert milliseconds to minutes
+  const minutesDiff = Math.floor(timeDiff / (1000 * 60));
+
+  // Display the time difference as "x minutes ago"
+  if (minutesDiff < 60) {
+   item.textContent = `${minutesDiff}m ago`;
+  } else {
+   // Convert minutes to hours
+   const hoursDiff = Math.floor(minutesDiff / 60);
+   item.textContent = `${hoursDiff}h ago`;
+  }
+ });
+</script>

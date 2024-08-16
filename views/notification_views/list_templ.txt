@@ -1,0 +1,5 @@
+<div class=\"flex justify-between max-w-2xl mx-auto border-b border-b-slate-600 mb-8 pb-2\"></div><section class=\"overflow-auto  max-w-full mx-auto bg-slate-600 rounded-lg shadow-xl\">
+<div>no notification</div>
+<div>
+</div>
+</section>
