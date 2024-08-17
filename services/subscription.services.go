@@ -1,8 +1,8 @@
 package services
 
 import (
-	"github.com/ramyjaber1/internal/models"
-	"github.com/ramyjaber1/internal/utils"
+	"github.com/gonext-tech/internal/models"
+	"github.com/gonext-tech/internal/utils"
 	"sort"
 )
 

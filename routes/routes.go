@@ -1,18 +1,20 @@
 package routes
 
 import (
+	"github.com/gonext-tech/internal/handlers"
+	"github.com/gonext-tech/internal/manager"
+	"github.com/gonext-tech/internal/models"
+	"github.com/gonext-tech/internal/services"
 	"github.com/labstack/echo/v4"
-	"github.com/ramyjaber1/internal/handlers"
-	"github.com/ramyjaber1/internal/manager"
-	"github.com/ramyjaber1/internal/models"
-	"github.com/ramyjaber1/internal/services"
 	"gorm.io/gorm"
 )
 
-func SetupRoutes(e *echo.Echo, store *gorm.DB) {
+func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB) {
 	userService := services.NewUserServices(models.User{}, store)
 	bloodService := services.NewBloodService(models.BloodType{}, store)
 	cityService := services.NewCityService(models.City{}, store)
+	//subscriptionService := services.NewSubscriptionService(projectStores)
+	membershipService := services.NewMembershipService(projectStores)
 	donorService := services.NewDonorService(models.Donor{}, store)
 	projectService := services.NewProjectService(models.Project{}, store)
 	ticketService := services.NewTicketService(models.Ticket{}, store)
@@ -23,6 +25,8 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB) {
 	donorHandler := handlers.NewDonorHandler(donorService, bloodService, cityService)
 	notificationHandler := handlers.NewNotificationHandler(notificationService)
 	projectHandler := handlers.NewProjectHandler(projectService)
+	//subscriptionHandler := handlers.NewSubscriptionHandler(subscriptionService, projectService)
+	membershipHandler := handlers.NewMembershipHandler(membershipService, projectService)
 	ticketHandler := handlers.NewTicketHandler(ticketService, projectService, notificationService)
 	e.GET("/", authHandler.HomeHandler)
 	e.GET("/login", authHandler.LoginHandler)
@@ -61,6 +65,15 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB) {
 	protectedGroup.GET("city/edit/:id", cityHandler.UpdatePage)
 	protectedGroup.POST("city/edit/:id", cityHandler.UpdateHandler)
 	protectedGroup.DELETE("city/:id", cityHandler.DeleteHandler)
+
+	// membership
+	protectedGroup.GET("membership", membershipHandler.ListPage)
+	protectedGroup.GET("membership/view/:id/:name", membershipHandler.ViewPage)
+	protectedGroup.GET("membership/create", membershipHandler.CreatePage)
+	protectedGroup.POST("membership/create", membershipHandler.CreateHandler)
+	protectedGroup.GET("membership/edit/:id/:name", membershipHandler.UpdatePage)
+	protectedGroup.POST("membership/edit/:id/:name", membershipHandler.UpdateHandler)
+	protectedGroup.DELETE("membership/:id", membershipHandler.DeleteHandler)
 
 	// donor
 	protectedGroup.GET("donor", donorHandler.ListPage)

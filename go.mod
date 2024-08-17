@@ -1,4 +1,4 @@
-module github.com/ramyjaber1/internal
+module github.com/gonext-tech/internal
 
 go 1.21
 

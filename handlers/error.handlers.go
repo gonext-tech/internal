@@ -6,7 +6,7 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
-	"github.com/ramyjaber1/internal/views/errors_pages"
+	"github.com/gonext-tech/internal/views/errors_pages"
 )
 
 var (

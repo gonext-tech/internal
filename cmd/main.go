@@ -3,14 +3,14 @@ package main
 import (
 	"fmt"
 
+	"github.com/gonext-tech/internal/database"
+	"github.com/gonext-tech/internal/handlers"
+	"github.com/gonext-tech/internal/routes"
 	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/ramyjaber1/internal/database"
-	"github.com/ramyjaber1/internal/handlers"
-	"github.com/ramyjaber1/internal/routes"
 )
 
 const (
@@ -35,11 +35,14 @@ func main() {
 	// Session Middleware
 	e.Use(session.Middleware(sessions.NewCookieStore([]byte(SECRET_KEY))))
 	e.Use(middleware.Logger())
-	db, err := database.DBInit()
+	db, projectDB, err := database.DBInit()
 	if err != nil {
 		e.Logger.Fatal(err)
 	}
-	routes.SetupRoutes(e, db)
+	if err != nil {
+		e.Logger.Fatal(err)
+	}
+	routes.SetupRoutes(e, db, projectDB)
 
 	e.Logger.Fatal(e.Start(":9001"))
 }

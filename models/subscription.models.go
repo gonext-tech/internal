@@ -26,15 +26,14 @@ type Subscription struct {
 }
 
 type Membership struct {
-	ID          uint      `json:"id"`
-	ShopID      uint      `json:"shop_id"`
-	Name        string    `json:"name"`
-	Price       float64   `json:"price"`
-	Duration    int       `json:"duration"`
-	Notes       string    `json:"notes"`
-	MaxUsers    int       `json:"max_users"`
-	ProjectName string    `json:"project_name" gorm:"default:Qwik"`
-	Status      string    `json:"status" gorm:"default:ACTIVE"`
-	CreatedAt   time.Time `json:"created_at" gorm:"autoCreateTime"`
-	UpdatedAt   time.Time `json:"updated_at" gorm:"autoUpdateTime"`
+	ID          uint      `form:"id"`
+	Name        string    `form:"name"`
+	Price       float64   `form:"price"`
+	Duration    int       `form:"duration"`
+	Notes       string    `form:"notes"`
+	MaxUsers    int       `form:"max_users"`
+	ProjectName string    `form:"project_name"`
+	Status      string    `form:"status" gorm:"default:ACTIVE"`
+	CreatedAt   time.Time `form:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt   time.Time `form:"updated_at" gorm:"autoUpdateTime"`
 }

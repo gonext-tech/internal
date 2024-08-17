@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/ramyjaber1/internal/models"
-	blood_views "github.com/ramyjaber1/internal/views/bloodType_views"
+	"github.com/gonext-tech/internal/models"
+	blood_views "github.com/gonext-tech/internal/views/bloodType_views"
 )
 
 type BloodService interface {

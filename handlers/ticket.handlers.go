@@ -7,8 +7,8 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
-	"github.com/ramyjaber1/internal/models"
-	"github.com/ramyjaber1/internal/views/ticket_views"
+	"github.com/gonext-tech/internal/models"
+	"github.com/gonext-tech/internal/views/ticket_views"
 )
 
 type TicketService interface {
