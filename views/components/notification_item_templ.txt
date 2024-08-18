@@ -1,7 +1,0 @@
-<a class=\"font-bold text-center w-full p-4\">No New Notifications</a>
-<li data-value=\"
-\"><a href=\"
-\" class=\"flex items-start\"><div class=\"flex flex-col gap-2\"><span class=\"text-wrap\"><span class=\"font-bold\">
-</span> 
- <span class=\"text-primary\">Upload Image</span> artical.</span> <span id=\"notification-time\" class=\"text-xs text-accent\">
-</span></div><div class=\"h-1 border-t \"></div></a></li>
