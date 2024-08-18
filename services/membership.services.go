@@ -94,6 +94,13 @@ func (ms *MembershipServices) GetALL(limit, page int, orderBy, sortBy, project, 
 	return paginatedMemberships, meta, nil
 }
 
+func (ms *MembershipServices) Fetch(project string) ([]models.Membership, error) {
+	var memberships []models.Membership
+	DB := utils.GetCurrentDB(project, ms.STORES)
+	DB.Table("memberships").Find(&memberships)
+	return memberships, nil
+}
+
 func (ms *MembershipServices) GetID(id, dbName string) (models.Membership, error) {
 	var membership models.Membership
 	DB := utils.GetCurrentDB(dbName, ms.STORES)

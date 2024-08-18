@@ -13,8 +13,9 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	userService := services.NewUserServices(models.User{}, store)
 	bloodService := services.NewBloodService(models.BloodType{}, store)
 	cityService := services.NewCityService(models.City{}, store)
-	//subscriptionService := services.NewSubscriptionService(projectStores)
+	subscriptionService := services.NewSubscriptionService(projectStores)
 	membershipService := services.NewMembershipService(projectStores)
+	shopService := services.NewShopService(projectStores)
 	donorService := services.NewDonorService(models.Donor{}, store)
 	projectService := services.NewProjectService(models.Project{}, store)
 	ticketService := services.NewTicketService(models.Ticket{}, store)
@@ -25,9 +26,10 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	donorHandler := handlers.NewDonorHandler(donorService, bloodService, cityService)
 	notificationHandler := handlers.NewNotificationHandler(notificationService)
 	projectHandler := handlers.NewProjectHandler(projectService)
-	//subscriptionHandler := handlers.NewSubscriptionHandler(subscriptionService, projectService)
+	subscriptionHandler := handlers.NewSubscriptionHandler(subscriptionService, projectService)
 	membershipHandler := handlers.NewMembershipHandler(membershipService, projectService)
 	ticketHandler := handlers.NewTicketHandler(ticketService, projectService, notificationService)
+	shopHandler := handlers.NewShopHandler(shopService, projectService)
 	e.GET("/", authHandler.HomeHandler)
 	e.GET("/login", authHandler.LoginHandler)
 	e.POST("/login", authHandler.LoginHandler)
@@ -67,13 +69,34 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	protectedGroup.DELETE("city/:id", cityHandler.DeleteHandler)
 
 	// membership
+	protectedGroup.GET("shop", shopHandler.ListPage)
+	protectedGroup.GET("shop/search", shopHandler.SearchUser)
+	protectedGroup.GET("shop/view/:id/:name", shopHandler.ViewPage)
+	protectedGroup.GET("shop/create", shopHandler.CreatePage)
+	protectedGroup.POST("shop/create", shopHandler.CreateHandler)
+	protectedGroup.GET("shop/edit/:id/:name", shopHandler.UpdatePage)
+	protectedGroup.POST("shop/edit/:id/:name", shopHandler.UpdateHandler)
+	protectedGroup.DELETE("shop/:id/:name", shopHandler.DeleteHandler)
+
+	// membership
 	protectedGroup.GET("membership", membershipHandler.ListPage)
+	protectedGroup.GET("membership/fetch", membershipHandler.Fetch)
 	protectedGroup.GET("membership/view/:id/:name", membershipHandler.ViewPage)
 	protectedGroup.GET("membership/create", membershipHandler.CreatePage)
 	protectedGroup.POST("membership/create", membershipHandler.CreateHandler)
 	protectedGroup.GET("membership/edit/:id/:name", membershipHandler.UpdatePage)
 	protectedGroup.POST("membership/edit/:id/:name", membershipHandler.UpdateHandler)
-	protectedGroup.DELETE("membership/:id", membershipHandler.DeleteHandler)
+	protectedGroup.DELETE("membership/:id/:name", membershipHandler.DeleteHandler)
+
+	// subscrtiption
+	protectedGroup.GET("subscription", subscriptionHandler.ListPage)
+	//protectedGroup.GET("subscription/fetch", subscriptionHandler.Fetch)
+	protectedGroup.GET("subscription/view/:id/:name", subscriptionHandler.ViewPage)
+	protectedGroup.GET("subscription/create", subscriptionHandler.CreatePage)
+	protectedGroup.POST("subscription/create", subscriptionHandler.CreateHandler)
+	protectedGroup.GET("subscription/edit/:id/:name", subscriptionHandler.UpdatePage)
+	protectedGroup.POST("subscription/edit/:id/:name", subscriptionHandler.UpdateHandler)
+	protectedGroup.DELETE("subscription/:id/:name", subscriptionHandler.DeleteHandler)
 
 	// donor
 	protectedGroup.GET("donor", donorHandler.ListPage)

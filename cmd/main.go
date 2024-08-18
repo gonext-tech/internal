@@ -6,6 +6,7 @@ import (
 	"github.com/gonext-tech/internal/database"
 	"github.com/gonext-tech/internal/handlers"
 	"github.com/gonext-tech/internal/routes"
+	"github.com/gonext-tech/internal/utils"
 	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo-contrib/session"
@@ -24,7 +25,8 @@ func main() {
 	}
 
 	e := echo.New()
-	e.Static("/", "assets")
+	e.Binder = &utils.CustomBinder{}
+	e.Static("/", "public")
 
 	e.HTTPErrorHandler = handlers.CustomHTTPErrorHandler
 

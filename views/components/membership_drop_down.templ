@@ -1,0 +1,14 @@
+package components
+
+import (
+"github.com/gonext-tech/internal/models"
+"strconv"
+)
+
+templ MembershipResult(memberships []models.Membership) {
+<option value="" selected disabled>Select a membership</option>
+for _, membership := range memberships {
+<option data-duration={ strconv.Itoa(int(membership.Duration)) } value={ strconv.Itoa(int(membership.ID)) }>{
+  membership.Name }</option>
+}
+}

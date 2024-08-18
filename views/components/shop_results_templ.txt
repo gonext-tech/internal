@@ -1,0 +1,7 @@
+<p data-id=\"
+\" data-name=\"
+\" onclick=\"myFunction(event);\" class=\"py-2 px-4 cursor-pointer hover:bg-slate-700\" value=\"
+\">
+</p>
+<p class=\"text-center\">No Result found or select project</p>
+<script>\n  function myFunction(event) {\n    const clickedElement = event.target; // Get the clicked element\n    const shop_id = document.getElementById(\"shop_id\")\n    const shop_search_input = document.getElementById(\"shop-search-input\")\n    shop_search_input.value = clickedElement.dataset.name\n    shop_id.value = clickedElement.dataset.id\n  }\n</script>
