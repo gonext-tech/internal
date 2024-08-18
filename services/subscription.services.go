@@ -16,7 +16,7 @@ func NewSubscriptionService(db []models.ProjectsDB) *SubscriptionServices {
 	}
 }
 
-func (ss *SubscriptionServices) GetALL(limit, page int, orderBy, sortBy, project, status, searchTerm string) (models.PaginationResponse, error) {
+func (ss *SubscriptionServices) GetALL(limit, page int, orderBy, sortBy, project, status, searchTerm string) ([]models.Subscription, models.Meta, error) {
 	allSubscription := []models.Subscription{}
 	var totalRecords int64
 	for _, store := range ss.STORES {
@@ -76,7 +76,7 @@ func (ss *SubscriptionServices) GetALL(limit, page int, orderBy, sortBy, project
 	if end > len(allSubscription) {
 		end = len(allSubscription)
 	}
-	paginatedCustomers := allSubscription[start:end]
+	paginatedSubscription := allSubscription[start:end]
 
 	// Calculate total pages (lastPage)
 	lastPage := (totalRecords + int64(limit) - 1) / int64(limit)
@@ -89,14 +89,7 @@ func (ss *SubscriptionServices) GetALL(limit, page int, orderBy, sortBy, project
 		Limit:       limit,
 	}
 
-	// Construct the response
-	response := models.PaginationResponse{
-		OK:   true,
-		Data: paginatedCustomers,
-		Meta: meta,
-	}
-
-	return response, nil
+	return paginatedSubscription, meta, nil
 }
 
 func (ss *SubscriptionServices) GetID(id, dbName string) (models.Subscription, error) {
@@ -119,6 +112,14 @@ func (ss *SubscriptionServices) Create(subscription models.Subscription) (models
 func (ss *SubscriptionServices) Update(subscription models.Subscription) (models.Subscription, error) {
 	DB := utils.GetCurrentDB(subscription.ProjectName, ss.STORES)
 	if result := DB.Table("subscriptions").Updates(&subscription); result.Error != nil {
+		return models.Subscription{}, result.Error
+	}
+	return subscription, nil
+}
+
+func (ss *SubscriptionServices) Delete(subscription models.Subscription) (models.Subscription, error) {
+	DB := utils.GetCurrentDB(subscription.ProjectName, ss.STORES)
+	if result := DB.Table("memberships").Delete(&subscription); result.Error != nil {
 		return models.Subscription{}, result.Error
 	}
 	return subscription, nil

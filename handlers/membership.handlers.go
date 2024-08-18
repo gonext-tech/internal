@@ -6,12 +6,14 @@ import (
 	"strconv"
 
 	"github.com/gonext-tech/internal/models"
+	"github.com/gonext-tech/internal/views/components"
 	"github.com/gonext-tech/internal/views/membership_views"
 	"github.com/labstack/echo/v4"
 )
 
 type MembershipService interface {
 	GetALL(limit, page int, orderBy, sortBy, project, status, searchTerm string) ([]models.Membership, models.Meta, error)
+	Fetch(string) ([]models.Membership, error)
 	GetID(id, name string) (models.Membership, error)
 	Create(models.Membership) (models.Membership, error)
 	Update(models.Membership) (models.Membership, error)
@@ -28,6 +30,12 @@ func NewMembershipHandler(ms MembershipService, ps ProjectService) *MembershipHa
 		MembershipServices: ms,
 		ProjectServices:    ps,
 	}
+}
+
+func (mh *MembershipHandler) Fetch(c echo.Context) error {
+	projectName := c.QueryParam("project_name")
+	memberships, _ := mh.MembershipServices.Fetch(projectName)
+	return renderView(c, components.MembershipResult(memberships))
 }
 
 func (mh *MembershipHandler) ListPage(c echo.Context) error {

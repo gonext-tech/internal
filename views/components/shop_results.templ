@@ -1,0 +1,28 @@
+package components
+
+import (
+"github.com/gonext-tech/internal/models"
+"strconv"
+)
+
+templ ShopResult(shops []models.Shop) {
+if len(shops) != 0 {
+for _, shop := range shops {
+<p data-id={ strconv.Itoa(int(shop.ID)) } data-name={ shop.Name } onclick="myFunction(event);"
+  class="py-2 px-4 cursor-pointer hover:bg-slate-700" value={ strconv.Itoa(int(shop.ID)) }>{ shop.Name }</p>
+}
+} else {
+<p class="text-center">
+  No Result found or select project
+</p>
+}
+<script>
+  function myFunction(event) {
+    const clickedElement = event.target; // Get the clicked element
+    const shop_id = document.getElementById("shop_id")
+    const shop_search_input = document.getElementById("shop-search-input")
+    shop_search_input.value = clickedElement.dataset.name
+    shop_id.value = clickedElement.dataset.id
+  }
+</script>
+}

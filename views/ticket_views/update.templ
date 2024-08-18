@@ -1,128 +1,110 @@
 package ticket_views
 
-import "github.com/gonext-tech/internal/models"
-import "github.com/gonext-tech/internal/views/components"
-import "strconv"
+import (
+"github.com/gonext-tech/internal/models"
+"github.com/gonext-tech/internal/views/components"
+"strconv"
+)
 
-templ Update(ticket models.Ticket,projects []models.Project) {
-	<h1 class="text-2xl font-bold text-center mb-8">
-		Update Ticket
-	</h1>
-	<section class="px-10 mx-auto bg-slate-600 rounded-lg shadow-xl">
-		<form class="rounded-xl flex flex-col  gap-y-4 py-4  mx-auto" action="" method="post" hx-swap="transition:true">
-			<div class="flex flex-wrap w-full gap-4 ">
-				<label class="flex w-[32%] flex-col justify-start gap-2">
-					Title:
-					<input
-						class="input input-bordered input-primary bg-slate-800"
-						type="text"
-						name="title"
-						value={ ticket.Title }
-						required
-						autofocus
-						minlength="3"
-						maxlength="64"
-					/>
-				</label>
-				<label class="flex flex-col justify-start gap-2">
-					Project
-					<select value={ strconv.Itoa(int(ticket.ProjectID)) } name="project_id" class="select select-bordered select-primary bg-slate-800">
-						<option disabled selected>Pick one</option>
-						for _, project := range projects {
-							if project.ID == ticket.ProjectID {
-								<option selected value={ strconv.Itoa(int(project.ID)) }>{ project.Name }</option>
-							} else {
-								<option value={ strconv.Itoa(int(project.ID)) }>{ project.Name }</option>
-							}
-						}
-					</select>
-				</label>
-				<label class="flex flex-col justify-start gap-2">
-					Priority
-					<select value={ ticket.Priority } name="priority" class="select select-bordered select-primary bg-slate-800">
-						if ticket.Priority == "" {
-							<option disabled selected>Pick one</option>
-						} else {
-							<option disabled>Pick one</option>
-						}
-						<option value="XS">XS</option>
-						<option value="S">S</option>
-						<option value="M">M</option>
-						<option value="L">L</option>
-						<option value="XL">XL</option>
-						<option value="XXL">XXL</option>
-					</select>
-				</label>
-				<label class="flex flex-col justify-start gap-2">
-					Type
-					<select value={ ticket.Type } name="type" class="select select-bordered select-primary bg-slate-800">
-						if ticket.Type == "" {
-							<option disabled selected>Pick one</option>
-						} else {
-							<option disabled>Pick one</option>
-						}
-						<option value="BUG">Bug</option>
-						<option value="FEATURE">Feature</option>
-						<option value="IMPROVMENT">Improvment</option>
-					</select>
-				</label>
-				<label class="flex flex-col justify-start gap-2">
-					Status
-					<select value={ ticket.Status } name="status" class="select select-bordered select-primary bg-slate-800">
-						if ticket.Status == "" {
-							<option disabled selected>Pick one</option>
-						} else {
-							<option disabled>Pick one</option>
-						}
-						<option value="PENDING">Pending</option>
-						<option value="OPEN">Open</option>
-						<option value="DONE">Done</option>
-						<option value="INPROGRESS">In Progress</option>
-						<option value="CLOSED">Closed</option>
-					</select>
-				</label>
-				<label class="flex w-[32%] flex-col justify-start gap-2">
-					Description:
-					<textarea
-						class="input input-bordered input-primary bg-slate-800"
-						type="text"
-						name="description"
-						minlength="3"
-						maxlength="64"
-					>{ ticket.Description }</textarea>
-				</label>
-				<label class="flex w-[32%] flex-col justify-start gap-2">
-					User:
-					<input name="user_id" id="user_id" class="hidden"/>
-					<div class="dropdown">
-						<div tabindex="0" role="button">
-							<input
-								class="input input-bordered  input-primary bg-slate-800"
-								type="search"
-								name="searchTerm"
-								value={ ticket.User.Name }
-								id="user-search-input"
-								placeholder="Search by title..."
-								hx-get="/user/search"
-								hx-trigger="input changed delay:500ms, search"
-								hx-target="#user-results"
-								autocomplete="off"
-							/>
-						</div>
-						<ul tabindex="0" id="user-results" class="dropdown-content mt-2 z-[1] menu p-2 shadow bg-base-100 rounded-md  w-52">
-							@components.UserResult([]models.User{})
-						</ul>
-					</div>
-				</label>
-			</div>
-			<footer class="card-actions flex gap-4 justify-end">
-				<button class="badge badge-primary p-4 hover:scale-[1.1]">
-					Update
-				</button>
-				<a href="/ticket" class="badge badge-neutral p-4 hover:scale-[1.1]">
-					Cancel
-				</a>
-			</footer>
-		</form>
-	</section>
+templ Update(ticket models.Ticket, projects []models.Project) {
+<h1 class="text-2xl font-bold text-center mb-8">
+  Update Ticket
+</h1>
+<section class="px-10 mx-auto bg-slate-600 rounded-lg shadow-xl">
+  <form class="rounded-xl flex flex-col  gap-y-4 py-4  mx-auto" action="" method="post" hx-swap="transition:true">
+    <div class="flex flex-wrap w-full gap-4 ">
+      <label class="flex w-[32%] flex-col justify-start gap-2">
+        Title:
+        <input class="input input-bordered input-primary bg-slate-800" type="text" name="title" value={ ticket.Title }
+          required autofocus minlength="3" maxlength="64" />
+      </label>
+      <label class="flex flex-col justify-start gap-2">
+        Project
+        <select value={ strconv.Itoa(int(ticket.ProjectID)) } name="project_id"
+          class="select select-bordered select-primary bg-slate-800">
+          <option disabled selected>Pick one</option>
+          for _, project := range projects {
+          if project.ID == ticket.ProjectID {
+          <option selected value={ strconv.Itoa(int(project.ID)) }>{ project.Name }</option>
+          } else {
+          <option value={ strconv.Itoa(int(project.ID)) }>{ project.Name }</option>
+          }
+          }
+        </select>
+      </label>
+      <label class="flex flex-col justify-start gap-2">
+        Priority
+        <select value={ ticket.Priority } name="priority" class="select select-bordered select-primary bg-slate-800">
+          if ticket.Priority == "" {
+          <option disabled selected>Pick one</option>
+          } else {
+          <option disabled>Pick one</option>
+          }
+          <option value="XS">XS</option>
+          <option value="S">S</option>
+          <option value="M">M</option>
+          <option value="L">L</option>
+          <option value="XL">XL</option>
+          <option value="XXL">XXL</option>
+        </select>
+      </label>
+      <label class="flex flex-col justify-start gap-2">
+        Type
+        <select value={ ticket.Type } name="type" class="select select-bordered select-primary bg-slate-800">
+          if ticket.Type == "" {
+          <option disabled selected>Pick one</option>
+          } else {
+          <option disabled>Pick one</option>
+          }
+          <option value="BUG">Bug</option>
+          <option value="FEATURE">Feature</option>
+          <option value="IMPROVMENT">Improvment</option>
+        </select>
+      </label>
+      <label class="flex flex-col justify-start gap-2">
+        Status
+        <select value={ ticket.Status } name="status" class="select select-bordered select-primary bg-slate-800">
+          if ticket.Status == "" {
+          <option disabled selected>Pick one</option>
+          } else {
+          <option disabled>Pick one</option>
+          }
+          <option value="PENDING">Pending</option>
+          <option value="OPEN">Open</option>
+          <option value="DONE">Done</option>
+          <option value="INPROGRESS">In Progress</option>
+          <option value="CLOSED">Closed</option>
+        </select>
+      </label>
+      <label class="flex w-[32%] flex-col justify-start gap-2">
+        Description:
+        <textarea class="input input-bordered input-primary bg-slate-800" type="text" name="description" minlength="3"
+          maxlength="64">{ ticket.Description }</textarea>
+      </label>
+      <label class="flex w-[32%] flex-col justify-start gap-2">
+        User:
+        <input name="user_id" id="user_id" class="hidden" />
+        <div class="dropdown">
+          <div tabindex="0" role="button">
+            <input class="input input-bordered  input-primary bg-slate-800" type="search" name="searchTerm" value={
+              ticket.User.Name } id="user-search-input" placeholder="Search by title..." hx-get="/user/search"
+              hx-trigger="input changed delay:500ms, search" hx-target="#user-results" autocomplete="off" />
+          </div>
+          <ul tabindex="0" id="user-results"
+            class="dropdown-content mt-2 z-[1] menu p-2 shadow bg-base-100 rounded-md  w-52">
+            @components.UserResult([]models.User{})
+          </ul>
+        </div>
+      </label>
+    </div>
+    <footer class="card-actions flex gap-4 justify-end">
+      <button class="badge badge-primary p-4 hover:scale-[1.1]">
+        Update
+      </button>
+      <a href="/ticket" class="badge badge-neutral p-4 hover:scale-[1.1]">
+        Cancel
+      </a>
+    </footer>
+  </form>
+</section>
 }
