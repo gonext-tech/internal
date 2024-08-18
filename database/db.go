@@ -17,7 +17,7 @@ func DBInit() (d *gorm.DB, dd []models.ProjectsDB, err error) {
 	if database == nil {
 		log.Panic("Can't connect to Postgres!")
 	}
-	database.AutoMigrate(models.User{}, models.Project{}, models.Ticket{}, models.Notification{}, models.CommitStats{}, models.Subscription{}, models.Membership{})
+	database.AutoMigrate(models.User{}, models.Project{}, models.CommitStats{}, models.Subscription{}, models.Membership{})
 	var projects []models.Project
 	database.Where("status = ?", "ACTIVE").Find(&projects)
 	var projectsDB []models.ProjectsDB
