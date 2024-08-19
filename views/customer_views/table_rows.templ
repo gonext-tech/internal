@@ -1,0 +1,74 @@
+package customer_views
+
+import (
+"fmt"
+"github.com/gonext-tech/internal/models"
+"strings"
+)
+
+templ TableRows(customers []models.Customer) {
+if len(customers) > 0 {
+for index , s := range customers {
+<tr>
+  <td class="px-4 py-4 text-sm font-medium whitespace-nowrap">
+    <div>
+      <h2 class="font-medium text-gray-800 dark:text-white ">{ s.Name }</h2>
+      <p class="text-sm font-normal text-gray-600 dark:text-gray-400">{ }</p>
+    </div>
+  </td>
+  <td class="px-4 py-4 text-sm font-medium whitespace-nowrap">
+    <div>
+      <h2 class="font-medium text-gray-800 dark:text-white ">{ s.Name }</h2>
+      <p class="text-sm font-normal text-gray-600 dark:text-gray-400">{ s.Phone }</p>
+    </div>
+  </td>
+  <td class="px-4 py-4 text-sm font-medium whitespace-nowrap">
+    <div class={ "inline text-sm text-white text-center  font-normal capitalize px-2 py-1 rounded-lg" ,
+      templ.KV("bg-blue-500", s.Status=="ACTIVE" ) , templ.KV("bg-red-500", s.Status=="NOT_ACTIVE" ) }>
+      { strings.ToLower(s.Status) }
+    </div>
+  </td>
+  <td class="px-4 py-4 text-sm whitespace-nowrap">
+    <div>
+      <h4 class="text-gray-700 dark:text-gray-200">{ s.Address }</h4>
+    </div>
+  </td>
+  <td class="px-4 py-4 text-sm whitespace-nowrap">
+    <div>
+      <h4 class="text-gray-700 dark:text-gray-200">{ s.ProjectName }</h4>
+    </div>
+  </td>
+  <td class="px-4 py-4 text-sm whitespace-nowrap">
+    <div class={ "dropdown dropdown-end" , templ.KV("dropdown-top", index + 1==len(customers) ) }>
+      <div tabindex="0" role="button">
+        <button
+          class="px-1 py-1 text-gray-500 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:bg-gray-100">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z">
+            </path>
+          </svg>
+        </button>
+      </div>
+      <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+        <li>
+          <a hx-swap="transition:true" href={ templ.URL(fmt.Sprintf("/customer/edit/%d/%s", s.ID, s.ProjectName)) }>
+            Edit
+          </a>
+        </li>
+        <li>
+          <button hx-swap="transition:true" hx-delete={ fmt.Sprintf("/customer/%d/%s", s.ID, s.ProjectName) }
+            hx-target="body" hx-confirm="are you sure you wanna delete this?">Delete</button>
+        </li>
+      </ul>
+    </div>
+  </td>
+</tr>
+}
+} else {
+<tr>
+  <td class="text-center" colspan="6">No customer available... add some </td>
+</tr>
+}
+}

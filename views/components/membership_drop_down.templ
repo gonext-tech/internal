@@ -5,10 +5,13 @@ import (
 "strconv"
 )
 
-templ MembershipResult(memberships []models.Membership) {
-<option value="" selected disabled>Select a membership</option>
+templ MembershipResult(membership_id uint, memberships []models.Membership) {
+<option value="" selected?={ membership_id==0 } disabled>Select a membership</option>
 for _, membership := range memberships {
-<option data-duration={ strconv.Itoa(int(membership.Duration)) } value={ strconv.Itoa(int(membership.ID)) }>{
-  membership.Name }</option>
+<option selected?={ membership.ID==membership_id } data-duration={ strconv.Itoa(int(membership.Duration)) } value={
+  strconv.Itoa(int(membership.ID)) }>
+  {
+  membership.Name }
+</option>
 }
 }

@@ -4,4 +4,4 @@
 \">
 </p>
 <p class=\"text-center\">No Result found</p>
-<script>\nfunction myFunction(event) {\n const clickedElement = event.target; // Get the clicked element\n const user_id = document.getElementById(\"user_id\")\n const user_input = document.getElementById(\"user-search-input\")\n  user_input.value = clickedElement.dataset.name\n  user_id.value = clickedElement.dataset.id\n}\n</script>
+<script>\n  function myFunction(event) {\n    console.log(\"isOwner\", isOwner)\n    const clickedElement = event.target; // Get the clicked element\n    const user_id = document.getElementById(\"user_id\")\n    const user_input = document.getElementById(\"user-search-input\")\n    user_input.value = clickedElement.dataset.name\n    user_id.value = clickedElement.dataset.id\n  }\n</script>

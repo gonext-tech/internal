@@ -22,12 +22,14 @@ type SubscriptionService interface {
 type SubscriptionHandler struct {
 	SubscriptionServices SubscriptionService
 	ProjectServices      ProjectService
+	MembershipServices   MembershipService
 }
 
-func NewSubscriptionHandler(ms SubscriptionService, ps ProjectService) *SubscriptionHandler {
+func NewSubscriptionHandler(ms SubscriptionService, ps ProjectService, mems MembershipService) *SubscriptionHandler {
 	return &SubscriptionHandler{
 		SubscriptionServices: ms,
 		ProjectServices:      ps,
+		MembershipServices:   mems,
 	}
 }
 
@@ -155,6 +157,7 @@ func (sh *SubscriptionHandler) UpdatePage(c echo.Context) error {
 	}
 
 	projects, _, _ := sh.ProjectServices.GetALL(50, 1, "desc", "id", "", "")
+	memberships, _, _ := sh.MembershipServices.GetALL(50, 1, "desc", "id", projectName, "", "")
 	return renderView(c, subscription_views.Index(
 		titlePage,
 		c.Get(email_key).(string),
@@ -162,14 +165,14 @@ func (sh *SubscriptionHandler) UpdatePage(c echo.Context) error {
 		isError,
 		getFlashmessages(c, "error"),
 		getFlashmessages(c, "success"),
-		subscription_views.Update(subscription, projects),
+		subscription_views.Update(subscription, projects, memberships),
 	))
 }
 
 func (sh *SubscriptionHandler) UpdateHandler(c echo.Context) error {
 	isError = false
 	id := c.Param("id")
-	projectName := c.Param("projectName")
+	projectName := c.Param("name")
 	subscription, err := sh.SubscriptionServices.GetID(id, projectName)
 	if err != nil {
 		errorMsg = fmt.Sprintf("subscription with %s not found", id)
@@ -182,6 +185,8 @@ func (sh *SubscriptionHandler) UpdateHandler(c echo.Context) error {
 		setFlashmessages(c, "error", errorMsg)
 		return sh.UpdatePage(c)
 	}
+
+	subscription.Shop = models.Shop{}
 
 	_, err = sh.SubscriptionServices.Update(subscription)
 	if err != nil {

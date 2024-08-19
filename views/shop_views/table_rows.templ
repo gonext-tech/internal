@@ -12,11 +12,16 @@ for index , s := range shops {
 <tr>
   <td class="px-4 py-4 text-sm font-medium whitespace-nowrap">
     <div>
-      <h2 class="font-medium text-gray-800 dark:text-white ">{ s.ProjectName }</h2>
-      <p class="text-sm font-normal text-gray-600 dark:text-gray-400"></p>
+      <h2 class="font-medium text-gray-800 dark:text-white ">{ s.Name }</h2>
     </div>
   </td>
-  <td class="px-12 py-4 text-sm font-medium whitespace-nowrap">
+  <td class="px-4 py-4 text-sm font-medium whitespace-nowrap">
+    <div>
+      <h2 class="font-medium text-gray-800 dark:text-white ">{ s.Owner.Name }</h2>
+      <p class="text-sm font-normal text-gray-600 dark:text-gray-400">{ s.Owner.Phone }</p>
+    </div>
+  </td>
+  <td class="px-4 py-4 text-sm font-medium whitespace-nowrap">
     <div class={ "inline text-sm text-white text-center  font-normal capitalize px-2 py-1 rounded-lg" ,
       templ.KV("bg-blue-500", s.Status=="ACTIVE" ) , templ.KV("bg-red-500", s.Status=="NOT_ACTIVE" ) }>
       { strings.ToLower(s.Status) }
@@ -24,33 +29,12 @@ for index , s := range shops {
   </td>
   <td class="px-4 py-4 text-sm whitespace-nowrap">
     <div>
-      <h4 class="text-gray-700 dark:text-gray-200">{ s.Owner.Name }</h4>
-      <p class="text-gray-500 dark:text-gray-400">{ s.Status }</p>
+      <h4 class="text-gray-700 dark:text-gray-200">{ s.Address }</h4>
     </div>
   </td>
   <td class="px-4 py-4 text-sm whitespace-nowrap">
-    <div class="flex items-center">
-      <img class="object-cover w-6 h-6 -mx-1 border-2 border-white rounded-full dark:border-gray-700 shrink-0"
-        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80"
-        alt="" />
-      <img class="object-cover w-6 h-6 -mx-1 border-2 border-white rounded-full dark:border-gray-700 shrink-0"
-        src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80"
-        alt="" />
-      <img class="object-cover w-6 h-6 -mx-1 border-2 border-white rounded-full dark:border-gray-700 shrink-0"
-        src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1256&q=80"
-        alt="" />
-      <img class="object-cover w-6 h-6 -mx-1 border-2 border-white rounded-full dark:border-gray-700 shrink-0"
-        src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80"
-        alt="" />
-      <p
-        class="flex items-center justify-center w-6 h-6 -mx-1 text-xs text-blue-600 bg-blue-100 border-2 border-white rounded-full">
-        +4
-      </p>
-    </div>
-  </td>
-  <td class="px-4 py-4 text-sm whitespace-nowrap">
-    <div class="w-48 h-1.5 bg-blue-200 overflow-hidden rounded-full">
-      <div class="bg-blue-500 w-2/3 h-1.5">random</div>
+    <div>
+      <h4 class="text-gray-700 dark:text-gray-200">{ s.ProjectName }</h4>
     </div>
   </td>
   <td class="px-4 py-4 text-sm whitespace-nowrap">

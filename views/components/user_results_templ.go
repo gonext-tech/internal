@@ -10,10 +10,12 @@ import "context"
 import "io"
 import "bytes"
 
-import "github.com/gonext-tech/internal/models"
-import "strconv"
+import (
+	"github.com/gonext-tech/internal/models"
+	"strconv"
+)
 
-func UserResult(users []models.User) templ.Component {
+func UserResult(users []models.User, isOwner bool) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -59,7 +61,7 @@ func UserResult(users []models.User) templ.Component {
 				var templ_7745c5c3_Var2 string
 				templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(user.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/user_results.templ`, Line: 14, Col: 15}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/user_results.templ`, Line: 11, Col: 102}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 				if templ_7745c5c3_Err != nil {

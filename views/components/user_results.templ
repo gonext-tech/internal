@@ -1,31 +1,29 @@
 package components
 
-import "github.com/gonext-tech/internal/models"
-import "strconv"
+import (
+"github.com/gonext-tech/internal/models"
+"strconv"
+)
 
-templ UserResult(users []models.User) {
-	if len(users) != 0 {
-		for _, user := range users {
-			<p
-				data-id={ strconv.Itoa(int(user.ID)) }
-				data-name={ user.Name }
-				onclick="myFunction(event);"
-				class="py-2 px-4 cursor-pointer hover:bg-slate-700"
-				value={ strconv.Itoa(int(user.ID)) }
-			>{ user.Name }</p>
-		}
-	} else {
-		<p class="text-center">
-			No Result found
-		</p>
-	}
-	<script>
-function myFunction(event) {
- const clickedElement = event.target; // Get the clicked element
- const user_id = document.getElementById("user_id")
- const user_input = document.getElementById("user-search-input")
-  user_input.value = clickedElement.dataset.name
-  user_id.value = clickedElement.dataset.id
+templ UserResult(users []models.User, isOwner bool) {
+if len(users) != 0 {
+for _, user := range users {
+<p data-id={ strconv.Itoa(int(user.ID)) } data-name={ user.Name } onclick="myFunction(event);"
+  class="py-2 px-4 cursor-pointer hover:bg-slate-700" value={ strconv.Itoa(int(user.ID)) }>{ user.Name }</p>
 }
+} else {
+<p class="text-center">
+  No Result found
+</p>
+}
+<script>
+  function myFunction(event) {
+    console.log("isOwner", isOwner)
+    const clickedElement = event.target; // Get the clicked element
+    const user_id = document.getElementById("user_id")
+    const user_input = document.getElementById("user-search-input")
+    user_input.value = clickedElement.dataset.name
+    user_id.value = clickedElement.dataset.id
+  }
 </script>
 }

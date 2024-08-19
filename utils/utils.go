@@ -38,14 +38,15 @@ func ConvertShopToCustomerShop(shop models.Shop) models.CustomerShop {
 	// }
 
 	customerShop := models.CustomerShop{
-		ID:        shop.ID,
-		Name:      shop.Name,
-		Address:   shop.Address,
-		OwnerID:   shop.OwnerID,
-		Status:    shop.Status,
-		CreatedAt: shop.CreatedAt,
-		Workers:   shop.Workers,
-		UpdatedAt: shop.UpdatedAt,
+		ID:          shop.ID,
+		Name:        shop.Name,
+		Address:     shop.Address,
+		OwnerID:     shop.OwnerID,
+		Status:      shop.Status,
+		CreatedAt:   shop.CreatedAt,
+		ProjectName: shop.ProjectName,
+		Workers:     shop.Workers,
+		UpdatedAt:   shop.UpdatedAt,
 	}
 	return customerShop
 }
