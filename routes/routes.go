@@ -10,16 +10,22 @@ import (
 )
 
 func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB) {
+
+	// --> SERVICES INIT <--
 	userService := services.NewUserServices(models.User{}, store)
 	subscriptionService := services.NewSubscriptionService(projectStores)
 	membershipService := services.NewMembershipService(projectStores)
 	shopService := services.NewShopService(projectStores)
 	projectService := services.NewProjectService(models.Project{}, store)
+	customerService := services.NewCustomerService(projectStores)
+
+	// --> HANDLERS INIT <--
 	authHandler := handlers.NewAuthHandler(userService)
 	projectHandler := handlers.NewProjectHandler(projectService)
-	subscriptionHandler := handlers.NewSubscriptionHandler(subscriptionService, projectService)
+	subscriptionHandler := handlers.NewSubscriptionHandler(subscriptionService, projectService, membershipService)
 	membershipHandler := handlers.NewMembershipHandler(membershipService, projectService)
 	shopHandler := handlers.NewShopHandler(shopService, projectService)
+	customerHandler := handlers.NewCustomerHandler(customerService, projectService)
 
 	// --> UNPRTECTED ROUTES <--
 	e.GET("/", authHandler.HomeHandler)
@@ -51,6 +57,16 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	protectedGroup.GET("shop/edit/:id/:name", shopHandler.UpdatePage)
 	protectedGroup.POST("shop/edit/:id/:name", shopHandler.UpdateHandler)
 	protectedGroup.DELETE("shop/:id/:name", shopHandler.DeleteHandler)
+
+	// --> CUSTOMER ROUTES <--
+	protectedGroup.GET("customer", customerHandler.ListPage)
+	protectedGroup.GET("customer/search", customerHandler.SearchUser)
+	protectedGroup.GET("customer/view/:id/:name", customerHandler.ViewPage)
+	protectedGroup.GET("customer/create", customerHandler.CreatePage)
+	protectedGroup.POST("customer/create", customerHandler.CreateHandler)
+	protectedGroup.GET("customer/edit/:id/:name", customerHandler.UpdatePage)
+	protectedGroup.POST("customer/edit/:id/:name", customerHandler.UpdateHandler)
+	protectedGroup.DELETE("customer/:id/:name", customerHandler.DeleteHandler)
 
 	// --> MEMBERSHIP ROUTES <--
 	protectedGroup.GET("membership", membershipHandler.ListPage)

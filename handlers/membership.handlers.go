@@ -35,7 +35,7 @@ func NewMembershipHandler(ms MembershipService, ps ProjectService) *MembershipHa
 func (mh *MembershipHandler) Fetch(c echo.Context) error {
 	projectName := c.QueryParam("project_name")
 	memberships, _ := mh.MembershipServices.Fetch(projectName)
-	return renderView(c, components.MembershipResult(memberships))
+	return renderView(c, components.MembershipResult(0, memberships))
 }
 
 func (mh *MembershipHandler) ListPage(c echo.Context) error {
@@ -175,7 +175,7 @@ func (mh *MembershipHandler) UpdatePage(c echo.Context) error {
 func (mh *MembershipHandler) UpdateHandler(c echo.Context) error {
 	isError = false
 	id := c.Param("id")
-	projectName := c.Param("projectName")
+	projectName := c.Param("name")
 	membership, err := mh.MembershipServices.GetID(id, projectName)
 	if err != nil {
 		errorMsg = fmt.Sprintf("membership with %s not found", id)

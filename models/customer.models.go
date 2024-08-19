@@ -3,31 +3,32 @@ package models
 import "time"
 
 type Customer struct {
-	ID          uint         `json:"id" gorm:"primaryKey"`
-	Email       string       `json:"email" gorm:"unique"`
-	Name        string       `json:"name"`
-	Phone       string       `json:"phone"`
-	Address     string       `json:"address"`
-	Image       string       `json:"image"`
-	Status      string       `json:"status" gorm:"default:ACTIVE"`
-	Password    string       `json:"password"`
-	Role        string       `json:"role" gorm:"default:USER"`
-	ShopID      uint         `json:"shop_id"`
-	Shop        CustomerShop `json:"shop" gorm:"foreignKey:ShopID"`
-	ProjectName string       `json:"project_name"`
-	CreatedAt   time.Time    `json:"created_at" gorm:"autoCreateTime"`
-	UpdatedAt   time.Time    `json:"updated_at" gorm:"autoUpdateTime"`
+	ID          uint         `form:"id" gorm:"primaryKey"`
+	Email       string       `form:"email" gorm:"unique"`
+	Name        string       `form:"name"`
+	Phone       string       `form:"phone"`
+	Address     string       `form:"address"`
+	Image       string       `form:"image"`
+	Status      string       `form:"status" gorm:"default:ACTIVE"`
+	Password    string       `form:"password"`
+	Role        string       `form:"role" gorm:"default:USER"`
+	ShopID      uint         `form:"shop_id"`
+	Shop        CustomerShop `form:"shop" gorm:"foreignKey:ShopID"`
+	ProjectName string       `form:"project_name"`
+	CreatedAt   time.Time    `form:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt   time.Time    `form:"updated_at" gorm:"autoUpdateTime"`
 }
 
 type CustomerShop struct {
-	ID        uint      `json:"id" gorm:"primaryKey"`
-	Name      string    `json:"name"`
-	OwnerID   uint      `json:"owner_id"`
-	Owner     User      `json:"owner" gorm:"foreignKey:OwnerID"`
-	Address   string    `json:"address"`
-	Image     string    `json:"image"`
-	Workers   []User    `json:"workers" gorm:"foreignKey:ShopID"`
-	Status    string    `json:"status" gorm:"default:ACTIVE"`
-	CreatedAt time.Time `json:"created_at" gorm:"autoCreateTime"`
-	UpdatedAt time.Time `json:"updated_at" gorm:"autoUpdateTime"`
+	ID          uint      `json:"id" gorm:"primaryKey"`
+	Name        string    `json:"name"`
+	OwnerID     uint      `json:"owner_id"`
+	Owner       User      `json:"owner" gorm:"foreignKey:OwnerID"`
+	Address     string    `json:"address"`
+	Image       string    `json:"image"`
+	Workers     []User    `json:"workers" gorm:"foreignKey:ShopID"`
+	Status      string    `json:"status" gorm:"default:ACTIVE"`
+	ProjectName string    `form:"project_name"`
+	CreatedAt   time.Time `json:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt   time.Time `json:"updated_at" gorm:"autoUpdateTime"`
 }

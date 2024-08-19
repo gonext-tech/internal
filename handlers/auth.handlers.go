@@ -138,7 +138,7 @@ func (ah *AuthHandler) SearchUser(c echo.Context) error {
 		setFlashmessages(c, "error", errorMsg)
 	}
 
-	return renderView(c, components.UserResult(users))
+	return renderView(c, components.UserResult(users, false))
 }
 
 func (ah *AuthHandler) LoginHandler(c echo.Context) error {
@@ -151,10 +151,8 @@ func (ah *AuthHandler) LoginHandler(c echo.Context) error {
 		if len(c.Request().Header["X-Timezone"]) != 0 {
 			tzone = c.Request().Header["X-Timezone"][0]
 		}
-		log.Println("authhhh")
 		// Authentication goes here
 		user, err := ah.UserServices.CheckEmail(c.FormValue("email"))
-		log.Println("authhhh-user", user)
 		if err != nil {
 			if strings.Contains(err.Error(), "no rows in result set") {
 				setFlashmessages(c, "error", "There is no user with that email")
@@ -192,7 +190,6 @@ func (ah *AuthHandler) LoginHandler(c echo.Context) error {
 			HttpOnly: true,
 		}
 
-		log.Println("sesss", sess)
 		// Set user as authenticated, their username,
 		// their ID and the client's time zone
 		sess.Values = map[interface{}]interface{}{
@@ -202,7 +199,6 @@ func (ah *AuthHandler) LoginHandler(c echo.Context) error {
 			tzone_key:   tzone,
 		}
 
-		log.Println("sesss", sess)
 		sess.Save(c.Request(), c.Response())
 
 		setFlashmessages(c, "success", "You have successfully logged in!!")

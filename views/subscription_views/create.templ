@@ -6,7 +6,8 @@ import (
 )
 
 templ Create(projects []models.Project) {
-<section class="bg-white dark:bg-gray-900 rounded-md">
+<section class=" bg-base-200 rounded-md relative">
+  @components.BackButton("subscription")
   <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">
     <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Add new subscription</h2>
     <form action="" method="post" hx-swap="transition:true">
@@ -19,8 +20,8 @@ templ Create(projects []models.Project) {
         </div>
         <div>
           <label for="project" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Project</label>
-          <select id="project" name="project_name" hx-get="/membership/fetch" hx-target="#membership_id"
-            hx-trigger="change"
+          <select id="project_name" name="project_name" hx-get="/membership/fetch" hx-target="#membership_id"
+            hx-swap={ "transition:false" } hx-trigger="change"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
             <option disabled selected>Select project</option>
             for _, project := range projects {
@@ -35,19 +36,19 @@ templ Create(projects []models.Project) {
             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Membership</label>
           <select id="membership_id" name="membership_id"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-            @components.MembershipResult([]models.Membership{})
+            @components.MembershipResult(0, []models.Membership{})
           </select>
         </div>
         <div class="w-full">
           <label for="shop" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Shop</label>
           <input type="number" name="shop_id" class="hidden" id="shop_id" />
-          <div class="dropdown">
+          <div class="dropdown w-full">
             <div tabindex="0" role="button">
-              <input
+              <input hx-swap={ "transition:false" }
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                 type="search" name="searchTerm" id="shop-search-input" placeholder="Search by title..."
                 hx-get="/shop/search" hx-trigger="input changed delay:500ms, search" hx-target="#shop-results"
-                hx-include="#project" autocomplete="off" />
+                hx-include="#project_name" autocomplete="off" />
             </div>
             <ul tabindex="0" id="shop-results"
               class="dropdown-content mt-2 z-[1] menu p-2 shadow bg-base-100 rounded-md  w-52">
@@ -64,7 +65,7 @@ templ Create(projects []models.Project) {
             <option value="NOT_ACTIVE">Not Active</option>
           </select>
         </div>
-        <div class="sm:col-span-2">
+        <div>
           <label for="start_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
             Start
             Date
@@ -76,7 +77,7 @@ templ Create(projects []models.Project) {
         <input type="date" class="hidden" name="next_billing_date" id="next_billing_date"
           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
           placeholder="50" required="" />
-        <div class="sm:col-span-2">
+        <div>
           <label for="end_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">End Date</label>
           <input type="date" name="end_date" id="end_date"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
@@ -91,7 +92,7 @@ templ Create(projects []models.Project) {
       </div>
       <button type="submit"
         class="mt-6 inline-flex items-center justify-center px-4 py-2 text-sm font-medium tracking-wide text-white transition-colors duration-200 bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-700 focus:shadow-outline focus:outline-none">
-        Add Hospital
+        Add Subscription
       </button>
     </form>
   </div>

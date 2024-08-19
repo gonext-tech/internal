@@ -1,0 +1,34 @@
+package components
+
+import (
+"github.com/gonext-tech/internal/models"
+"strconv"
+)
+
+templ CustomerResult(customers []models.Customer) {
+if len(customers) != 0 {
+for _, customer := range customers {
+<p data-id={ strconv.Itoa(int(customer.ID)) } data-name={ customer.Name } onclick="myFunction(event);"
+  class="py-2 px-4 cursor-pointer hover:bg-slate-700" value={ strconv.Itoa(int(customer.ID)) }>
+  <span>{ customer.Name } </span>
+  <br />
+  <span>{ customer.Phone } </span>
+</p>
+}
+} else {
+<p class="text-center">
+  No Result found or
+  <br />
+  select project
+</p>
+}
+<script>
+  function myFunction(event) {
+    const clickedElement = event.target; // Get the clicked element
+    const owner_id = document.getElementById("owner_id")
+    const search_input = document.getElementById("owner-search-input")
+    search_input.value = clickedElement.dataset.name
+    owner_id.value = clickedElement.dataset.id
+  }
+</script>
+}

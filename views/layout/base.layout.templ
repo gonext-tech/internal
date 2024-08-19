@@ -50,6 +50,47 @@ templ Base(title, username string, fromProtected, isError bool, errMsgs, sucMsgs
   </div>
 </body>
 <script>
+
+  // --> ANITMATION START <--
+
+  document.addEventListener('htmx:beforeSwap', function (event) {
+    // Check if the swap is coming from an element with a specific data attribute
+
+    if (event.detail.requestConfig.headers["HX-Trigger"] === 'back_button') {
+      // Apply custom logic for the back button swap
+      console.log('Navigating back with custom logic.');
+
+      // Example: Change the transition class
+      const mainContent = document.getElementById('main-content');
+      if (mainContent) {
+        mainContent.classList.remove('sample-transition');
+        mainContent.classList.add('sample-transition-back');
+      }
+    } else {
+      // Handle other cases (optional)
+      console.log('Navigating forward or from other elements.');
+
+      // Reset to the default transition
+      const mainContent = document.getElementById('main-content');
+      if (mainContent) {
+        mainContent.classList.remove('sample-transition-back');
+        mainContent.classList.add('sample-transition');
+      }
+    }
+  });
+
+  window.addEventListener('popstate', function () {
+    const container = document.getElementById('main-content');
+    if (container) {
+      container.classList.add('sample-transition');
+      setTimeout(function () {
+        container.classList.remove('sample-transition');
+      }, 600);
+    }
+  });
+
+  // --> ANITMATION END <--
+
   function confirmDelete(id, path) {
     if (confirm("Are you sure you want to delete this item?")) {
       const deleteUrl = `/${path}/${id}`;

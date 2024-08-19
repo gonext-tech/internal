@@ -29,7 +29,6 @@ func (ss *ShopServices) GetALL(limit, page int, orderBy, sortBy, project, status
 			continue
 		}
 		query := store.DB.Table("shops").Order("created_at DESC")
-
 		if searchTerm != "" {
 			searchTermWithWildcard := "%" + searchTerm + "%"
 			query = query.Where("name LIKE ?", searchTermWithWildcard)
@@ -48,7 +47,7 @@ func (ss *ShopServices) GetALL(limit, page int, orderBy, sortBy, project, status
 		totalRecords += count
 
 		// Execute the query
-		if err := query.Find(&shops).Error; err != nil {
+		if err := query.Preload("Owner").Find(&shops).Error; err != nil {
 			continue
 		}
 
@@ -99,7 +98,7 @@ func (ss *ShopServices) Fetch(project string) ([]models.Shop, error) {
 func (ss *ShopServices) GetID(id, dbName string) (models.Shop, error) {
 	var shop models.Shop
 	DB := utils.GetCurrentDB(dbName, ss.STORES)
-	if result := DB.Table("shops").First(&shop, id); result.Error != nil {
+	if result := DB.Table("shops").Preload("Owner").First(&shop, id); result.Error != nil {
 		return models.Shop{}, result.Error
 	}
 	return shop, nil
@@ -115,7 +114,7 @@ func (ss *ShopServices) Create(shop models.Shop) (models.Shop, error) {
 }
 func (ss *ShopServices) Update(shop models.Shop) (models.Shop, error) {
 	DB := utils.GetCurrentDB(shop.ProjectName, ss.STORES)
-	if result := DB.Table("shops").Updates(&shop); result.Error != nil {
+	if result := DB.Table("shops").Save(&shop); result.Error != nil {
 		return models.Shop{}, result.Error
 	}
 	return shop, nil
