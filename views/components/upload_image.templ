@@ -1,0 +1,56 @@
+package components
+
+templ UploadImage(image, source string) {
+<div class="absolute top-24 left-5 ">
+  <div class="relative w-28 h-28 group bg-base-800 rounded-full p-0.5">
+    <div id="remove-button" onclick="removeImage()" class={ `absolute flex items-center justify-center top-1 right-2
+      bg-white text-black w-5 h-5 rounded-full cursor-pointer z-10 ` ,templ.KV(`hidden`, image=="" ) }>✖</div>
+    <!-- Hidden input to store the image data or filename -->
+    <input type="hidden" id="image" name="image" value={ image } alt="customer-image" />
+    <!-- Image display logic -->
+    if image != "" {
+    <img id="placeholder-image" src={ image } alt="customer-image"
+      class="w-full h-full object-center rounded-full bg-white"
+      onerror="this.onerror=null; this.src='/not-found.png';" />
+    } else {
+    if source == "customer" {
+    <img id="placeholder-image" src="/not-found-person.png" alt="Placeholder"
+      class="w-full h-full object-center rounded-full" />
+    }
+    if source == "shop" {
+    <img id="placeholder-image" src="/not-found-shop.png" alt="Placeholder"
+      class="w-full h-full object-center rounded-full" />
+    }
+    }
+    <!-- Upload button -->
+    <div onclick="document.getElementById('file-input').click()"
+      class="absolute inset-0 cursor-pointer bg-black rounded-full bg-opacity-50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+      <i class="fa-solid fa-camera-retro"></i>
+      <button type="button" class="mt-2 text-white bg-transparent border-none cursor-pointer text-lg">Upload</button>
+    </div>
+    <!-- File input -->
+    <input type="file" id="file-input" name="file" class="hidden" onchange="previewImage(event)" />
+  </div>
+</div>
+<script>
+  function previewImage(event) {
+    const reader = new FileReader();
+    reader.onload = function () {
+      const imgElement = document.getElementById('placeholder-image');
+      imgElement.src = reader.result;
+      document.getElementById('remove-button').classList.remove('hidden');
+    }
+    reader.readAsDataURL(event.target.files[0]);
+  }
+
+  function removeImage() {
+    document.getElementById('image').value = '';
+    const imgElement = document.getElementById('placeholder-image');
+    imgElement.src = '/not-found-person.png'; // Set back to placeholder image
+    document.getElementById('file-input').value = ''; // Clear file input
+    const removeButton = document.getElementById('remove-button')
+    removeButton.classList.add('hidden')
+  }
+
+</script>
+}

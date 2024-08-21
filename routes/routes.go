@@ -18,14 +18,16 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	shopService := services.NewShopService(projectStores)
 	projectService := services.NewProjectService(models.Project{}, store)
 	customerService := services.NewCustomerService(projectStores)
+	uploadService := services.NewUploadServices(store)
 
 	// --> HANDLERS INIT <--
 	authHandler := handlers.NewAuthHandler(userService)
 	projectHandler := handlers.NewProjectHandler(projectService)
 	subscriptionHandler := handlers.NewSubscriptionHandler(subscriptionService, projectService, membershipService)
 	membershipHandler := handlers.NewMembershipHandler(membershipService, projectService)
-	shopHandler := handlers.NewShopHandler(shopService, projectService)
-	customerHandler := handlers.NewCustomerHandler(customerService, projectService)
+	shopHandler := handlers.NewShopHandler(shopService, projectService, uploadService)
+	customerHandler := handlers.NewCustomerHandler(customerService, projectService, uploadService)
+	_ = handlers.NewUploadHandler(uploadService, projectService)
 
 	// --> UNPRTECTED ROUTES <--
 	e.GET("/", authHandler.HomeHandler)

@@ -24,12 +24,14 @@ type ShopService interface {
 type ShopHandler struct {
 	ShopServices    ShopService
 	ProjectServices ProjectService
+	UploadServices  UploadService
 }
 
-func NewShopHandler(ss ShopService, ps ProjectService) *ShopHandler {
+func NewShopHandler(ss ShopService, ps ProjectService, us UploadService) *ShopHandler {
 	return &ShopHandler{
 		ShopServices:    ss,
 		ProjectServices: ps,
+		UploadServices:  us,
 	}
 }
 
@@ -180,6 +182,17 @@ func (mh *ShopHandler) CreateHandler(c echo.Context) error {
 		setFlashmessages(c, "error", "Can't create shop")
 		return mh.CreatePage(c)
 	}
+	imageURLs := UploadImage(c, mh.UploadServices, shop.ProjectName, fmt.Sprintf("shop/%d", shop.ID))
+
+	if len(imageURLs) > 0 {
+		shop.Image = imageURLs[0]
+		_, err = mh.ShopServices.Update(shop)
+		if err != nil {
+			setFlashmessages(c, "error", "Can't create customer")
+			return mh.CreatePage(c)
+		}
+	}
+
 	setFlashmessages(c, "success", "shop created successfully!!")
 
 	return c.Redirect(http.StatusSeeOther, "/shop")
@@ -225,6 +238,10 @@ func (sh *ShopHandler) UpdateHandler(c echo.Context) error {
 		return sh.UpdatePage(c)
 	}
 	shop.Owner = models.User{}
+	imageURLs := UploadImage(c, sh.UploadServices, "internal", fmt.Sprintf("shop/%d", shop.ID))
+	if len(imageURLs) > 0 {
+		shop.Image = imageURLs[0]
+	}
 	_, err = sh.ShopServices.Update(shop)
 	if err != nil {
 		errorMsg = fmt.Sprintf("membership with id %s not found", id)

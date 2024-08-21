@@ -8,6 +8,7 @@ import (
 
 	"github.com/gonext-tech/internal/models"
 	"golang.org/x/crypto/bcrypt"
+
 	//"github.com/gonext-tech/internal/views/components"
 	"github.com/gonext-tech/internal/views/components"
 	"github.com/gonext-tech/internal/views/customer_views"
@@ -25,12 +26,14 @@ type CustomerService interface {
 type CustomerHandler struct {
 	CustomerServices CustomerService
 	ProjectServices  ProjectService
+	UploadServices   UploadService
 }
 
-func NewCustomerHandler(cs CustomerService, ps ProjectService) *CustomerHandler {
+func NewCustomerHandler(cs CustomerService, ps ProjectService, us UploadService) *CustomerHandler {
 	return &CustomerHandler{
 		CustomerServices: cs,
 		ProjectServices:  ps,
+		UploadServices:   us,
 	}
 }
 
@@ -168,17 +171,29 @@ func (ch *CustomerHandler) CreateHandler(c echo.Context) error {
 		setFlashmessages(c, "error", errorMsg)
 		return ch.CreatePage(c)
 	}
+
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(customer.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
 	customer.Password = string(hashedPassword)
-	_, err = ch.CustomerServices.Create(customer)
+	customer, err = ch.CustomerServices.Create(customer)
 	if err != nil {
 		setFlashmessages(c, "error", "Can't create customer")
 		return ch.CreatePage(c)
 	}
-	setFlashmessages(c, "success", "membership created successfully!!")
+
+	imageURLs := UploadImage(c, ch.UploadServices, customer.ProjectName, fmt.Sprintf("cutsomer/%d", customer.ID))
+
+	if len(imageURLs) > 0 {
+		customer.Image = imageURLs[0]
+		_, err = ch.CustomerServices.Update(customer)
+		if err != nil {
+			setFlashmessages(c, "error", "Can't create customer")
+			return ch.CreatePage(c)
+		}
+	}
+	setFlashmessages(c, "success", "customer created successfully!!")
 
 	return c.Redirect(http.StatusSeeOther, "/customer")
 }
@@ -189,6 +204,7 @@ func (ch *CustomerHandler) UpdatePage(c echo.Context) error {
 	id := c.Param("id")
 	projectName := c.Param("name")
 	customer, err := ch.CustomerServices.GetID(id, projectName)
+	log.Println("customerrrrr", customer.ShopID)
 	if err != nil {
 		errorMsg = fmt.Sprintf("customer with %s not found", id)
 		setFlashmessages(c, "error", errorMsg)
@@ -211,13 +227,13 @@ func (ch *CustomerHandler) UpdateHandler(c echo.Context) error {
 	id := c.Param("id")
 	projectName := c.Param("name")
 	customer, err := ch.CustomerServices.GetID(id, projectName)
-
-	log.Println("custiomerrr", customer)
 	if err != nil {
 		errorMsg = fmt.Sprintf("customer with %s not found", id)
 		setFlashmessages(c, "error", errorMsg)
 		return ch.UpdatePage(c)
 	}
+	// Retrieve uploaded files
+	imageURLs := UploadImage(c, ch.UploadServices, "internal", fmt.Sprintf("customer/%d", customer.ID))
 
 	oldPassword := customer.Password
 	if err := c.Bind(&customer); err != nil {
@@ -225,7 +241,9 @@ func (ch *CustomerHandler) UpdateHandler(c echo.Context) error {
 		setFlashmessages(c, "error", errorMsg)
 		return ch.UpdatePage(c)
 	}
-
+	if len(imageURLs) > 0 {
+		customer.Image = imageURLs[0]
+	}
 	if oldPassword != customer.Password {
 		err = bcrypt.CompareHashAndPassword([]byte(oldPassword), []byte(customer.Password))
 		if err != nil {

@@ -10,7 +10,9 @@ templ Create(projects []models.Project) {
   @components.BackButton("shop")
   <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">
     <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Add new shop</h2>
-    <form action="" method="post" hx-swap="transition:true">
+    <form action="" method="post" hx-swap="transition:true" hx-encoding="multipart/form-data">
+      <!--   Image upload START -->
+      @components.UploadImage("", "shop")
       <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
         <div class="sm:col-span-2">
           <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
