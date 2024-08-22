@@ -46,5 +46,5 @@ func main() {
 	}
 	routes.SetupRoutes(e, db, projectDB)
 
-	e.Logger.Fatal(e.Start(":9001"))
+	e.Logger.Fatal(e.Start(":7001"))
 }
