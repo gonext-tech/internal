@@ -23,7 +23,7 @@ func (ah *AutomationHandler) GetAppointments(c echo.Context) error {
 	nextHour := now.Add(1 * time.Hour)
 	for _, db := range ah.DB {
 		if db.Name == "Qwik" {
-			db.DB.Preload("User").Preload("Shop").Preload("Client").Where("date BETWEEN ? AND ?", now, nextHour).Find(&appointments)
+			db.DB.Preload("User").Preload("Shop").Preload("Client").Where("date BETWEEN ? AND ?", now, nextHour).Where("notification_send_at IS NULL").Find(&appointments)
 		}
 	}
 	return c.JSON(200, &appointments)
@@ -36,7 +36,8 @@ func (ah *AutomationHandler) UpdateAppointment(c echo.Context) error {
 	for _, db := range ah.DB {
 		if db.Name == "Qwik" {
 			db.DB.First(&appointment, id)
-			appointment.UpdatedAt = time.Now()
+			now := time.Now()
+			appointment.NotificationSendAt = &now
 		}
 	}
 	return c.JSON(200, appointment)

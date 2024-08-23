@@ -23,6 +23,7 @@ type Appointment struct {
 	ShopID              uint                 `json:"shop_id"`
 	Shop                Shop                 `json:"shop" gorm:"foreignKey:ShopID"`
 	PaidAt              *time.Time           `json:"paid_at,omitempty"`
+	NotificationSendAt  *time.Time           `json:"notification_send_at,omitempty"`
 	CreatedAt           time.Time            `json:"created_at"`
 	UpdatedAt           time.Time            `json:"update_at"`
 }
