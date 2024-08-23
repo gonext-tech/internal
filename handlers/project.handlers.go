@@ -187,13 +187,13 @@ func (ph *ProjectHandler) UpdateHandler(c echo.Context) error {
 	}
 
 	imageURLs := UploadImage(c, ph.UploadServices, "internal", fmt.Sprintf("project/%d", project.ID))
-	project.Notes = projectBody.Notes
 	project.Name = projectBody.Name
-	project.DBName = projectBody.Notes
+	project.DBName = projectBody.DBName
 	project.RepoName = projectBody.RepoName
 	project.DomainURL = projectBody.DomainURL
 	project.Status = projectBody.Status
 	project.File = projectBody.Image
+	project.Notes = projectBody.Notes
 	if projectBody.SSLExpiredAt != "" {
 		sslExpiredAt, err := time.Parse("2006-01-02", projectBody.SSLExpiredAt)
 		if err != nil {
