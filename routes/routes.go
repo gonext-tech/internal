@@ -40,7 +40,7 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 
 	// --> AUTOMATION <--
 	e.GET("/api/send/wp", automationHandler.GetAppointments)
-	e.PUT("/api/send/wp/id", automationHandler.UpdateAppointment)
+	e.PUT("/api/send/wp/:id", automationHandler.UpdateAppointment)
 
 	protectedGroup := e.Group("/", authHandler.AuthMiddleware)
 
