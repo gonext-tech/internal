@@ -48,18 +48,29 @@ type AuthHandler struct {
 }
 
 func (ah *AuthHandler) HomeHandler(c echo.Context) error {
-	homeView := auth_views.Home(fromProtected)
-	isError = false
-	log.Println("frommProrected", fromProtected)
-	return renderView(c, auth_views.HomeIndex(
-		"| Home",
-		"",
-		fromProtected,
-		isError,
-		getFlashmessages(c, "error"),
-		getFlashmessages(c, "success"),
-		homeView,
-	))
+	sess, _ := session.Get(auth_sessions_key, c)
+	if auth, ok := sess.Values[auth_key].(bool); !ok || !auth {
+		log.Println("okkk", ok)
+		log.Println("authh", auth)
+		fromProtected = false
+
+		return c.Redirect(http.StatusSeeOther, "/login")
+	}
+
+	log.Println("okkk")
+
+	return c.Redirect(http.StatusSeeOther, "/project")
+	// homeView := auth_views.Home(fromProtected)
+	// isError = false
+	// return renderView(c, auth_views.HomeIndex(
+	// 	"| Home",
+	// 	"",
+	// 	fromProtected,
+	// 	isError,
+	// 	getFlashmessages(c, "error"),
+	// 	getFlashmessages(c, "success"),
+	// 	homeView,
+	// ))
 }
 
 func (ah *AuthHandler) RegisterHandler(c echo.Context) error {
@@ -173,7 +184,6 @@ func (ah *AuthHandler) LoginHandler(c echo.Context) error {
 			[]byte(c.FormValue("password")),
 		)
 
-		log.Println("errrr", err)
 		if err != nil {
 			// In production you have to give the user a generic message
 			setFlashmessages(c, "error", "Incorrect password")
@@ -199,11 +209,13 @@ func (ah *AuthHandler) LoginHandler(c echo.Context) error {
 			tzone_key:   tzone,
 		}
 
-		sess.Save(c.Request(), c.Response())
+		if err := sess.Save(c.Request(), c.Response()); err != nil {
+			setFlashmessages(c, "error", "can't login now")
+		}
 
 		setFlashmessages(c, "success", "You have successfully logged in!!")
 
-		return c.Redirect(http.StatusSeeOther, "/project")
+		return c.Redirect(http.StatusSeeOther, "/")
 	}
 
 	return renderView(c, auth_views.LoginIndex(
@@ -217,14 +229,44 @@ func (ah *AuthHandler) LoginHandler(c echo.Context) error {
 	))
 }
 
+func (ah *AuthHandler) LogoutHandler(c echo.Context) error {
+	// Get the session
+	sess, err := session.Get(auth_sessions_key, c)
+	if err != nil {
+		return c.Redirect(http.StatusSeeOther, "/login")
+	}
+
+	// Clear the session
+
+	sess.Options.MaxAge = -1
+	for k := range sess.Values {
+		delete(sess.Values, k)
+	}
+	log.Println("Session before saving in logout:", sess.Values)
+	err = sess.Save(c.Request(), c.Response())
+	log.Println("Session after saving in logout:", sess.Values)
+	if err != nil {
+		log.Println("Error saving session:", err)
+		return c.Redirect(http.StatusSeeOther, "/login")
+	}
+	log.Println("Session after logout:", sess.Values)
+	// Redirect to the login page after logout
+	return c.Redirect(http.StatusSeeOther, "/login")
+}
+
 func (ah *AuthHandler) AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		sess, _ := session.Get(auth_sessions_key, c)
+		log.Println("sesssion from middleware", sess.Values)
+		// Optional: Force session clear for debugging
 		if auth, ok := sess.Values[auth_key].(bool); !ok || !auth {
-			// fmt.Println(ok, auth)
 			fromProtected = false
-
-			return echo.NewHTTPError(echo.ErrUnauthorized.Code, "Please provide valid credentials")
+			log.Println("Clearing session in middleware")
+			for k := range sess.Values {
+				delete(sess.Values, k)
+			}
+			sess.Save(c.Request(), c.Response())
+			return c.Redirect(http.StatusSeeOther, "/login")
 		}
 
 		if userId, ok := sess.Values[user_id_key].(int); ok && userId != 0 {

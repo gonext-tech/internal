@@ -23,7 +23,7 @@ templ FlashMessages(errMsgs, sucMsgs []string) {
 		}
 		if len(sucMsgs) != 0 {
 			<!-- Success -->
-			<div class="join rounded-box">
+			<div class="join rounded-box" _="on load wait 3s then remove me">
 				<div class="join-item p-4 bg-success text-success-content text-xl">
 					<i class="fa-solid fa-circle-check"></i>
 				</div>

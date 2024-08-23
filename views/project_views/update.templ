@@ -1,46 +1,122 @@
 package project_views
 
-import "github.com/gonext-tech/internal/models"
+import (
+	"github.com/gonext-tech/internal/models"
+	"github.com/gonext-tech/internal/views/components"
+)
 
 templ Update(project models.Project) {
-	<h1 class="text-2xl font-bold text-center mb-8">
-		Update Project
-	</h1>
-	<section class="px-10 mx-auto bg-slate-600 rounded-lg shadow-xl">
-		<form class="rounded-xl flex flex-col  gap-y-4 py-4  mx-auto" action="" method="post"  hx-swap="transition:true">
-			<div class="flex flex-wrap w-full gap-4 ">
-				<label class="flex w-[32%] flex-col justify-start gap-2">
-					Name:
-					<input
-						class="input input-bordered input-primary bg-slate-800"
-						type="text"
-						name="name"
-						value={ project.Name }
-						required
-						autofocus
-						minlength="3"
-						maxlength="64"
-					/>
-				</label>
-				<label class="flex w-[32%] flex-col justify-start gap-2">
-					Description:
-					<textarea
-						class="input input-bordered input-primary bg-slate-800"
-						type="text"
-						name="description"
-						minlength="3"
-						maxlength="64"
-					>{ project.RepoName   }</textarea>
-				</label>
-			</div>
-			<footer class="card-actions flex gap-4 justify-end">
-				<button class="badge badge-primary p-4 hover:scale-[1.1]">
-					Update
+	<section class=" bg-base-200 rounded-md relative">
+		@components.BackButton("project")
+		<div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">
+			<h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Edit { project.Name }</h2>
+			<form action="" method="post" hx-swap="transition:true" hx-encoding="multipart/form-data">
+				<!--   Image upload START -->
+				@components.UploadImage(project.File, "shop")
+				<div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
+					<div class="sm:col-span-2">
+						<label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
+						<input
+							type="text"
+							name="name"
+							id="name"
+							value={ project.Name }
+							class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+							placeholder="Cutest shop"
+							required=""
+						/>
+					</div>
+					<div class="">
+						<label for="db_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">DB Name</label>
+						<input
+							type="text"
+							name="db_name"
+							id="db_name"
+							value={ project.DBName }
+							class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+							placeholder="QwikDB"
+							required=""
+						/>
+					</div>
+					<div class="">
+						<label for="domain_url" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Domain</label>
+						<input
+							type="text"
+							name="domain_url"
+							id="domain_url"
+							value={ project.DomainURL }
+							class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+							placeholder="https://qwik.gonext.tech"
+							required=""
+						/>
+					</div>
+					<div class="">
+						<label for="repo_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Repo Name</label>
+						<input
+							type="text"
+							name="repo_name"
+							id="repo_name"
+							value={ project.DomainURL }
+							class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+							placeholder="Qwik"
+							required=""
+						/>
+					</div>
+					<div class="">
+						<label for="ssl_expired_at" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+							SSL
+							Expiration
+						</label>
+						<input
+							type="date"
+							name="ssl_expired_at"
+							id="ssl_expired_at"
+							value={ project.SSLExpiredAt.Format("2006-01-02") }
+							class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+							placeholder="Qwik"
+							required=""
+						/>
+					</div>
+					<div>
+						<label for="status" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Status</label>
+						<select
+							id="status"
+							name="status"
+							class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+						>
+							<option value="" selected disabled>Select Status</option>
+							<option value="ACTIVE" selected?={ project.Status=="ACTIVE" }>Active</option>
+							<option value="NOT_ACTIVE" selected?={ project.Status=="NOT_ACTIVE" }>Not Active</option>
+						</select>
+					</div>
+					<div class="">
+						<label for="commands" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Command</label>
+						<textarea
+							id="commands"
+							name="commands"
+							rows="3"
+							class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+							placeholder="commands"
+						>{ project.UpdateCommands }</textarea>
+					</div>
+					<div class="sm:col-span-2">
+						<label for="notes" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Notes</label>
+						<textarea
+							id="notes"
+							name="notes"
+							rows="3"
+							class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+							placeholder="notes"
+						>{ project.Notes }</textarea>
+					</div>
+				</div>
+				<button
+					type="submit"
+					class="mt-6 inline-flex items-center justify-center px-4 py-2 text-sm font-medium tracking-wide text-white transition-colors duration-200 bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-700 focus:shadow-outline focus:outline-none"
+				>
+					Update project
 				</button>
-				<a href="/project" class="badge badge-neutral p-4 hover:scale-[1.1]">
-					Cancel
-				</a>
-			</footer>
-		</form>
+			</form>
+		</div>
 	</section>
 }

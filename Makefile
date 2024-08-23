@@ -16,4 +16,4 @@ css:
 	tailwindcss -i views/css/styles.css -o public/styles.css --watch
 
 templ:
-	@templ generate -watch -proxy=http://localhost:9001
+	@templ generate -watch -proxy=http://localhost:7001
