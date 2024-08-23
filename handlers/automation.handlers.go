@@ -35,7 +35,7 @@ func (ah *AutomationHandler) UpdateAppointment(c echo.Context) error {
 	id := c.Param("id")
 	for _, db := range ah.DB {
 		if db.Name == "Qwik" {
-			db.DB.Preload("").First(&appointment, id)
+			db.DB.First(&appointment, id)
 			appointment.UpdatedAt = time.Now()
 		}
 	}
