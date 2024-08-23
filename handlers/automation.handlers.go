@@ -38,6 +38,7 @@ func (ah *AutomationHandler) UpdateAppointment(c echo.Context) error {
 			db.DB.First(&appointment, id)
 			now := time.Now()
 			appointment.NotificationSendAt = &now
+			db.DB.Model(&appointment).Updates(appointment)
 		}
 	}
 	return c.JSON(200, appointment)
