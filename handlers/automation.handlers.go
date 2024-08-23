@@ -22,7 +22,7 @@ func (ah *AutomationHandler) GetAppointments(c echo.Context) error {
 	now := time.Now()
 	nextHour := now.Add(1 * time.Hour)
 	for _, db := range ah.DB {
-		if db.Name == "Appointment" {
+		if db.Name == "Qwik" {
 			db.DB.Preload("User").Preload("Shop").Preload("Client").Where("date BETWEEN ? AND ?", now, nextHour).Find(&appointments)
 		}
 	}
