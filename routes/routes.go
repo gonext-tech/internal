@@ -26,6 +26,7 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	subscriptionHandler := handlers.NewSubscriptionHandler(subscriptionService, projectService, membershipService)
 	membershipHandler := handlers.NewMembershipHandler(membershipService, projectService)
 	shopHandler := handlers.NewShopHandler(shopService, projectService, uploadService)
+	automationHandler := handlers.NewAutomationHandler(projectStores)
 	customerHandler := handlers.NewCustomerHandler(customerService, projectService, uploadService)
 	_ = handlers.NewUploadHandler(uploadService, projectService)
 
@@ -36,6 +37,10 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	e.GET("/register", authHandler.RegisterHandler)
 	e.POST("/register", authHandler.RegisterHandler)
 	e.POST("/logout", authHandler.LogoutHandler)
+
+	// --> AUTOMATION <--
+	e.GET("/api/send/wp", automationHandler.GetAppointments)
+	e.PUT("/api/send/wp/id", automationHandler.UpdateAppointment)
 
 	protectedGroup := e.Group("/", authHandler.AuthMiddleware)
 
