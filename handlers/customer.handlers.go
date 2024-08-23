@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -204,7 +203,6 @@ func (ch *CustomerHandler) UpdatePage(c echo.Context) error {
 	id := c.Param("id")
 	projectName := c.Param("name")
 	customer, err := ch.CustomerServices.GetID(id, projectName)
-	log.Println("customerrrrr", customer.ShopID)
 	if err != nil {
 		errorMsg = fmt.Sprintf("customer with %s not found", id)
 		setFlashmessages(c, "error", errorMsg)

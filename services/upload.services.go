@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"image"
 	"io"
-	"log"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -100,7 +99,6 @@ func (us *UploadServices) Upload(file *multipart.FileHeader, project string, fol
 }
 
 func (us *UploadServices) Delete(imageName string) error {
-	log.Println("imageName", imageName)
 	if !us.isValidImageExtension(imageName) {
 		return errors.New("image extension is not available")
 	}
@@ -110,8 +108,11 @@ func (us *UploadServices) Delete(imageName string) error {
 	if err != nil {
 		return err
 	}
+
+	bucketURL := os.Getenv("BUCKET_URL")
+	image := strings.TrimPrefix(imageName, bucketURL)
 	// Construct path to the image file
-	imagePath := filepath.Join(homefolderPath, imageName)
+	imagePath := filepath.Join(homefolderPath, image)
 
 	// Check if the image file exists
 	if _, err := os.Stat(imagePath); os.IsNotExist(err) {

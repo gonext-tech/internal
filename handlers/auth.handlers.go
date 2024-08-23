@@ -1,10 +1,8 @@
 package handlers
 
 import (
-	// "fmt"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -50,15 +48,10 @@ type AuthHandler struct {
 func (ah *AuthHandler) HomeHandler(c echo.Context) error {
 	sess, _ := session.Get(auth_sessions_key, c)
 	if auth, ok := sess.Values[auth_key].(bool); !ok || !auth {
-		log.Println("okkk", ok)
-		log.Println("authh", auth)
 		fromProtected = false
 
 		return c.Redirect(http.StatusSeeOther, "/login")
 	}
-
-	log.Println("okkk")
-
 	return c.Redirect(http.StatusSeeOther, "/project")
 	// homeView := auth_views.Home(fromProtected)
 	// isError = false
@@ -171,7 +164,6 @@ func (ah *AuthHandler) LoginHandler(c echo.Context) error {
 				return c.Redirect(http.StatusSeeOther, "/login")
 			}
 
-			log.Println("did we enter here?", user)
 			setFlashmessages(c, "error", fmt.Sprintf(
 				"something went wrong: %s",
 				err,
@@ -193,7 +185,6 @@ func (ah *AuthHandler) LoginHandler(c echo.Context) error {
 
 		// Get Session and setting Cookies
 		sess, err := session.Get(auth_sessions_key, c)
-		log.Println("sesss-errr", err)
 		sess.Options = &sessions.Options{
 			Path:     "/",
 			MaxAge:   360000, // in seconds
@@ -242,14 +233,10 @@ func (ah *AuthHandler) LogoutHandler(c echo.Context) error {
 	for k := range sess.Values {
 		delete(sess.Values, k)
 	}
-	log.Println("Session before saving in logout:", sess.Values)
 	err = sess.Save(c.Request(), c.Response())
-	log.Println("Session after saving in logout:", sess.Values)
 	if err != nil {
-		log.Println("Error saving session:", err)
 		return c.Redirect(http.StatusSeeOther, "/login")
 	}
-	log.Println("Session after logout:", sess.Values)
 	// Redirect to the login page after logout
 	return c.Redirect(http.StatusSeeOther, "/login")
 }
@@ -257,11 +244,9 @@ func (ah *AuthHandler) LogoutHandler(c echo.Context) error {
 func (ah *AuthHandler) AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		sess, _ := session.Get(auth_sessions_key, c)
-		log.Println("sesssion from middleware", sess.Values)
 		// Optional: Force session clear for debugging
 		if auth, ok := sess.Values[auth_key].(bool); !ok || !auth {
 			fromProtected = false
-			log.Println("Clearing session in middleware")
 			for k := range sess.Values {
 				delete(sess.Values, k)
 			}

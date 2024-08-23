@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -176,7 +175,6 @@ func (mh *ShopHandler) CreateHandler(c echo.Context) error {
 		setFlashmessages(c, "error", errorMsg)
 		return mh.CreatePage(c)
 	}
-	log.Println("shopppp", shop)
 	_, err := mh.ShopServices.Create(shop)
 	if err != nil {
 		setFlashmessages(c, "error", "Can't create shop")
@@ -244,7 +242,7 @@ func (sh *ShopHandler) UpdateHandler(c echo.Context) error {
 	}
 	_, err = sh.ShopServices.Update(shop)
 	if err != nil {
-		errorMsg = fmt.Sprintf("membership with id %s not found", id)
+		errorMsg = fmt.Sprintf("shop with id %s not found", id)
 		setFlashmessages(c, "error", errorMsg)
 		return sh.UpdatePage(c)
 	}

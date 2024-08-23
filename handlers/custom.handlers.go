@@ -1,30 +1,28 @@
 package handlers
 
 import (
-	"errors"
+	"log"
 
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/gommon/log"
 )
 
 func UploadImage(c echo.Context, us UploadService, project, folder string) []string {
 	var imageURLs []string
 	form, err := c.MultipartForm()
 	if err != nil {
-		log.Error(err)
+		log.Println("err-1", err)
 		return imageURLs
 	}
 
 	files := form.File["file"]
 	if len(files) == 0 {
-		log.Error(errors.New("theres not file"))
 		return imageURLs
 	}
 	oldImage := c.FormValue("image")
 	if oldImage != "" {
 		err = us.Delete(oldImage)
 		if err != nil {
-			return imageURLs
+			log.Println("errr-delete", err)
 		}
 	}
 
