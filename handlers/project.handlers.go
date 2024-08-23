@@ -2,12 +2,14 @@ package handlers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
+	"time"
 
-	"github.com/labstack/echo/v4"
 	"github.com/gonext-tech/internal/models"
 	"github.com/gonext-tech/internal/views/project_views"
+	"github.com/labstack/echo/v4"
 )
 
 type ProjectService interface {
@@ -20,11 +22,13 @@ type ProjectService interface {
 
 type ProjectHandler struct {
 	ProjectServices ProjectService
+	UploadServices  UploadService
 }
 
-func NewProjectHandler(ps ProjectService) *ProjectHandler {
+func NewProjectHandler(ps ProjectService, us UploadService) *ProjectHandler {
 	return &ProjectHandler{
 		ProjectServices: ps,
+		UploadServices:  us,
 	}
 }
 
@@ -56,6 +60,19 @@ func (ph *ProjectHandler) ListPage(c echo.Context) error {
 	if isError {
 		setFlashmessages(c, "error", errorMsg)
 	}
+
+	var params models.ParamResponse
+	if searchTerm != "" {
+		params.Search = searchTerm
+	}
+	if status != "" {
+		params.Status = status
+	}
+	params.Page = page
+	params.Limit = limit
+	params.SortBy = sortBy
+	params.OrderBy = orderBy
+
 	titlePage := fmt.Sprintf(
 		"Project List(%d)", meta.TotalCount)
 	return renderView(c, project_views.Index(
@@ -65,7 +82,7 @@ func (ph *ProjectHandler) ListPage(c echo.Context) error {
 		isError,
 		getFlashmessages(c, "error"),
 		getFlashmessages(c, "success"),
-		project_views.List(titlePage, projects, meta),
+		project_views.List(titlePage, projects, meta, params),
 	))
 }
 
@@ -116,6 +133,16 @@ func (ph *ProjectHandler) CreateHandler(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	imageURLs := UploadImage(c, ph.UploadServices, "internal", fmt.Sprintf("project/%d", project.ID))
+
+	if len(imageURLs) > 0 {
+		project.File = imageURLs[0]
+		_, err = ph.ProjectServices.Update(project)
+		if err != nil {
+			setFlashmessages(c, "error", "Can't create project")
+			return ph.CreatePage(c)
+		}
+	}
 	setFlashmessages(c, "success", "project created successfully!!")
 
 	return c.Redirect(http.StatusSeeOther, "/project")
@@ -144,17 +171,42 @@ func (ph *ProjectHandler) UpdatePage(c echo.Context) error {
 func (ph *ProjectHandler) UpdateHandler(c echo.Context) error {
 	isError = false
 	id := c.Param("id")
+
 	project, err := ph.ProjectServices.GetID(id)
 	if err != nil {
 		errorMsg = fmt.Sprintf("project with %s not found", id)
 		setFlashmessages(c, "error", errorMsg)
 		return ph.UpdatePage(c)
 	}
-	if err := c.Bind(&project); err != nil {
+	var projectBody models.ProjectBody
+	if err := c.Bind(&projectBody); err != nil {
+		log.Println("err", err)
 		errorMsg = "cannot parse the project body"
 		setFlashmessages(c, "error", errorMsg)
 		return ph.UpdatePage(c)
 	}
+
+	imageURLs := UploadImage(c, ph.UploadServices, "internal", fmt.Sprintf("project/%d", project.ID))
+	project.Notes = projectBody.Notes
+	project.Name = projectBody.Name
+	project.DBName = projectBody.Notes
+	project.RepoName = projectBody.RepoName
+	project.DomainURL = projectBody.DomainURL
+	project.Status = projectBody.Status
+	project.File = projectBody.Image
+	if projectBody.SSLExpiredAt != "" {
+		sslExpiredAt, err := time.Parse("2006-01-02", projectBody.SSLExpiredAt)
+		if err != nil {
+			log.Println("Error parsing ssl_expired_at:", err)
+			return err
+		}
+		project.SSLExpiredAt = sslExpiredAt
+	}
+
+	if len(imageURLs) > 0 {
+		project.File = imageURLs[0]
+	}
+
 	project, err = ph.ProjectServices.Update(project)
 	if err != nil {
 		errorMsg = fmt.Sprintf("project with id %s not found", id)

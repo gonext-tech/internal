@@ -22,7 +22,7 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 
 	// --> HANDLERS INIT <--
 	authHandler := handlers.NewAuthHandler(userService)
-	projectHandler := handlers.NewProjectHandler(projectService)
+	projectHandler := handlers.NewProjectHandler(projectService, uploadService)
 	subscriptionHandler := handlers.NewSubscriptionHandler(subscriptionService, projectService, membershipService)
 	membershipHandler := handlers.NewMembershipHandler(membershipService, projectService)
 	shopHandler := handlers.NewShopHandler(shopService, projectService, uploadService)
@@ -35,6 +35,7 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	e.POST("/login", authHandler.LoginHandler)
 	e.GET("/register", authHandler.RegisterHandler)
 	e.POST("/register", authHandler.RegisterHandler)
+	e.POST("/logout", authHandler.LogoutHandler)
 
 	protectedGroup := e.Group("/", authHandler.AuthMiddleware)
 

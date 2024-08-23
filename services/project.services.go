@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"log"
 
 	"github.com/gonext-tech/internal/models"
 	"gorm.io/gorm"
@@ -56,9 +57,10 @@ func (ps *ProjectService) GetID(id string) (models.Project, error) {
 	if id == "0" || id == "" {
 		return models.Project{}, errors.New("no id provided")
 	}
-	if result := ps.DB.Preload("Tickets").First(&project, id); result.Error != nil {
+	if result := ps.DB.First(&project, id); result.Error != nil {
 		return models.Project{}, result.Error
 	}
+	log.Println("projecttttttt", project)
 	return project, nil
 }
 
