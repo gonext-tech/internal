@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -224,6 +225,7 @@ func (sh *ShopHandler) UpdateHandler(c echo.Context) error {
 	id := c.Param("id")
 	projectName := c.Param("name")
 	shop, err := sh.ShopServices.GetID(id, projectName)
+	log.Println("errrrr", err)
 	if err != nil {
 		errorMsg = fmt.Sprintf("shop with %s not found", id)
 		setFlashmessages(c, "error", errorMsg)

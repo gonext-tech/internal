@@ -114,7 +114,7 @@ func (ss *ShopServices) Create(shop models.Shop) (models.Shop, error) {
 }
 func (ss *ShopServices) Update(shop models.Shop) (models.Shop, error) {
 	DB := utils.GetCurrentDB(shop.ProjectName, ss.STORES)
-	if result := DB.Table("shops").Save(&shop); result.Error != nil {
+	if result := DB.Table("shops").Select("*").Save(&shop); result.Error != nil {
 		return models.Shop{}, result.Error
 	}
 	return shop, nil

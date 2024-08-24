@@ -10,7 +10,8 @@ templ Create(projects []models.Project) {
   @components.BackButton("shop")
   <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">
     <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Add new shop</h2>
-    <form action="" method="post" hx-swap="transition:true" hx-encoding="multipart/form-data">
+    <form action="" method="post" hx-swap="transition:true" hx-encoding="multipart/form-data"
+      hx-on="htmx:beforeSend:modifyFormData">
       <!--   Image upload START -->
       @components.UploadImage("", "shop")
       <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
@@ -58,6 +59,12 @@ templ Create(projects []models.Project) {
             <option value="NOT_ACTIVE">Not Active</option>
           </select>
         </div>
+        <div>
+          <label for="send_wp" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            Send WP
+          </label>
+          <input class="toggle toggle-primary" name="send_wp" id="send_wp" type="checkbox" />
+        </div>
         <div class="sm:col-span-2">
           <label for="address" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Address</label>
           <textarea id="address" name="address" rows="3"
@@ -73,8 +80,15 @@ templ Create(projects []models.Project) {
   </div>
 </section>
 <script>
-  document.getElementById('shop-form').addEventListener('submit', function () {
-    this.setAttribute('hx-swap', 'transition:true');
+
+  document.addEventListener('htmx:beforeSend', function (event) {
+    // Modify form data here
+    const formData = event.detail.parameters;
+
+    const checkbox = document.getElementById('myCheckbox');
+    if (!checkbox.checked) {
+      formData.send_wp = "false"; // Ensure "false" is sent if unchecked
+    }
   });
 </script>
 }
