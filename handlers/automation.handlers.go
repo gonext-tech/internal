@@ -23,7 +23,12 @@ func (ah *AutomationHandler) GetAppointments(c echo.Context) error {
 	nextHour := now.Add(1 * time.Hour)
 	for _, db := range ah.DB {
 		if db.Name == "Qwik" {
-			db.DB.Preload("User").Preload("Shop").Preload("Client").Where("date BETWEEN ? AND ?", now, nextHour).Where("notification_send_at IS NULL").Find(&appointments)
+			db.DB.Preload("User").Preload("Shop").Preload("Client").
+				Joins("JOIN shops ON shops.id = appointments.shop_id").
+				Where("appointments.date BETWEEN ? AND ?", now, nextHour).
+				Where("appointments.notification_send_at IS NULL").
+				Where("shops.send_wp = ? AND shops.status = ?", true, "ACTIVE").
+				Find(&appointments)
 		}
 	}
 	return c.JSON(200, &appointments)
