@@ -6,6 +6,7 @@
 *.dylib
 bin/
 tailwindcss
+node_modules/
 # Test binary, built with `go test -c`
 *.test
 tmp/
