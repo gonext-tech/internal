@@ -134,9 +134,9 @@ func (sh *SubscriptionHandler) CreateHandler(c echo.Context) error {
 		setFlashmessages(c, "error", err.Error())
 		return sh.CreatePage(c)
 	}
-	log.Println("susbcriptionnnn", subscription)
 	_, err := sh.SubscriptionServices.Create(subscription)
 	if err != nil {
+		log.Println("err-create-subscription", err)
 		setFlashmessages(c, "error", "Can't create subscription")
 		return sh.CreatePage(c)
 	}
