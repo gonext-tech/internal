@@ -63,6 +63,7 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	protectedGroup.GET("shop/create", shopHandler.CreatePage)
 	protectedGroup.POST("shop/create", shopHandler.CreateHandler)
 	protectedGroup.GET("shop/edit/:id/:name", shopHandler.UpdatePage)
+	protectedGroup.GET("shop/subscription/:id/:name", subscriptionHandler.ShopListPage)
 	protectedGroup.POST("shop/edit/:id/:name", shopHandler.UpdateHandler)
 	protectedGroup.DELETE("shop/:id/:name", shopHandler.DeleteHandler)
 
