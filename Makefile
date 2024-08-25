@@ -1,7 +1,7 @@
 build:
-	tailwindcss -i view/css/styles.css -o public/css/styles.css
+	./tailwindcss -i views/css/styles.css -o public/css/styles.css
 	@templ generate view
-	@go build -o bin/internal main.go
+	@go build -o bin/internal cmd/main.go
 
 test:
 	@go test -v ./...
