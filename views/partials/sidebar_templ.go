@@ -23,7 +23,7 @@ func Sidebar(username string, bool bool) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"sticky \"><aside class=\"h-screen sticky top-0 flex flex-col bg-base-200 overflow-y-auto \"><!-- Header --><div class=\"flex justify-between p-2\"><!-- Logo --><a class=\"btn btn-ghost text-lg\"><img alt=\"Logo\" src=\"/logo.svg\" class=\"w-4\"> Internal</a> <a class=\"btn btn-ghost btn-circle text-lg\"><i class=\"fa-solid fa-gear\"></i></a></div><!-- Body --><div class=\"flex flex-col border-y border-base-300 px-6 pt-4 grow\"><!-- Search input --><input class=\"input input-bordered\" placeholder=\"Search...\"><!-- Links --><div class=\"flex flex-col divide-y divide-base-300\"><ul class=\"menu px-0 py-4\"><li><a href=\"/\" _=\"on load if window.location.pathname === &#39;/&#39; then add .active to me\"><i class=\"fa-solid fa-house fa-fw\"></i> Home</a></li><li><a href=\"/project\" _=\"on load if window.location.pathname.startsWith(&#39;/project&#39;) then add .active to me\"><i class=\"fa-solid fa-tasks fa-fw\"></i> Project</a></li><li><a href=\"/shop\" _=\"on load if window.location.pathname.startsWith(&#39;/shop&#39;) then add .active to me\"><i class=\"fa-solid fa-store fa-fw\"></i> Shop</a></li><li><a href=\"/subscription\" _=\"on load if window.location.pathname.startsWith(&#39;/subscription&#39;) then add .active to me\"><i class=\"fa-solid fa-receipt fa-fw\"></i> Subscription</a></li><li><a href=\"/membership\" _=\"on load if window.location.pathname.startsWith(&#39;/membership&#39;) then add .active to me\"><i class=\"fa-solid fa-toolbox fa-fw\"></i> Membership</a></li></ul><ul class=\"menu px-0 py-4\"><li><a href=\"/customer\" _=\"on load if window.location.pathname.startsWith(&#39;/customer&#39;) then add .active to me\"><i class=\"fa-solid fa-user-plus fa-fw\"></i> Customer</a></li><li><a><i class=\"fa-brands fa-facebook fa-fw\"></i> Facebook</a></li><li><a><i class=\"fa-brands fa-youtube fa-fw\"></i> Youtube</a></li></ul><ul class=\"menu px-0 py-4\"><li><a><i class=\"fa-solid fa-truck fa-fw\"></i> Deliver</a></li><li><a><i class=\"fa-solid fa-box fa-fw\"></i> Products</a></li><li><a><i class=\"fa-solid fa-store fa-fw\"></i> Store</a></li><li><a><i class=\"fa-solid fa-lemon fa-fw\"></i> Fruits</a></li></ul></div></div><!-- Footer --><div class=\"flex justify-between items-center p-2\"><a class=\"btn\"><img alt=\"Profile\" src=\"/avatar.png\" class=\"w-8 rounded-full\"><div class=\"flex flex-col text-start\"><span class=\"font-bold\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -36,7 +36,7 @@ func Sidebar(username string, bool bool) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span> <span class=\"text-sm text-accent\"></span></div></a> <a hx-post=\"/logout\" hx-swap=\"transition:true\" class=\"btn btn-error btn-sm mr-3\" hx-on=\"htmx:afterRequest: if(event.detail.successful) {  window.location.reload(); }\" title=\"Logout\"><i class=\"fa-solid fa-door-open\"></i></a></div></aside></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

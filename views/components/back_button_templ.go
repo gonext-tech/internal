@@ -25,7 +25,7 @@ func BackButton(url string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a id=\"back_button\" href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -34,7 +34,7 @@ func BackButton(url string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"transition:true\" class=\"btn btn-ghost px-3 absolute top-0 left-0\"><i class=\"fa-solid fa-arrow-left-long text-2xl\"></i></a><script>\n  function swapClasses(event) {\n    console.log(\"did we enter here\")\n    const element = event.target;\n    const container = element.closest('.sample-transition');\n\n    container.classList.remove('sample-transition');\n    container.classList.add('sample-transition-back');\n\n    // Assuming you have a way to determine the animation duration\n    const animationDuration = 300; // Adjust as needed\n\n    setTimeout(() => {\n      container.classList.remove('sample-transition-back');\n      container.classList.add('sample-transition');\n    }, animationDuration);\n  }\n</script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
