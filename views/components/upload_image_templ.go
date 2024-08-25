@@ -23,7 +23,7 @@ func UploadImage(image, source string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"absolute top-24 left-5 \"><div class=\"relative w-28 h-28 group bg-base-800 rounded-full p-0.5\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -33,7 +33,7 @@ func UploadImage(image, source string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"remove-button\" onclick=\"removeImage()\" class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -41,7 +41,7 @@ func UploadImage(image, source string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 3)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">✖</div><!-- Hidden input to store the image data or filename --><input type=\"hidden\" id=\"image\" name=\"image\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -49,12 +49,12 @@ func UploadImage(image, source string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 4)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" alt=\"customer-image\"><!-- Image display logic -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if image != "" {
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 5)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<img id=\"placeholder-image\" src=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -62,29 +62,29 @@ func UploadImage(image, source string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 6)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" alt=\"customer-image\" class=\"w-full h-full object-center rounded-full bg-white\" onerror=\"this.onerror=null; this.src=&#39;/not-found.png&#39;;\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
 			if source == "customer" {
-				templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 7)
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<img id=\"placeholder-image\" src=\"/not-found-person.png\" alt=\"Placeholder\" class=\"w-full h-full object-center rounded-full\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 8)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if source == "shop" {
-				templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 9)
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<img id=\"placeholder-image\" src=\"/not-found-shop.png\" alt=\"Placeholder\" class=\"w-full h-full object-center rounded-full\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
 		}
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 10)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!-- Upload button --><div onclick=\"document.getElementById(&#39;file-input&#39;).click()\" class=\"absolute inset-0 cursor-pointer bg-black rounded-full bg-opacity-50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300\"><i class=\"fa-solid fa-camera-retro\"></i> <button type=\"button\" class=\"mt-2 text-white bg-transparent border-none cursor-pointer text-lg\">Upload</button></div><!-- File input --><input type=\"file\" id=\"file-input\" name=\"file\" class=\"hidden\" onchange=\"previewImage(event)\"></div></div><script>\n  function previewImage(event) {\n    const reader = new FileReader();\n    reader.onload = function () {\n      const imgElement = document.getElementById('placeholder-image');\n      imgElement.src = reader.result;\n      document.getElementById('remove-button').classList.remove('hidden');\n    }\n    reader.readAsDataURL(event.target.files[0]);\n  }\n\n  function removeImage() {\n    document.getElementById('image').value = '';\n    const imgElement = document.getElementById('placeholder-image');\n    imgElement.src = '/not-found-person.png'; // Set back to placeholder image\n    document.getElementById('file-input').value = ''; // Clear file input\n    const removeButton = document.getElementById('remove-button')\n    removeButton.classList.add('hidden')\n  }\n\n</script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

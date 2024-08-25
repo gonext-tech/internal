@@ -25,7 +25,7 @@ func Error401(fromProtected bool) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<section class=\"flex flex-col items-center justify-center h-[100vh] gap-4\"><div class=\"items-center justify-center flex flex-col gap-4\"><h1 class=\"text-9xl font-extrabold text-gray-700 tracking-widest\">401</h1><h2 class=\"bg-rose-700 px-2 text-sm rounded rotate-[20deg] absolute\">Status Unauthorized</h2></div><p class=\"text-xs text-center md:text-sm text-gray-400\">Please provide valid credentials.</p><a hx-swap=\"transition:true\" href=\"/login\" class=\"btn btn-secondary btn-outline\">Go Login Page</a></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -23,7 +23,7 @@ func Footer() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<section class=\"bg-base-200/30 shadow-lg\"><div class=\"max-w-screen-xl px-4 py-8 mt-32 mx-auto space-y-8 overflow-hidden sm:px-6 lg:px-8\"><p class=\"text-base leading-6 text-center text-gray-400\">&copy; 2024 <a href=\"https://gonext.tech\" target=\"_blank\" class=\"hover:text-blue-500 hover:underline\">Gonext</a>. All rights reserved.</p></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
