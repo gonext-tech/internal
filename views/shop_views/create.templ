@@ -11,7 +11,7 @@ templ Create(projects []models.Project) {
   <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">
     <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Add new shop</h2>
     <form action="" method="post" hx-swap="transition:true" hx-encoding="multipart/form-data"
-      hx-on="htmx:beforeSend:modifyFormData">
+      hx-on::before-send="modifyForm(event)">
       <!--   Image upload START -->
       @components.UploadImage("", "shop")
       <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
@@ -80,15 +80,15 @@ templ Create(projects []models.Project) {
   </div>
 </section>
 <script>
-
-  document.addEventListener('htmx:beforeSend', function (event) {
+  function modifyForm(event) {
     // Modify form data here
-    const formData = event.detail.parameters;
-
-    const checkbox = document.getElementById('myCheckbox');
+    const formData = event.detail.requestConfig.parameters;
+    const checkbox = document.getElementById('send_wp');
     if (!checkbox.checked) {
       formData.send_wp = "false"; // Ensure "false" is sent if unchecked
+    } else {
+      formData.send_wp = "true";
     }
-  });
+  };
 </script>
 }

@@ -29,12 +29,6 @@ func (cb *CustomBinder) Bind(i interface{}, c echo.Context) error {
 		}
 	}
 
-	if nextBillingDate := form.Get("next_billing_date"); nextBillingDate != "" {
-		if t, err := time.Parse("2006-01-02", nextBillingDate); err == nil {
-			form.Set("next_billing_date", t.Format(time.RFC3339))
-		}
-	}
-
 	// Use Echo's default binder to bind the form data to the struct
 	binder := new(echo.DefaultBinder)
 	return binder.Bind(i, c)

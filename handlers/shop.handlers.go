@@ -22,16 +22,18 @@ type ShopService interface {
 }
 
 type ShopHandler struct {
-	ShopServices    ShopService
-	ProjectServices ProjectService
-	UploadServices  UploadService
+	ShopServices       ShopService
+	ProjectServices    ProjectService
+	UploadServices     UploadService
+	MembershipServices MembershipService
 }
 
-func NewShopHandler(ss ShopService, ps ProjectService, us UploadService) *ShopHandler {
+func NewShopHandler(ss ShopService, ps ProjectService, ms MembershipService, us UploadService) *ShopHandler {
 	return &ShopHandler{
-		ShopServices:    ss,
-		ProjectServices: ps,
-		UploadServices:  us,
+		ShopServices:       ss,
+		ProjectServices:    ps,
+		MembershipServices: ms,
+		UploadServices:     us,
 	}
 }
 
@@ -209,6 +211,7 @@ func (sh *ShopHandler) UpdatePage(c echo.Context) error {
 	}
 
 	projects, _, _ := sh.ProjectServices.GetALL(50, 1, "desc", "id", "", "")
+	memberships, _, _ := sh.MembershipServices.GetALL(50, 1, "desc", "id", projectName, "", "")
 	return renderView(c, shop_views.Index(
 		titlePage,
 		c.Get(email_key).(string),
@@ -216,7 +219,7 @@ func (sh *ShopHandler) UpdatePage(c echo.Context) error {
 		isError,
 		getFlashmessages(c, "error"),
 		getFlashmessages(c, "success"),
-		shop_views.Update(shop, projects),
+		shop_views.Update(shop, projects, memberships),
 	))
 }
 
