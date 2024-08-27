@@ -19,8 +19,10 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	projectService := services.NewProjectService(models.Project{}, store)
 	customerService := services.NewCustomerService(projectStores)
 	uploadService := services.NewUploadServices(store)
+	appointmentService := services.NewAppointmentService(projectStores)
 
 	// --> HANDLERS INIT <--
+	appointmentHandler := handlers.NewAppointmentHandler(appointmentService)
 	authHandler := handlers.NewAuthHandler(userService)
 	projectHandler := handlers.NewProjectHandler(projectService, uploadService)
 	subscriptionHandler := handlers.NewSubscriptionHandler(subscriptionService, projectService, membershipService)
@@ -58,6 +60,7 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 
 	// --> SHOP ROUTES <--
 	protectedGroup.GET("shop", shopHandler.ListPage)
+	protectedGroup.GET("shop/appointment/:id", appointmentHandler.ListPage)
 	protectedGroup.GET("shop/search", shopHandler.SearchUser)
 	protectedGroup.GET("shop/view/:id/:name", shopHandler.ViewPage)
 	protectedGroup.GET("shop/create", shopHandler.CreatePage)
@@ -95,6 +98,8 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	protectedGroup.GET("subscription/edit/:id/:name", subscriptionHandler.UpdatePage)
 	protectedGroup.POST("subscription/edit/:id/:name", subscriptionHandler.UpdateHandler)
 	protectedGroup.DELETE("subscription/:id/:name", subscriptionHandler.DeleteHandler)
+
+	// --> SUBSCRIPTION ROUTES <--
 
 	protectedGroup.GET("user/search", authHandler.SearchUser)
 
