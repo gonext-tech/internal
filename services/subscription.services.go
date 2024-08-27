@@ -16,7 +16,7 @@ func NewSubscriptionService(db []models.ProjectsDB) *SubscriptionServices {
 	}
 }
 
-func (ss *SubscriptionServices) GetALL(limit, page int, orderBy, sortBy, project, status, searchTerm string) ([]models.Subscription, models.Meta, error) {
+func (ss *SubscriptionServices) GetALL(limit, page int, orderBy, sortBy, project, shop, status, searchTerm string) ([]models.Subscription, models.Meta, error) {
 	allSubscription := []models.Subscription{}
 	var totalRecords int64
 	for _, store := range ss.STORES {
@@ -35,6 +35,10 @@ func (ss *SubscriptionServices) GetALL(limit, page int, orderBy, sortBy, project
 		}
 		if status != "" {
 			query = query.Where("status = ?", status)
+		}
+
+		if shop != "" {
+			query = query.Where("shop_id", shop)
 		}
 
 		// Applying sorting parameters

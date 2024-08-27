@@ -10,7 +10,8 @@ type Subscription struct {
 	ShopID        uint       `form:"shop_id"`
 	Shop          Shop       `form:"shop" gorm:"foreignKey:ShopID"`
 	Notes         string     `form:"notes"`
-	Status        string     `form:"status" gorm:"default:TOPAY"`
+	PaymentStatus string     `form:"payment_status" gorm:"default:TOPAY"`
+	Status        string     `form:"status" gorm:"default:ACTIVE"`
 	StartDate     time.Time  `form:"start_date"`
 	EndDate       time.Time  `form:"end_date"`
 	AutoRenewal   bool       `form:"auto_renewal"`
