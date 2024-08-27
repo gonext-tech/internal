@@ -16,17 +16,20 @@ func NewAppointmentService(db []models.ProjectsDB) *AppointmentServices {
 	}
 }
 
-func (as *AppointmentServices) GetALL(limit, page int, orderBy, sortBy, project, status, searchTerm string) ([]models.Appointment, models.Meta, error) {
+func (as *AppointmentServices) GetALL(limit, page int, orderBy, sortBy, searchTerm, shopID, status string) ([]models.Appointment, models.Meta, error) {
 	DB := utils.GetCurrentDB("Qwik", as.STORES)
 	var appointments []models.Appointment
-	query := DB
-	totalQuery := query
+	query := DB.Preload("Client").Preload("Shop")
+	totalQuery := DB
 	if searchTerm != "" {
 		searchTermWithWildcard := "%" + searchTerm + "%"
 		query = query.Where("name LIKE ?", searchTermWithWildcard)
 		totalQuery = query
 	}
-
+	if shopID != "" {
+		query = query.Where("shop_id = ?", shopID)
+		totalQuery = totalQuery.Where("shop_id = ?", shopID)
+	}
 	if status != "" {
 		query = query.Where("status = ?", status)
 		totalQuery = totalQuery.Where("status = ?", status)
@@ -34,11 +37,12 @@ func (as *AppointmentServices) GetALL(limit, page int, orderBy, sortBy, project,
 	offset := (page - 1) * limit
 	query.Order(sortBy + " " + orderBy).Offset(offset).Limit(limit).Find(&appointments)
 	totalRecords := int64(0)
-	totalQuery.Model(&as.Appointment).Count(&totalRecords)
+	totalQuery.Model(&models.Appointment{}).Count(&totalRecords)
 	lastPage := int64(0)
 	if limit > 0 {
 		lastPage = (totalRecords + int64(limit) - 1) / int64(limit)
 	}
+
 	meta := models.Meta{
 		CurrentPage: page,
 		TotalCount:  int(totalRecords),
@@ -49,10 +53,10 @@ func (as *AppointmentServices) GetALL(limit, page int, orderBy, sortBy, project,
 	return appointments, meta, nil
 }
 
-func (as *AppointmentServices) GetID(id, dbName string) (models.Appointment, error) {
+func (as *AppointmentServices) GetID(id string) (models.Appointment, error) {
 	var appointment models.Appointment
 	DB := utils.GetCurrentDB("Qwik", as.STORES)
-	if result := DB.Table("appointments").Preload("Client").First(&appointment, id); result.Error != nil {
+	if result := DB.Table("appointments").Preload("Client").Preload("Shop").First(&appointment, id); result.Error != nil {
 		return models.Appointment{}, result.Error
 	}
 	return appointment, nil
@@ -68,14 +72,6 @@ func (as *AppointmentServices) Create(appointment models.Appointment) (models.Ap
 func (as *AppointmentServices) Update(appointment models.Appointment) (models.Appointment, error) {
 	DB := utils.GetCurrentDB("Qwik", as.STORES)
 	if result := DB.Table("appointments").Updates(&appointment); result.Error != nil {
-		return models.Appointment{}, result.Error
-	}
-	return appointment, nil
-}
-
-func (ss *SubscriptionServices) Delete(appointment models.Appointment) (models.Appointment, error) {
-	DB := utils.GetCurrentDB("Qwik", ss.STORES)
-	if result := DB.Table("appointments").Delete(&appointment); result.Error != nil {
 		return models.Appointment{}, result.Error
 	}
 	return appointment, nil

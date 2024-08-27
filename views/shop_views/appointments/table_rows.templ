@@ -1,0 +1,51 @@
+package appointments
+
+import (
+"fmt"
+"github.com/gonext-tech/internal/models"
+"strings"
+)
+
+templ TableRows(appointments []models.Appointment) {
+if len(appointments) > 0 {
+for _ , s := range appointments {
+<tr>
+  <td class="px-4 py-4 text-sm whitespace-nowrap">
+    <div>
+      <h4 class="text-gray-700 dark:text-gray-200">{ s.Client.Name }</h4>
+      <p class="text-gray-500 dark:text-gray-400">{ s.Client.Phone }</p>
+    </div>
+  </td>
+  <td class="px-4 py-4 text-sm whitespace-nowrap">
+    <div>
+      <h4 class="text-gray-700 dark:text-gray-200">{ s.Date.Format("Jan, 02 2006") }</h4>
+    </div>
+  </td>
+  <td class="px-4 py-4 text-sm whitespace-nowrap">
+    <h4 class="text-gray-700 dark:text-gray-200">{ fmt.Sprintf("$%.2f", s.Price) }</h4>
+  </td>
+  <td class="px-4 py-4 text-sm whitespace-nowrap">
+    <h4 class="text-gray-700 dark:text-gray-200">{ fmt.Sprintf("%d", s.Duration) }</h4>
+  </td>
+  <td class="px-x py-4 text-sm font-medium whitespace-nowrap">
+    <div class={ "inline text-sm text-white text-center  font-normal capitalize px-2 py-1 rounded-lg" ,
+      templ.KV("bg-yellow-600", s.PaymentStatus=="TOPAY" ) , templ.KV("bg-red-500", s.PaymentStatus=="NOTPAID" ) ,
+      templ.KV("bg-greed-500", s.PaymentStatus=="PAID" ) }>
+      { strings.ToLower(s.PaymentStatus) }
+    </div>
+  </td>
+  <td class="px-x py-4 text-sm font-medium whitespace-nowrap">
+    <div class={ "inline text-sm text-white text-center  font-normal capitalize px-2 py-1 rounded-lg" ,
+      templ.KV("bg-yellow-600", s.Status=="PENDING" ) , templ.KV("bg-red-500", s.Status=="CANCELED" ) ,
+      templ.KV("bg-greed-500", s.Status=="DONE" ) }>
+      { strings.ToLower(s.Status) }
+    </div>
+  </td>
+</tr>
+}
+} else {
+<tr>
+  <td colspan="6" class="text-center font-bold text-lg">No appointment for type </td>
+</tr>
+}
+}
