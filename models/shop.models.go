@@ -12,7 +12,7 @@ type Shop struct {
 	Workers           []User     `form:"workers" gorm:"foreignKey:ShopID"`
 	MembershipID      uint       `form:"membership_id"`
 	Membership        Membership `form:"membership" gorm:"foreignKey:MembershipID"`
-	NextBillingDate   *time.Time `form:"next_billing_date"`
+	NextBillingDate   *time.Time `form:"next_billing_date,omitempty"`
 	SendWP            bool       `form:"send_wp"`
 	Status            string     `form:"status" gorm:"default:ACTIVE"`
 	TotalIncome       float64    `form:"total_income"`

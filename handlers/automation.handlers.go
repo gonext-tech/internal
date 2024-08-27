@@ -26,6 +26,7 @@ func (ah *AutomationHandler) GetAppointments(c echo.Context) error {
 			db.DB.Preload("User").Preload("Shop").Preload("Client").
 				Joins("JOIN shops ON shops.id = appointments.shop_id").
 				Where("appointments.date BETWEEN ? AND ?", now, nextHour).
+				Where("appointments.status = ?", "PENDING").
 				Where("appointments.notification_send_at IS NULL").
 				Where("shops.send_wp = ? AND shops.status = ?", true, "ACTIVE").
 				Find(&appointments)

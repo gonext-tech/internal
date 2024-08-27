@@ -236,6 +236,7 @@ func (sh *ShopHandler) UpdateHandler(c echo.Context) error {
 	}
 
 	if err := c.Bind(&shop); err != nil {
+		log.Println("errrr-bind-shop", err)
 		errorMsg = "cannot parse the shop body"
 		setFlashmessages(c, "error", errorMsg)
 		return sh.UpdatePage(c)
