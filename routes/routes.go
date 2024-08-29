@@ -13,6 +13,7 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 
 	// --> SERVICES INIT <--
 	userService := services.NewUserServices(models.User{}, store)
+	referalService := services.NewReferalService(models.Referal{}, store)
 	subscriptionService := services.NewSubscriptionService(projectStores)
 	membershipService := services.NewMembershipService(projectStores)
 	shopService := services.NewShopService(projectStores)
@@ -23,6 +24,7 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 
 	// --> HANDLERS INIT <--
 	appointmentHandler := handlers.NewAppointmentHandler(appointmentService)
+	referalHandler := handlers.NewReferalHandler(referalService, uploadService)
 	authHandler := handlers.NewAuthHandler(userService)
 	projectHandler := handlers.NewProjectHandler(projectService, uploadService)
 	subscriptionHandler := handlers.NewSubscriptionHandler(subscriptionService, projectService, membershipService)
@@ -57,6 +59,15 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	protectedGroup.GET("project/edit/:id", projectHandler.UpdatePage)
 	protectedGroup.POST("project/edit/:id", projectHandler.UpdateHandler)
 	protectedGroup.DELETE("project/:id", projectHandler.DeleteHandler)
+
+	// --> Referal ROUTES <--
+	protectedGroup.GET("referal", referalHandler.ListPage)
+	protectedGroup.GET("referal/view", referalHandler.ViewPage)
+	protectedGroup.GET("referal/create", referalHandler.CreatePage)
+	protectedGroup.POST("referal/create", referalHandler.CreateHandler)
+	protectedGroup.GET("referal/edit/:id", referalHandler.UpdatePage)
+	protectedGroup.POST("referal/edit/:id", referalHandler.UpdateHandler)
+	protectedGroup.DELETE("referal/:id", referalHandler.DeleteHandler)
 
 	// --> SHOP ROUTES <--
 	protectedGroup.GET("shop", shopHandler.ListPage)
