@@ -1,0 +1,97 @@
+package referal_views
+
+import "github.com/gonext-tech/internal/views/components"
+
+templ Create() {
+<section class=" bg-base-200 rounded-md relative">
+  @components.BackButton("referal")
+  <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">
+    <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Add new referal</h2>
+    <form action="" method="post" hx-swap="transition:true" hx-encoding="multipart/form-data"
+      hx-on::before-send="modifyForm(event)">
+      <!--   Image upload START -->
+      @components.UploadImage("", "referal")
+      <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
+        <div class="sm:col-span-2">
+          <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
+          <input type="text" name="name" id="name"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+            placeholder="Cutest shop" required="" />
+        </div>
+        <div class="">
+          <label for="phone" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Phone</label>
+          <input type="text" name="phone" id="phone"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+            placeholder="961 123456" required="" />
+        </div>
+        <div class="">
+          <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+          <input type="email" name="email" id="email"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+            placeholder="https://qwik.gonext.tech" required="" />
+        </div>
+        <div class="">
+          <label for="total_users" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            Total
+            Users
+          </label>
+          <input type="number" name="total_users" id="total_users"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+            placeholder="10" />
+        </div>
+        <div class="">
+          <label for="total_revenue" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            Total Revenue
+          </label>
+          <input type="number" name="total_revenue" id="total_revenue"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+            placeholder="Qwik" />
+        </div>
+        <div class="">
+          <label for="remaining_revenue" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            Total Revenue
+          </label>
+          <input type="number" name="remaining_revenue" id="remaining_revenue"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+            placeholder="Qwik" />
+        </div>
+        <div class="">
+          <label for="last_withdraw_at" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            Last Withdraw
+          </label>
+          <input type="date" name="last_withdraw_at" id="last_withdraw_at"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+            placeholder="" />
+        </div>
+        <div>
+          <label for="status" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Status</label>
+          <select id="status" name="status"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+            <option value="" selected disabled>Select Status</option>
+            <option value="ACTIVE">Active</option>
+            <option value="NOT_ACTIVE">Not Active</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit"
+        class="mt-6 inline-flex items-center justify-center px-4 py-2 text-sm font-medium tracking-wide text-white transition-colors duration-200 bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-700 focus:shadow-outline focus:outline-none">
+        Create Referal
+      </button>
+    </form>
+  </div>
+</section>
+<script>
+  function modifyForm(event) {
+    // Modify form data here
+    const formData = event.detail.requestConfig.parameters;
+    const lastWithdraw = document.getElementById('last_withdraw_at')
+    if (lastWithdraw.value) {
+      const isoDate = new Date(lastWithdraw.value).toISOString();
+      formData.last_withdraw_at = isoDate
+    } else {
+      delete formData.last_withdraw_at;
+    }
+
+  };
+</script>
+}

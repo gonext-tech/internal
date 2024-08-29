@@ -67,7 +67,7 @@ func UploadImage(image, source string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			if source == "customer" {
+			if source == "customer" || source == "referal" || source == "user" {
 				templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 7)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
