@@ -5,27 +5,27 @@ import (
 )
 
 type Appointment struct {
-	ID                  uint                 `form:"id" gorm:"primaryKey"`
-	ClientID            uint                 `form:"client_id"`
-	Client              Client               `form:"client" gorm:"foreignKey:ClientID"`
-	UserID              uint                 `form:"user_id"`
-	User                User                 `form:"user" gorm:"foreignKey:UserID"`
-	Date                time.Time            `form:"date"`
-	ServiceID           uint                 `form:"service_id"`
-	Service             Service              `form:"service" gorm:"foreignKey:ServiceID"`
-	AppointmentServices []AppointmentService `form:"appointment_services" gorm:"foreignKey:AppointmentID"`
-	PaymentStatus       string               `form:"payment_status" gorm:"default:TOPAY"`
-	Priority            string               `form:"priority" gorm:"default:NO"`
-	Price               float64              `form:"price"`
-	Status              string               `form:"status" gorm:"default:PENDING"`
-	Duration            int                  `form:"duration"`
-	Notes               string               `form:"notes"`
-	ShopID              uint                 `form:"shop_id"`
-	Shop                Shop                 `form:"shop" gorm:"foreignKey:ShopID"`
-	PaidAt              *time.Time           `form:"paid_at,omitempty"`
-	NotificationSendAt  *time.Time           `form:"notification_send_at,omitempty"`
-	CreatedAt           time.Time            `form:"created_at"`
-	UpdatedAt           time.Time            `form:"update_at"`
+	ID                  uint                 `json:"id" form:"id" gorm:"primaryKey"`
+	ClientID            uint                 `json:"client_id" form:"client_id"`
+	Client              Client               `json:"client" form:"client" gorm:"foreignKey:ClientID"`
+	UserID              uint                 `json:"user_id" form:"user_id"`
+	User                User                 `json:"user" form:"user" gorm:"foreignKey:UserID"`
+	Date                time.Time            `json:"date" form:"date"`
+	ServiceID           uint                 `json:"service_id" form:"service_id"`
+	Service             Service              `json:"service" form:"service" gorm:"foreignKey:ServiceID"`
+	AppointmentServices []AppointmentService `json:"appointment_services" form:"appointment_services" gorm:"foreignKey:AppointmentID"`
+	PaymentStatus       string               `json:"payment_status" form:"payment_status" gorm:"default:TOPAY"`
+	Priority            string               `json:"priority" form:"priority" gorm:"default:NO"`
+	Price               float64              `json:"price" form:"price"`
+	Status              string               `json:"status" form:"status" gorm:"default:PENDING"`
+	Duration            int                  `json:"duration" form:"duration"`
+	Notes               string               `json:"notes" form:"notes"`
+	ShopID              uint                 `json:"shop_id" form:"shop_id"`
+	Shop                Shop                 `json:"shop" form:"shop" gorm:"foreignKey:ShopID"`
+	PaidAt              *time.Time           `json:"paid_at" form:"paid_at,omitempty"`
+	NotificationSendAt  *time.Time           `json:"notification_send_at" form:"notification_send_at,omitempty"`
+	CreatedAt           time.Time            `json:"created_at" form:"created_at"`
+	UpdatedAt           time.Time            `json:"updated_at" form:"updated_at"`
 }
 
 type AppointmentService struct {
