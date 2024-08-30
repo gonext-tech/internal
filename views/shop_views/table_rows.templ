@@ -10,16 +10,12 @@ templ TableRows(shops []models.Shop) {
 if len(shops) > 0 {
 for index , s := range shops {
 <tr>
-  <td class="px-4 py-4 text-sm font-medium whitespace-nowrap">
-    <div>
-      <h2 class="font-medium text-gray-800 dark:text-white ">{ s.Name }</h2>
-    </div>
+  <td class="px-4 py-4 text-sm whitespace-nowrap">
+    <h4 class="text-gray-700 dark:text-gray-200">{ s.Name }</h4>
   </td>
-  <td class="px-4 py-4 text-sm font-medium whitespace-nowrap">
-    <div>
-      <h2 class="font-medium text-gray-800 dark:text-white ">{ s.Owner.Name }</h2>
-      <p class="text-sm font-normal text-gray-600 dark:text-gray-400">{ s.Owner.Phone }</p>
-    </div>
+  <td class="px-4 py-4 text-sm whitespace-nowrap">
+    <h4 class="text-gray-700 dark:text-gray-200">{ s.Owner.Name }</h4>
+    <p class="text-gray-500 dark:text-gray-400">{ s.Owner.Phone }</p>
   </td>
   <td class="px-4 py-4 text-sm font-medium whitespace-nowrap">
     <div class={ "inline text-sm text-white text-center  font-normal capitalize px-2 py-1 rounded-lg" ,
@@ -37,7 +33,15 @@ for index , s := range shops {
       <h4 class="text-gray-700 dark:text-gray-200">{ s.ProjectName }</h4>
     </div>
   </td>
-  <td class="px-4 py-4 text-sm whitespace-nowrap">
+  <td class="px-4 py-4 text-sm whitespace-nowrap flex gap-x-2 items-center justify-end">
+    if s.ProjectName == "Qwik" {
+    <button
+      class="px-1 py-1 text-gray-500 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:bg-gray-100">
+      <a hx-swap="transition:true" href={ templ.URL(fmt.Sprintf("/shop/appointment/%d", s.ID)) }>
+        <i class="fa-regular fa-clock"></i>
+      </a>
+    </button>
+    }
     <div class={ "dropdown dropdown-end" , templ.KV("dropdown-top", index + 1==len(shops) ) }>
       <div tabindex="0" role="button">
         <button
@@ -54,6 +58,11 @@ for index , s := range shops {
         <li>
           <a hx-swap="transition:true" href={ templ.URL(fmt.Sprintf("/shop/edit/%d/%s", s.ID, s.ProjectName)) }>
             Edit
+          </a>
+        </li>
+        <li>
+          <a hx-swap="transition:true" href={ templ.URL(fmt.Sprintf("/shop/subscription/%d/%s", s.ID, s.ProjectName)) }>
+            Subscription
           </a>
         </li>
         <li>

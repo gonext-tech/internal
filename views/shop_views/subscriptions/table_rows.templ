@@ -1,0 +1,54 @@
+package subscriptions
+
+import (
+	"fmt"
+	"github.com/gonext-tech/internal/models"
+	"strings"
+)
+
+templ TableRows(subscriptions []models.Subscription) {
+	if len(subscriptions) > 0 {
+		for _ , s := range subscriptions {
+			<tr>
+				<td class="px-4 py-4 text-sm whitespace-nowrap">
+					<div>
+						<h4 class="text-gray-700 dark:text-gray-200">{ s.Membership.Name }</h4>
+					</div>
+				</td>
+				<td class="px-4 py-4 text-sm whitespace-nowrap">
+					<div>
+						<h4 class="text-gray-700 dark:text-gray-200">{ s.EndDate.Format("Jan, 02 2006") }</h4>
+						<p class="text-gray-500 dark:text-gray-400">{ s.StartDate.Format("Jan, 02 2006") }</p>
+					</div>
+				</td>
+				<td class="px-4 py-4 text-sm whitespace-nowrap">
+					<h4 class="text-gray-700 dark:text-gray-200">{ fmt.Sprintf("$%.2f", s.Amount) }</h4>
+				</td>
+				<td class="px-4 py-4 text-sm whitespace-nowrap">
+					<h4 class="text-gray-700 dark:text-gray-200">{ s.ProjectName }</h4>
+				</td>
+				<td class="px-x py-4 text-sm font-medium whitespace-nowrap">
+					<div
+						class={ "inline text-sm text-white text-center  font-normal capitalize px-2 py-1 rounded-lg" ,
+      templ.KV("bg-yellow-600", s.Status=="TOPAY" ) , templ.KV("bg-red-500", s.Status=="NOT_PAID" ) ,
+      templ.KV("bg-greed-500", s.Status=="PAID" ) }
+					>
+						{ strings.ToLower(s.Status) }
+					</div>
+				</td>
+				<td class="px-x py-4 text-sm font-medium whitespace-nowrap">
+					<div
+						class={ "inline text-sm text-white text-center  font-normal capitalize px-2 py-1 rounded-lg" ,
+      templ.KV("bg-blue-500", s.Status=="ACTIVE" ) , templ.KV("bg-red-500", s.Status=="NOT_ACTIVE" ) }
+					>
+						{ strings.ToLower(s.Status) }
+					</div>
+				</td>
+			</tr>
+		}
+	} else {
+		<tr>
+			<td colspan="6" class="text-center font-bold text-lg">No subscription for type </td>
+		</tr>
+	}
+}

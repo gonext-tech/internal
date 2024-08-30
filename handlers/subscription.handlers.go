@@ -7,12 +7,13 @@ import (
 	"strconv"
 
 	"github.com/gonext-tech/internal/models"
+	"github.com/gonext-tech/internal/views/shop_views/subscriptions"
 	"github.com/gonext-tech/internal/views/subscription_views"
 	"github.com/labstack/echo/v4"
 )
 
 type SubscriptionService interface {
-	GetALL(limit, page int, orderBy, sortBy, project, status, searchTerm string) ([]models.Subscription, models.Meta, error)
+	GetALL(limit, page int, orderBy, sortBy, project, shop, status, searchTerm string) ([]models.Subscription, models.Meta, error)
 	GetID(id, name string) (models.Subscription, error)
 	Create(models.Subscription) (models.Subscription, error)
 	Update(models.Subscription) (models.Subscription, error)
@@ -55,12 +56,13 @@ func (sh *SubscriptionHandler) ListPage(c echo.Context) error {
 	}
 	status := c.QueryParam("status")
 	project := c.QueryParam("project")
+	shop := c.QueryParam("shop")
 	if project == "" {
 		project = ""
 	}
 
 	searchTerm := c.QueryParam("searchTerm")
-	response, meta, err := sh.SubscriptionServices.GetALL(limit, page, orderBy, sortBy, project, status, searchTerm)
+	response, meta, err := sh.SubscriptionServices.GetALL(limit, page, orderBy, sortBy, project, shop, status, searchTerm)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -85,6 +87,59 @@ func (sh *SubscriptionHandler) ListPage(c echo.Context) error {
 		getFlashmessages(c, "error"),
 		getFlashmessages(c, "success"),
 		subscription_views.List(titlePage, response, meta, params),
+	))
+}
+
+func (sh *SubscriptionHandler) ShopListPage(c echo.Context) error {
+	isError = false
+	shop := c.Param("id")
+	project := c.Param("name")
+
+	page, _ := strconv.Atoi(c.QueryParam("page"))
+	if page <= 0 {
+		page = 1
+	}
+	limit, _ := strconv.Atoi(c.QueryParam("limit"))
+	if limit <= 0 {
+		limit = 20
+	}
+	orderBy := c.QueryParam("orderBy")
+	if orderBy == "" {
+		orderBy = "desc"
+	}
+
+	sortBy := c.QueryParam("sortBy")
+	if sortBy == "" {
+		sortBy = "id"
+	}
+	status := c.QueryParam("status")
+
+	searchTerm := c.QueryParam("searchTerm")
+	response, meta, err := sh.SubscriptionServices.GetALL(limit, page, orderBy, sortBy, project, shop, status, searchTerm)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	var params models.ParamResponse
+	if searchTerm != "" {
+		params.Search = searchTerm
+	}
+	if status != "" {
+		params.Status = status
+	}
+	params.Page = page
+	params.Limit = limit
+	params.SortBy = sortBy
+	params.OrderBy = orderBy
+	titlePage := fmt.Sprintf(
+		"Memberships (%d)", meta.TotalCount)
+	return renderView(c, subscription_views.Index(
+		titlePage,
+		c.Get(email_key).(string),
+		fromProtected,
+		isError,
+		getFlashmessages(c, "error"),
+		getFlashmessages(c, "success"),
+		subscriptions.List(titlePage, response, meta, params),
 	))
 }
 
@@ -134,9 +189,9 @@ func (sh *SubscriptionHandler) CreateHandler(c echo.Context) error {
 		setFlashmessages(c, "error", err.Error())
 		return sh.CreatePage(c)
 	}
-	log.Println("susbcriptionnnn", subscription)
 	_, err := sh.SubscriptionServices.Create(subscription)
 	if err != nil {
+		log.Println("err-create-subscription", err)
 		setFlashmessages(c, "error", "Can't create subscription")
 		return sh.CreatePage(c)
 	}

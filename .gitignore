@@ -4,9 +4,9 @@
 *.dll
 *.so
 *.dylib
-bin/*
-
 tailwindcss
+node_modules/
+
 # Test binary, built with `go test -c`
 *.test
 tmp/
@@ -16,6 +16,7 @@ views/**/*.txt
 
 # Dependency directories (remove the comment below to include it)
 vendor/
+views/**/*.txt
 
 # Go workspace file
 go.work

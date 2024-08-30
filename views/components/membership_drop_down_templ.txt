@@ -1,9 +1,0 @@
-<option value=\"\"
- selected
- disabled>Select a membership</option> 
-<option
- selected
- data-duration=\"
-\" value=\"
-\">
-</option>

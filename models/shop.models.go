@@ -3,24 +3,25 @@ package models
 import "time"
 
 type Shop struct {
-	ID                uint       `form:"id" gorm:"primaryKey"`
-	Name              string     `form:"name"`
-	OwnerID           uint       `form:"owner_id"`
-	Owner             User       `form:"owner" gorm:"foreignKey:OwnerID"`
-	Address           string     `form:"address"`
-	Image             string     `form:"image"`
-	Workers           []User     `form:"workers" gorm:"foreignKey:ShopID"`
-	MembershipID      uint       `form:"membership_id"`
-	Membership        Membership `form:"membership" gorm:"foreignKey:MembershipID"`
-	NextBillingDate   *time.Time `form:"next_billing_date"`
-	SendWP            bool       `form:"send_wp"`
-	Status            string     `form:"status" gorm:"default:ACTIVE"`
-	TotalIncome       float64    `form:"total_income"`
-	TotalExpenses     float64    `form:"total_expenses"`
-	TotalClients      int        `form:"total_clients"`
-	TotalAppointments int        `form:"total_appointments"`
-	ProjectName       string     `form:"project_name"`
-	TopClients        []User     `form:"top_clients"`
-	CreatedAt         time.Time  `form:"created_at" gorm:"autoCreateTime"`
-	UpdatedAt         time.Time  `form:"updated_at" gorm:"autoUpdateTime"`
+	ID                uint       `json:"id" form:"id" gorm:"primaryKey"`
+	Name              string     `json:"name" form:"name"`
+	OwnerID           uint       `json:"owner_id" form:"owner_id"`
+	Owner             User       `json:"owner" form:"owner" gorm:"foreignKey:OwnerID"`
+	Address           string     `json:"address" form:"address"`
+	Image             string     `json:"image" form:"image"`
+	Workers           []User     `json:"workers" form:"workers" gorm:"foreignKey:ShopID"`
+	MembershipID      uint       `json:"membership_id" form:"membership_id"`
+	Membership        Membership `json:"membership" form:"membership" gorm:"foreignKey:MembershipID"`
+	NextBillingDate   *time.Time `json:"next_billing_date" form:"next_billing_date,omitempty"`
+	SendWP            bool       `json:"send_wp" form:"send_wp"`
+	WPMessage         string     `json:"wp_message" form:"wp_message"`
+	Status            string     `json:"status" form:"status" gorm:"default:ACTIVE"`
+	TotalIncome       float64    `json:"total_income" form:"total_income"`
+	TotalExpenses     float64    `json:"total_expenses" form:"total_expenses"`
+	TotalClients      int        `json:"total_clients" form:"total_clients"`
+	TotalAppointments int        `json:"total_appointments" form:"total_appointments"`
+	ProjectName       string     `json:"project_name" form:"project_name"`
+	TopClients        []User     `json:"top_clients" form:"top_clients"`
+	CreatedAt         time.Time  `json:"created_at" form:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt         time.Time  `json:"updated_at" form:"updated_at" gorm:"autoUpdateTime"`
 }

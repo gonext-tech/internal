@@ -19,13 +19,15 @@ func NewAutomationHandler(db []models.ProjectsDB) *AutomationHandler {
 
 func (ah *AutomationHandler) GetAppointments(c echo.Context) error {
 	var appointments []models.Appointment
-	now := time.Now()
-	nextHour := now.Add(1 * time.Hour)
+	tomorrow := time.Now().AddDate(0, 0, 1)
+	startOfTomorrow := time.Date(tomorrow.Year(), tomorrow.Month(), tomorrow.Day(), 0, 0, 0, 0, tomorrow.Location())
+	endOfTomorrow := startOfTomorrow.AddDate(0, 0, 1).Add(-time.Nanosecond)
 	for _, db := range ah.DB {
 		if db.Name == "Qwik" {
-			db.DB.Preload("User").Preload("Shop").Preload("Client").
+			db.DB.Preload("User").Preload("Shop").Preload("Shop.Owner").Preload("Client").
 				Joins("JOIN shops ON shops.id = appointments.shop_id").
-				Where("appointments.date BETWEEN ? AND ?", now, nextHour).
+				Where("appointments.date BETWEEN ? AND ?", startOfTomorrow, endOfTomorrow).
+				Where("appointments.status = ?", "PENDING").
 				Where("appointments.notification_send_at IS NULL").
 				Where("shops.send_wp = ? AND shops.status = ?", true, "ACTIVE").
 				Find(&appointments)
