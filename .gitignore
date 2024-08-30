@@ -11,6 +11,7 @@ node_modules/
 *.test
 tmp/
 views/**/*.txt
+views/**/*.go
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
