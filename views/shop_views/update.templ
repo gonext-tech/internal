@@ -91,7 +91,17 @@ templ Update(shop models.Shop, projects []models.Project, memberships []models.M
           <label for="send_wp" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
             Send WP
           </label>
-          <input checked?={ shop.SendWP } class="toggle toggle-primary" name="send_wp" id="send_wp" type="checkbox" />
+          <input checked?={ shop.SendWP } class="toggle toggle-primary" name="send_wp" id="send_wp" type="checkbox"
+            onchange="checkboxChange(this)" />
+        </div>
+        <div id="wp_message_div" class={ "sm:col-span-2" , templ.KV("hidden", shop.SendWP==false ) }>
+          <label for="wp_message" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            Whatsapp
+            Message
+          </label>
+          <textarea id="wp_message" name="wp_message" rows="5"
+            class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+            placeholder="Enter your whatsapp message here...">{ shop.WPMessage }</textarea>
         </div>
         <div class="sm:col-span-2">
           <label for="address" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Address</label>
@@ -123,6 +133,15 @@ templ Update(shop models.Shop, projects []models.Project, memberships []models.M
         formData.send_wp = "true";
       }
     };
+    function checkboxChange(event) {
+      const wpMessage = document.getElementById('wp_message_div');
+      if (event.checked) {
+        wpMessage.classList.remove('hidden');
+      } else {
+        wpMessage.classList.add('hidden')
+      }
+
+    }
   </script>
 </section>
 }

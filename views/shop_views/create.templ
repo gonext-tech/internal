@@ -63,7 +63,17 @@ templ Create(projects []models.Project) {
           <label for="send_wp" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
             Send WP
           </label>
-          <input class="toggle toggle-primary" name="send_wp" id="send_wp" type="checkbox" />
+          <input class="toggle toggle-primary" name="send_wp" id="send_wp" type="checkbox"
+            onchange="checkboxChange(this)" />
+        </div>
+        <div id="wp_message_div" class="sm:col-span-2 hidden">
+          <label for="wp_message" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            Whatsapp
+            Message
+          </label>
+          <textarea id="wp_message" name="wp_message" rows="5"
+            class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+            placeholder="Enter your whatsapp message here..."></textarea>
         </div>
         <div class="sm:col-span-2">
           <label for="address" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Address</label>
@@ -81,13 +91,20 @@ templ Create(projects []models.Project) {
 </section>
 <script>
   function modifyForm(event) {
-    // Modify form data here
     const formData = event.detail.requestConfig.parameters;
     const checkbox = document.getElementById('send_wp');
     if (!checkbox.checked) {
       formData.send_wp = "false"; // Ensure "false" is sent if unchecked
     } else {
       formData.send_wp = "true";
+    }
+  };
+  function checkboxChange(event) {
+    const wpMessage = document.getElementById('wp_message_div');
+    if (event.checked) {
+      wpMessage.classList.remove('hidden');
+    } else {
+      wpMessage.classList.add('hidden')
     }
   };
 </script>

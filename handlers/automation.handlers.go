@@ -24,7 +24,7 @@ func (ah *AutomationHandler) GetAppointments(c echo.Context) error {
 	endOfTomorrow := startOfTomorrow.AddDate(0, 0, 1).Add(-time.Nanosecond)
 	for _, db := range ah.DB {
 		if db.Name == "Qwik" {
-			db.DB.Preload("User").Preload("Shop").Preload("Client").
+			db.DB.Preload("User").Preload("Shop").Preload("Shop.Owner").Preload("Client").
 				Joins("JOIN shops ON shops.id = appointments.shop_id").
 				Where("appointments.date BETWEEN ? AND ?", startOfTomorrow, endOfTomorrow).
 				Where("appointments.status = ?", "PENDING").
