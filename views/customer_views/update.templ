@@ -94,6 +94,7 @@ templ Update(customer models.Customer, projects []models.Project) {
             <option value="ADMIN" selected?={ customer.Role=="ADMIN" }>Admin</option>
             <option value="OWNER" selected?={ customer.Role=="OWNER" }>Owner</option>
             <option value="USER" selected?={ customer.Role=="USER" }>User</option>
+            <option value="SECRETARY" selected?={ customer.Role=="SECRETARY" }>Secretary</option>
           </select>
         </div>
         <div class="sm:col-span-2">
