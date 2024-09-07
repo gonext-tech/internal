@@ -8,6 +8,7 @@ type Client struct {
 	ID           uint          `json:"id" gorm:"primaryKey"`
 	Name         string        `json:"name"`
 	Phone        string        `json:"phone"`
+	CountryCode        string        `json:"country_code"`
 	Address      string        `json:"address"`
 	Image        string        `json:"image"`
 	ShopID       uint          `json:"shop_id"`
