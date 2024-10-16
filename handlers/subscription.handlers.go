@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -22,14 +21,16 @@ type SubscriptionService interface {
 
 type SubscriptionHandler struct {
 	SubscriptionServices SubscriptionService
+	ShopServices         ShopService
 	ProjectServices      ProjectService
 	MembershipServices   MembershipService
 }
 
-func NewSubscriptionHandler(ms SubscriptionService, ps ProjectService, mems MembershipService) *SubscriptionHandler {
+func NewSubscriptionHandler(ms SubscriptionService, ps ProjectService, mems MembershipService, ss ShopService) *SubscriptionHandler {
 	return &SubscriptionHandler{
 		SubscriptionServices: ms,
 		ProjectServices:      ps,
+		ShopServices:         ss,
 		MembershipServices:   mems,
 	}
 }
@@ -191,10 +192,24 @@ func (sh *SubscriptionHandler) CreateHandler(c echo.Context) error {
 	}
 	_, err := sh.SubscriptionServices.Create(subscription)
 	if err != nil {
-		log.Println("err-create-subscription", err)
 		setFlashmessages(c, "error", "Can't create subscription")
 		return sh.CreatePage(c)
 	}
+	shop, err := sh.ShopServices.GetID(fmt.Sprintf("%d", subscription.ShopID), subscription.ProjectName)
+	if err != nil {
+		setFlashmessages(c, "error", "Can't create subscription")
+		return sh.CreatePage(c)
+	}
+	if shop.NextBillingDate == nil || shop.NextBillingDate.Before(subscription.EndDate) {
+		shop.NextBillingDate = &subscription.EndDate
+		_, err = sh.ShopServices.Update(shop)
+		if err != nil {
+			setFlashmessages(c, "error", "Can't update shop nextBillingDate")
+			return sh.CreatePage(c)
+		}
+
+	}
+
 	setFlashmessages(c, "success", "subscription created successfully!!")
 
 	return c.Redirect(http.StatusSeeOther, "/subscription")
@@ -249,6 +264,23 @@ func (sh *SubscriptionHandler) UpdateHandler(c echo.Context) error {
 		setFlashmessages(c, "error", errorMsg)
 		return sh.UpdatePage(c)
 	}
+
+	shop, err := sh.ShopServices.GetID(fmt.Sprintf("%d", subscription.ShopID), projectName)
+	if err != nil {
+		errorMsg = fmt.Sprintf("subscription with id %s not found", id)
+		setFlashmessages(c, "error", errorMsg)
+		return sh.UpdatePage(c)
+	}
+	if shop.NextBillingDate == nil || shop.NextBillingDate.Before(subscription.EndDate) {
+		shop.NextBillingDate = &subscription.EndDate
+		_, err = sh.ShopServices.Update(shop)
+		if err != nil {
+			setFlashmessages(c, "error", "Can't create subscription")
+			return sh.CreatePage(c)
+		}
+
+	}
+
 	setFlashmessages(c, "success", "subscription updated successfully!!")
 
 	return c.Redirect(http.StatusSeeOther, "/subscription")

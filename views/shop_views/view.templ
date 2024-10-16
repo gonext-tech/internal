@@ -1,33 +1,48 @@
 package shop_views
 
-import "github.com/gonext-tech/internal/models"
+import (
+"fmt"
+"github.com/gonext-tech/internal/models"
+"github.com/gonext-tech/internal/views/components/user_components"
+)
 
 templ View(shop models.Shop) {
-<h1 class="text-2xl font-bold text-center mb-8">
-  View Hospital #{ shop.ProjectName }
-</h1>
-<section class="max-w-2xl w-4/5 h-96 mx-auto bg-slate-600 rounded-lg shadow-xl">
-  <form class="rounded-xl flex flex-col gap-4 w-11/12 p-4 mx-auto" action="" method="post" hx-swap="transition:true">
-    <label class="flex flex-col justify-start gap-2">
-      Name:
-      <input class="input input-bordered input-primary bg-slate-800" type="text" name="name" value={ shop.ProjectName }
-        required autofocus minlength="3" maxlength="64" />
-    </label>
-    <label class="flex flex-col justify-start gap-2">
-      Phone:
-      <input type="text" name="name" value={ shop.Name } required autofocus minlength="3" maxlength="64"
-        class="input input-bordered input-primary bg-slate-800" />
-    </label>
-    <footer class="card-actions flex justify-between">
-      <div class="flex gap-4">
-        <button class="badge badge-primary p-4 hover:scale-[1.1]">
-          Update
-        </button>
-        <a href="/shop" class="badge badge-neutral p-4 hover:scale-[1.1]">
-          Cancel
-        </a>
+<div class="container mx-auto p-6">
+  <!-- Shop Details Section -->
+  <div class="rounded-lg shadow p-6 mb-4">
+    <div class="flex items-center gap-x-10">
+      <!-- Shop Image -->
+      <div class="mb-4">
+        <img src={ shop.Image } alt="Shop Image" class="w-36 h-36 rounded-md object-cover" />
       </div>
-    </footer>
-  </form>
-</section>
+      <div>
+        <!-- Shop Information -->
+        <div class="mb-4">
+          <h1 class="text-2xl font-bold">{ shop.Name }</h1>
+          <p class="text-gray-600">
+            { shop.Category } - { shop.Status } - { shop.ProjectName } - { shop.Owner.Name }
+          </p>
+          <p class="text-gray-600"><strong>Address:</strong> { shop.Address }</p>
+          <p class="text-gray-600"><strong>Category:</strong> { shop.Category }</p>
+        </div>
+        <!-- Buttons for Edit and Add User -->
+        <div class="flex space-x-4">
+          <!-- Edit Button -->
+          <a href={ templ.URL(fmt.Sprintf("/shop/edit/%d/%s", shop.ID, shop.ProjectName)) }
+            class="btn btn-primary btn-sm" hx-swap="transition:true">
+            Edit Shop
+          </a>
+          <!-- Add User Button -->
+          @user_components.UserDrawer(shop)
+        </div>
+      </div>
+    </div>
+    <h1 class="text-xl font-bold my-5">Workers:</h1>
+    <div id="customer-list" class="mt-2 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      for _,user := range shop.Workers {
+      @user_components.UserCard(user)
+      }
+    </div>
+  </div>
+</div>
 }

@@ -1,6 +1,7 @@
 package components
 
 import (
+"fmt"
 "github.com/gonext-tech/internal/models"
 "strconv"
 )
@@ -9,9 +10,8 @@ templ MembershipResult(membership_id uint, memberships []models.Membership) {
 <option value="" selected?={ membership_id==0 } disabled>Select a membership</option>
 for _, membership := range memberships {
 <option selected?={ membership.ID==membership_id } data-duration={ strconv.Itoa(int(membership.Duration)) } value={
-  strconv.Itoa(int(membership.ID)) }>
-  {
-  membership.Name }
+  strconv.Itoa(int(membership.ID)) } data-amount={ fmt.Sprintf("%.2f", membership.Price) }>
+  { membership.Name }
 </option>
 }
 }
