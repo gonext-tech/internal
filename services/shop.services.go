@@ -91,14 +91,14 @@ func (ss *ShopServices) GetALL(limit, page int, orderBy, sortBy, project, status
 func (ss *ShopServices) Fetch(project string) ([]models.Shop, error) {
 	var shops []models.Shop
 	DB := utils.GetCurrentDB(project, ss.STORES)
-	DB.Table("shopss").Find(&shops)
+	DB.Table("shops").Find(&shops)
 	return shops, nil
 }
 
 func (ss *ShopServices) GetID(id, dbName string) (models.Shop, error) {
 	var shop models.Shop
 	DB := utils.GetCurrentDB(dbName, ss.STORES)
-	if result := DB.Table("shops").Preload("Owner").First(&shop, id); result.Error != nil {
+	if result := DB.Table("shops").Preload("Owner").Preload("Workers").First(&shop, id); result.Error != nil {
 		return models.Shop{}, result.Error
 	}
 	return shop, nil

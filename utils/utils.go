@@ -16,16 +16,18 @@ func GetCurrentDB(dbName string, pDB []models.ProjectsDB) *gorm.DB {
 
 func ConvertCustomerToUser(customer models.Customer) models.User {
 	user := models.User{
-		ID:      customer.ID,
-		Email:   customer.Email,
-		Name:    customer.Name,
-		Phone:   customer.Phone,
-		Address: customer.Address,
-		//Status:    customer.Status,
-		Password:  customer.Password,
-		Role:      customer.Role,
-		CreatedAt: customer.CreatedAt,
-		UpdatedAt: customer.UpdatedAt,
+		ID:          customer.ID,
+		Email:       customer.Email,
+		Name:        customer.Name,
+		Phone:       customer.Phone,
+		Address:     customer.Address,
+		Image:       customer.Image,
+		ProjectName: customer.ProjectName,
+		Status:      customer.Status,
+		Password:    customer.Password,
+		Role:        customer.Role,
+		CreatedAt:   customer.CreatedAt,
+		UpdatedAt:   customer.UpdatedAt,
 	}
 	return user
 }

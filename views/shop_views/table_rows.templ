@@ -56,6 +56,11 @@ for index , s := range shops {
       </div>
       <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
         <li>
+          <a hx-swap="transition:true" href={ templ.URL(fmt.Sprintf("/shop/view/%d/%s", s.ID, s.ProjectName)) }>
+            View
+          </a>
+        </li>
+        <li>
           <a hx-swap="transition:true" href={ templ.URL(fmt.Sprintf("/shop/edit/%d/%s", s.ID, s.ProjectName)) }>
             Edit
           </a>

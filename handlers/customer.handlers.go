@@ -6,11 +6,14 @@ import (
 	"strconv"
 
 	"github.com/gonext-tech/internal/models"
+	"github.com/gonext-tech/internal/utils"
 	"golang.org/x/crypto/bcrypt"
 
 	//"github.com/gonext-tech/internal/views/components"
 	"github.com/gonext-tech/internal/views/components"
+	"github.com/gonext-tech/internal/views/components/user_components"
 	"github.com/gonext-tech/internal/views/customer_views"
+	"github.com/gonext-tech/internal/views/partials"
 	"github.com/labstack/echo/v4"
 )
 
@@ -170,6 +173,7 @@ func (ch *CustomerHandler) CreateHandler(c echo.Context) error {
 		setFlashmessages(c, "error", errorMsg)
 		return ch.CreatePage(c)
 	}
+	source := c.Request().Header.Get("HX-Source")
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(customer.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -193,7 +197,19 @@ func (ch *CustomerHandler) CreateHandler(c echo.Context) error {
 		}
 	}
 	setFlashmessages(c, "success", "customer created successfully!!")
+	if source != "" {
+		user := utils.ConvertCustomerToUser(customer)
+		successMsgs := getFlashmessages(c, "success")
+		successAlert := partials.FlashMessages(nil, successMsgs)
+		userCard := user_components.UserCard(user)
 
+		err := renderView(c, successAlert)
+		if err != nil {
+			return err
+		}
+		return renderView(c, userCard)
+
+	}
 	return c.Redirect(http.StatusSeeOther, "/customer")
 }
 
@@ -272,18 +288,32 @@ func (ch *CustomerHandler) DeleteHandler(c echo.Context) error {
 	isError = false
 	id := c.Param("id")
 	projectName := c.Param("name")
+	source := c.Request().Header.Get("HX-Source")
 	customer, err := ch.CustomerServices.GetID(id, projectName)
 	if err != nil {
 		errorMsg = fmt.Sprintf("customer with %s not found", id)
 		setFlashmessages(c, "error", errorMsg)
+		if source != "" {
+			errMsgs := getFlashmessages(c, "error")
+			return renderView(c, partials.FlashMessages(errMsgs, nil), 400)
+		}
 		return c.Redirect(http.StatusSeeOther, "/customer")
 	}
 	_, err = ch.CustomerServices.Delete(customer)
+
 	if err != nil {
 		errorMsg = fmt.Sprintf("couldnt delete customer with id %s", id)
 		setFlashmessages(c, "error", errorMsg)
+		if source != "" {
+			errMsgs := getFlashmessages(c, "error")
+			return renderView(c, partials.FlashMessages(errMsgs, nil), 400)
+		}
 		return c.Redirect(http.StatusSeeOther, "/customer")
 	}
-	setFlashmessages(c, "success", "Donor successfully deleted!!")
+	setFlashmessages(c, "success", "Customer successfully deleted!!")
+	if source != "" {
+		successMsgs := getFlashmessages(c, "success")
+		return renderView(c, partials.FlashMessages(nil, successMsgs))
+	}
 	return c.Redirect(http.StatusSeeOther, "/customer")
 }

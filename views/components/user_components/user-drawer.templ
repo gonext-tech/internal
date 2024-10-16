@@ -1,0 +1,108 @@
+package user_components
+
+import (
+"fmt"
+"github.com/gonext-tech/internal/models"
+)
+
+templ UserDrawer(shop models.Shop) {
+<div class="drawer drawer-end">
+  <input id="my-drawer-4" type="checkbox" class="drawer-toggle" />
+  <div class="drawer-content">
+    <!-- Page content here -->
+    <label for="my-drawer-4" class="drawer-button btn btn-secondary btn-sm ">Add User</label>
+  </div>
+  <div class="drawer-side z-50">
+    <label for="my-drawer-4" aria-label="close sidebar" class="drawer-overlay"></label>
+    <ul class="menu bg-base-200 text-base-content min-h-full w-96 p-4">
+      <h2 class="text-lg mb-5 mt-2">Add User</h2>
+      <form id="create-customer-drawer" hx-post="/customer/create" hx-encoding="multipart/form-data" class="space-y-3"
+        hx-headers='{"HX-Source": "drawer"}' hx-target="#customer-list" hx-swap="beforeend"
+        hx-on::after-request="closeDrawer(event)">
+        <div class="sm:col-span-2">
+          <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
+          <input type="text" name="name" id="name"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+            placeholder="Customer 1" required="" />
+        </div>
+        <div>
+          <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+          <input type="email" name="email" id="email" autocomplete="off"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+            placeholder="example@example.com" required="" />
+        </div>
+        <div>
+          <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password </label>
+          <div class="inline-flex items-center relative w-full">
+            <button tabindex="-1" type="button" onclick="togglePassword()"
+              class="btn btn-ghost btn-sm btn-circle absolute right-0 mr-2">
+              <i id="eyeIcon" class="fa-solid fa-eye text-lg"></i>
+            </button>
+            <input id="password" name="password" type="password" placeholder="keep it secret"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+          </div>
+        </div>
+        <div>
+          <label for="phone" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Phone</label>
+          <input type="text" name="phone" id="phone"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+            placeholder="961 123456" />
+        </div>
+        <div>
+          <label for="role" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Role</label>
+          <select id="role" name="role"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+            <option value="" selected disabled>Select role</option>
+            <option value="ADMIN">Admin</option>
+            <option value="OWNER">Owner</option>
+            <option value="USER">User</option>
+            <option value="SECRETARY">Secretary</option>
+          </select>
+        </div>
+        <div class="sm:col-span-2">
+          <label for="address" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Address</label>
+          <textarea id="address" name="address" rows="3"
+            class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+            placeholder="Address"></textarea>
+        </div>
+        // HIDDEN INPUTS
+        <input type="hidden" name="project_name" id="project_name" value={ shop.ProjectName } />
+        <input type="hidden" name="shop_id" id="shop_id" value={ fmt.Sprintf("%d", shop.ID) } />
+        <input type="hidden" name="status" id="status" value="ACTIVE" />
+        <div class="flex items-center justify-between">
+          <label for="my-drawer-4"
+            class="mt-6 cursor-pointer inline-flex items-center justify-center px-4 py-2 text-sm font-medium tracking-wide text-white transition-colors duration-200 bg-red-600 rounded-md hover:bg-red-700 focus:ring-2 focus:ring-offset-2 focus:ring-red-700 focus:shadow-outline focus:outline-none">
+            Cancel
+          </label>
+          <button type="submit"
+            class="mt-6 inline-flex items-center justify-center px-4 py-2 text-sm font-medium tracking-wide text-white transition-colors duration-200 bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-700 focus:shadow-outline focus:outline-none">
+            Submit
+          </button>
+        </div>
+      </form>
+    </ul>
+  </div>
+</div>
+<script>
+  function closeDrawer() {
+    document.getElementById('my-drawer-4').checked = false;
+    const form = document.getElementById('create-customer-drawer');
+    form.reset();
+  }
+
+  function togglePassword() {
+    const passwordInput = document.getElementById('password');
+    const eyeIcon = document.getElementById('eyeIcon');
+
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      eyeIcon.classList.remove('fa-eye');
+      eyeIcon.classList.add('fa-eye-slash');
+    } else {
+      passwordInput.type = 'password';
+      eyeIcon.classList.remove('fa-eye-slash');
+      eyeIcon.classList.add('fa-eye');
+    }
+  }
+</script>
+}
