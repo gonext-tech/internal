@@ -18,6 +18,7 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	membershipService := services.NewMembershipService(projectStores)
 	shopService := services.NewShopService(projectStores)
 	projectService := services.NewProjectService(models.Project{}, store)
+	invoiceService := services.NewInvoiceService(models.Invoice{}, store)
 	customerService := services.NewCustomerService(projectStores)
 	uploadService := services.NewUploadServices(store)
 	appointmentService := services.NewAppointmentService(projectStores)
@@ -27,6 +28,7 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	referalHandler := handlers.NewReferalHandler(referalService, uploadService)
 	authHandler := handlers.NewAuthHandler(userService)
 	projectHandler := handlers.NewProjectHandler(projectService, uploadService)
+	invoiceHandler := handlers.NewInvoiceHandler(invoiceService, projectService)
 	subscriptionHandler := handlers.NewSubscriptionHandler(subscriptionService, projectService, membershipService, shopService)
 	membershipHandler := handlers.NewMembershipHandler(membershipService, projectService)
 	shopHandler := handlers.NewShopHandler(shopService, projectService, membershipService, uploadService)
@@ -59,6 +61,15 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	protectedGroup.GET("project/edit/:id", projectHandler.UpdatePage)
 	protectedGroup.POST("project/edit/:id", projectHandler.UpdateHandler)
 	protectedGroup.DELETE("project/:id", projectHandler.DeleteHandler)
+
+	// --> PROJECT ROUTES <--
+	protectedGroup.GET("invoice", invoiceHandler.ListPage)
+	protectedGroup.GET("invoice/view", invoiceHandler.ViewPage)
+	protectedGroup.GET("invoice/create", invoiceHandler.CreatePage)
+	protectedGroup.POST("invoice/create", invoiceHandler.CreateHandler)
+	protectedGroup.GET("invoice/edit/:id", invoiceHandler.UpdatePage)
+	protectedGroup.POST("invoice/edit/:id", invoiceHandler.UpdateHandler)
+	protectedGroup.DELETE("invoice/:id", invoiceHandler.DeleteHandler)
 
 	// --> Referal ROUTES <--
 	protectedGroup.GET("referal", referalHandler.ListPage)
