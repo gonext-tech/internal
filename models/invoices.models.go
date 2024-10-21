@@ -7,11 +7,13 @@ type Invoice struct {
 	Description string    `form:"description"`
 	Amount      float64   `form:"amount"`
 	ProjectID   uint      `form:"project_id"`
-	Project     Project   `form:"project" gorm:"foreignKey:projectID"`
+	Project     Project   `form:"project" gorm:"foreignKey:ProjectID"`
+	UserID      uint      `form:"user_id"`
+	User        User      `form:"user" gorm:"foreignKey:UserID"`
 	InvoiceType string    `form:"invoice_type"`
+	Recurring   bool      `form:"recurring"`
+	Period      int       `form:"period"`
 	InvoiceDate time.Time `form:"invoice_date"`
-	Month       int       `form:"month"`
-	Year        int       `form:"year"`
 	CreatedAt   time.Time `form:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt   time.Time `form:"updated_at" gorm:"autoUpdateTime"`
 }

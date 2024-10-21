@@ -1,4 +1,4 @@
-package shop_views
+package invoice_views
 
 import (
 	"fmt"
@@ -6,46 +6,35 @@ import (
 	"strings"
 )
 
-templ TableRows(shops []models.Shop) {
-	if len(shops) > 0 {
-		for index , s := range shops {
+templ TableRows(invoices []models.Invoice) {
+	if len(invoices) > 0 {
+		for index , s := range invoices {
 			<tr>
 				<td class="px-4 py-4 text-sm whitespace-nowrap">
-					<h4 class="text-gray-700 dark:text-gray-200">{ s.Name }</h4>
+					<h4 class="text-gray-700 dark:text-gray-200">{ fmt.Sprintf("#%d",s.ID) }</h4>
 				</td>
 				<td class="px-4 py-4 text-sm whitespace-nowrap">
-					<h4 class="text-gray-700 dark:text-gray-200">{ s.Owner.Name }</h4>
-					<p class="text-gray-500 dark:text-gray-400">{ s.Owner.Phone }</p>
+					<h4 class="text-gray-700 dark:text-gray-200">{ fmt.Sprintf("$%.2f",s.Amount) }</h4>
+				</td>
+				<td class="px-4 py-4 text-sm whitespace-nowrap">
+					<h4 class="text-gray-700 dark:text-gray-200">{ s.InvoiceDate.Format("Jan, 02 2006") }</h4>
 				</td>
 				<td class="px-4 py-4 text-sm font-medium whitespace-nowrap">
 					<div
 						class={ "inline text-sm text-white text-center  font-normal capitalize px-2 py-1 rounded-lg" ,
-      templ.KV("bg-blue-500", s.Status=="ACTIVE" ) , templ.KV("bg-red-500", s.Status=="NOT_ACTIVE" ) }
+      templ.KV("bg-green-500", s.InvoiceType=="PAYIN" ) , templ.KV("bg-red-500", s.InvoiceType=="PAYOUT" ) }
 					>
-						{ strings.ToLower(s.Status) }
+						{ strings.ToLower(s.InvoiceType) }
 					</div>
 				</td>
 				<td class="px-4 py-4 text-sm whitespace-nowrap">
-					<div>
-						<h4 class="text-gray-700 dark:text-gray-200">{ s.Address }</h4>
-					</div>
+					<h4 class="text-gray-700 dark:text-gray-200">{ s.User.Name }</h4>
 				</td>
 				<td class="px-4 py-4 text-sm whitespace-nowrap">
-					<div>
-						<h4 class="text-gray-700 dark:text-gray-200">{ s.ProjectName }</h4>
-					</div>
+					<h4 class="text-gray-700 dark:text-gray-200">{ s.Project.Name }</h4>
 				</td>
 				<td class="px-4 py-4 text-sm whitespace-nowrap flex gap-x-2 items-center justify-end">
-					if s.ProjectName == "Qwik" {
-						<button
-							class="px-1 py-1 text-gray-500 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:bg-gray-100"
-						>
-							<a hx-swap="transition:true" href={ templ.URL(fmt.Sprintf("/shop/appointment/%d", s.ID)) }>
-								<i class="fa-regular fa-clock"></i>
-							</a>
-						</button>
-					}
-					<div class={ "dropdown dropdown-end" , templ.KV("dropdown-top", index + 1==len(shops) ) }>
+					<div class={ "dropdown  dropdown-left" , templ.KV("dropdown-top dropdown-end", index + 1==len(invoices) ) }>
 						<div tabindex="0" role="button">
 							<button
 								class="px-1 py-1 text-gray-500 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:bg-gray-100"
@@ -68,24 +57,19 @@ templ TableRows(shops []models.Shop) {
 						</div>
 						<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
 							<li>
-								<a hx-swap="transition:true" href={ templ.URL(fmt.Sprintf("/shop/view/%d/%s", s.ID, s.ProjectName)) }>
+								<a hx-swap="transition:true" href={ templ.URL(fmt.Sprintf("/invoice/view/%d", s.ID)) }>
 									View
 								</a>
 							</li>
 							<li>
-								<a hx-swap="transition:true" href={ templ.URL(fmt.Sprintf("/shop/edit/%d/%s", s.ID, s.ProjectName)) }>
+								<a hx-swap="transition:true" href={ templ.URL(fmt.Sprintf("/invoice/edit/%d", s.ID)) }>
 									Edit
-								</a>
-							</li>
-							<li>
-								<a hx-swap="transition:true" href={ templ.URL(fmt.Sprintf("/shop/subscription/%d/%s", s.ID, s.ProjectName)) }>
-									Subscription
 								</a>
 							</li>
 							<li>
 								<button
 									hx-swap="transition:true"
-									hx-delete={ fmt.Sprintf("/shop/%d/%s", s.ID, s.ProjectName) }
+									hx-delete={ fmt.Sprintf("/invoice/%d", s.ID) }
 									hx-target="body"
 									hx-confirm="are you sure you wanna delete this?"
 								>Delete</button>
@@ -97,7 +81,7 @@ templ TableRows(shops []models.Shop) {
 		}
 	} else {
 		<tr>
-			<td class="text-center" colspan="6">No shop available... add some </td>
+			<td class="text-center py-5" colspan="7">No invoice available... add some </td>
 		</tr>
 	}
 }

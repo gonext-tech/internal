@@ -12,7 +12,7 @@ type InvoiceService struct {
 	DB      *gorm.DB
 }
 
-func NewExpenseService(ex models.Invoice, db *gorm.DB) *InvoiceService {
+func NewInvoiceService(ex models.Invoice, db *gorm.DB) *InvoiceService {
 	return &InvoiceService{
 		Invoice: ex,
 		DB:      db,
@@ -21,7 +21,7 @@ func NewExpenseService(ex models.Invoice, db *gorm.DB) *InvoiceService {
 
 func (is *InvoiceService) GetALL(limit, page int, orderBy, sortBy, invoiceType, searchTerm, status string) ([]models.Invoice, models.Meta, error) {
 	var invoices []models.Invoice
-	query := is.DB
+	query := is.DB.Preload("User").Preload("Project")
 	totalQuery := is.DB
 
 	if searchTerm != "" {
@@ -63,7 +63,7 @@ func (is *InvoiceService) GetID(id string) (models.Invoice, error) {
 	if id == "0" || id == "" {
 		return is.Invoice, errors.New("no id provided")
 	}
-	if result := is.DB.First(&invoice, id); result.Error != nil {
+	if result := is.DB.Preload("User").Preload("Project").First(&invoice, id); result.Error != nil {
 		return is.Invoice, result.Error
 	}
 	return invoice, nil

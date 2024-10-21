@@ -8,6 +8,7 @@ import (
 
 	"github.com/gonext-tech/internal/models"
 	"github.com/gonext-tech/internal/views/invoice_views"
+	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 )
 
@@ -21,11 +22,13 @@ type InvoiceService interface {
 
 type InvoiceHandler struct {
 	InvoiceServices InvoiceService
+	ProjectServices ProjectService
 }
 
-func NewInvoiceHandler(is InvoiceService) *InvoiceHandler {
+func NewInvoiceHandler(is InvoiceService, ps ProjectService) *InvoiceHandler {
 	return &InvoiceHandler{
 		InvoiceServices: is,
+		ProjectServices: ps,
 	}
 }
 
@@ -110,8 +113,10 @@ func (ih *InvoiceHandler) ViewPage(c echo.Context) error {
 }
 
 func (ih *InvoiceHandler) CreatePage(c echo.Context) error {
+
 	isError = false
 	titlePage := "Invoice | Create"
+	projects, _, _ := ih.ProjectServices.GetALL(50, 1, "desc", "id", "", "")
 	return renderView(c, invoice_views.Index(
 		titlePage,
 		c.Get(email_key).(string),
@@ -119,15 +124,24 @@ func (ih *InvoiceHandler) CreatePage(c echo.Context) error {
 		isError,
 		getFlashmessages(c, "error"),
 		getFlashmessages(c, "success"),
-		invoice_views.Create(),
+		invoice_views.Create(projects),
 	))
 }
 
 func (ih *InvoiceHandler) CreateHandler(c echo.Context) error {
+	sess, _ := session.Get(auth_sessions_key, c)
+	userID, ok := sess.Values[user_id_key].(uint)
+	log.Println("userrrId", userID)
+	if !ok {
+		setFlashmessages(c, "error", "user is not authenticated")
+		return ih.CreatePage(c)
+	}
+
 	var invoice models.Invoice
 	if err := c.Bind(&invoice); err != nil {
 		return err
 	}
+	invoice.UserID = userID
 	_, err := ih.InvoiceServices.Create(invoice)
 	if err != nil {
 		return err
@@ -141,11 +155,13 @@ func (ih *InvoiceHandler) UpdatePage(c echo.Context) error {
 	isError = false
 	titlePage := "Invoice | Update"
 	id := c.Param("id")
-	project, err := ih.InvoiceServices.GetID(id)
+	invoice, err := ih.InvoiceServices.GetID(id)
 	if err != nil {
 		errorMsg = fmt.Sprintf("invoice with %s not found", id)
 		setFlashmessages(c, "error", errorMsg)
 	}
+
+	projects, _, _ := ih.ProjectServices.GetALL(50, 1, "desc", "id", "", "")
 	return renderView(c, invoice_views.Index(
 		titlePage,
 		c.Get(email_key).(string),
@@ -153,7 +169,7 @@ func (ih *InvoiceHandler) UpdatePage(c echo.Context) error {
 		isError,
 		getFlashmessages(c, "error"),
 		getFlashmessages(c, "success"),
-		invoice_views.Update(invoice),
+		invoice_views.Update(invoice, projects),
 	))
 }
 
