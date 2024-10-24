@@ -202,6 +202,8 @@ func (sh *SubscriptionHandler) CreateHandler(c echo.Context) error {
 	}
 	if shop.NextBillingDate == nil || shop.NextBillingDate.Before(subscription.EndDate) {
 		shop.NextBillingDate = &subscription.EndDate
+		shop.Owner = models.User{}
+		shop.Workers = []models.User{}
 		_, err = sh.ShopServices.Update(shop)
 		if err != nil {
 			setFlashmessages(c, "error", "Can't update shop nextBillingDate")
