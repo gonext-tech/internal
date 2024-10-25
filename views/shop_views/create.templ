@@ -58,6 +58,10 @@ templ Create(projects []models.Project) {
             <option value="NOT_ACTIVE">Not Active</option>
           </select>
         </div>
+        <div>
+          <label for="send_wp" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Status</label>
+          <input id="send_wp" name="send_wp" type="checkbox" class="toggle toggle-primary mt-2" />
+        </div>
         <div class="sm:col-span-2">
           <label for="address" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Address</label>
           <textarea id="address" name="address" rows="3"

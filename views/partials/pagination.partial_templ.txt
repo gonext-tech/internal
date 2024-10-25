@@ -2,10 +2,10 @@
  of 
 </span></div><div><select id=\"limit\" name=\"limit\" hx-get=\"
 \" hx-trigger=\"change\" hx-target=\"#main-content\" hx-include=\"#searchTerm, #page, #status\" hx-push-url=\"true\" class=\"bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500\">
-<option value=\"20\" selected>20</option>
-<option value=\"20\">20</option>
-<option value=\"50\" selected>50</option>
-<option value=\"50\">50</option>
+<option value=\"20\" selected>20</option> 
+<option value=\"20\">20</option> 
+<option value=\"50\" selected>50</option> 
+<option value=\"50\">50</option> 
 <option value=\"100\" selected>100</option>
 <option value=\"100\">100</option>
 </select></div><div class=\"flex min-w-1 items-center mt-4 gap-x-4 sm:mt-0\"><button
