@@ -3,52 +3,52 @@ package layout
 import "github.com/gonext-tech/internal/views/partials"
 
 templ Base(title, username string, fromProtected, isError bool, errMsgs, sucMsgs []string) {
-<!DOCTYPE html>
-<html lang="en" data-theme="dark">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Blood donation app" />
-  <meta name="google" content="notranslate" />
-  <link rel="shortcut icon" href="/logo.svg" type="image/svg" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- <link rel="stylesheet" href="/css/styles.css"/> -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-    integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link rel="stylesheet" href="/css/main.css" />
-  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.10/dist/full.min.css" rel="stylesheet" type="text/css" />
-  <title>Internal | { title }</title>
-  <script src="https://unpkg.com/htmx.org@1.9.9"
-    integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX"
-    crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/htmx.org/dist/ext/ws.js"></script>
-  <script src="https://unpkg.com/htmx-ext-response-targets@2.0.0/response-targets.js"></script>
-  <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
-</head>
-
-<body id="main-content" class="sample-transition bg-base-100" hx-boost="true">
-  <div class="flex">
-    if !isError && len(username) > 0 {
-    <aside class="sticky top-0 h-screen w-64">
-      @partials.Sidebar(username, fromProtected)
-    </aside>
-    }
-    <div class="flex-1">
-      <main class={ templ.KV("pt-10 px-10 min-h-screen w-full", !isError) }>
-        { children... }
-        <div className="relative">
-          @partials.FlashMessages(errMsgs, sucMsgs)
-        </div>
-      </main>
-      <footer class="w-full">
-        @partials.Footer()
-      </footer>
-    </div>
-  </div>
-</body>
-<script>
+	<!DOCTYPE html>
+	<html lang="en" data-theme="dark">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<meta name="description" content="Blood donation app"/>
+			<meta name="google" content="notranslate"/>
+			<link rel="shortcut icon" href="/logo.svg" type="image/svg"/>
+			<script src="https://cdn.tailwindcss.com"></script>
+			<!-- <link rel="stylesheet" href="/css/styles.css"/> -->
+			<link
+				rel="stylesheet"
+				href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+				integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+				crossorigin="anonymous"
+				referrerpolicy="no-referrer"
+			/>
+			<link rel="stylesheet" href="/css/main.css"/>
+			<link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
+			<title>Internal | { title }</title>
+			<script src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous"></script>
+			<script src="https://unpkg.com/htmx.org/dist/ext/ws.js"></script>
+			<script src="https://unpkg.com/htmx-ext-response-targets@2.0.0/response-targets.js"></script>
+			<script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
+		</head>
+		<body id="main-content" class="sample-transition bg-base-100" hx-boost="true">
+			<div class="flex">
+				if !isError && len(username) > 0 {
+					<aside class="sticky top-0 h-screen w-64">
+						@partials.Sidebar(username, fromProtected)
+					</aside>
+				}
+				<div class="flex-1">
+					<main class={ templ.KV("pt-10 px-2 min-h-screen w-full", !isError) }>
+						{ children... }
+						<div className="relative">
+							@partials.FlashMessages(errMsgs, sucMsgs)
+						</div>
+					</main>
+					<footer class="w-full">
+						@partials.Footer()
+					</footer>
+				</div>
+			</div>
+		</body>
+		<script>
 
   // --> ANITMATION START <--
 
@@ -112,6 +112,5 @@ templ Base(title, username string, fromProtected, isError bool, errMsgs, sucMsgs
     }
   }
 </script>
-
-</html>
+	</html>
 }
