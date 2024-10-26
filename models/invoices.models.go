@@ -4,6 +4,7 @@ import "time"
 
 type Invoice struct {
 	ID          uint      `form:"id" gorm:"primaryKey"`
+	ShopID      uint      `form:"shop_id"`
 	Description string    `form:"description"`
 	Amount      float64   `form:"amount"`
 	ProjectID   uint      `form:"project_id"`

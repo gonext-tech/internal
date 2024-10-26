@@ -43,6 +43,8 @@ type Meta struct {
 
 type ParamResponse struct {
 	Search  string
+	Month   string
+	Year    string
 	Status  string
 	SortBy  string
 	OrderBy string
