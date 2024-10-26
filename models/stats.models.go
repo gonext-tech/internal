@@ -8,7 +8,6 @@ import (
 
 type Stats struct {
 	ID                 uint      `form:"id" gorm:"primaryKey"`
-	ShopID             uint      `form:"shop_id"`
 	Month              int       `form:"month"`
 	Year               int       `form:"year"`
 	TotalSubscriptions int       `form:"total_subscriptions"`
