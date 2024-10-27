@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gonext-tech/internal/models"
+	"github.com/gonext-tech/internal/views/stats_views"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 )
@@ -12,9 +13,6 @@ import (
 type StatsService interface {
 	GetALL() ([]models.Stats, error)
 	GetMonthly(month, year string) (models.Stats, error)
-	Create(models.Stats) (models.Stats, error)
-	Update(models.Stats) (models.Stats, error)
-	Delete(models.Stats) error
 }
 
 type StatsHandler struct {
@@ -51,14 +49,14 @@ func (ss *StatsHandler) DashboardPage(c echo.Context) error {
 	}
 
 	titlePage := "Dashboard"
-	return renderView(c, subscription_views.Index(
+	return renderView(c, stats_views.Index(
 		titlePage,
 		c.Get(email_key).(string),
 		fromProtected,
 		isError,
 		getFlashmessages(c, "error"),
 		getFlashmessages(c, "success"),
-		subscription_views.List(titlePage, stats, params),
+		stats_views.StatsView(titlePage, stats, params),
 	))
 }
 

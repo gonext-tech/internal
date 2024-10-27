@@ -18,6 +18,7 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	membershipService := services.NewMembershipService(projectStores)
 	shopService := services.NewShopService(projectStores)
 	projectService := services.NewProjectService(models.Project{}, store)
+	statsService := services.NewStatisticcServices(models.Stats{}, store)
 	invoiceService := services.NewInvoiceService(models.Invoice{}, store)
 	customerService := services.NewCustomerService(projectStores)
 	uploadService := services.NewUploadServices(store)
@@ -28,6 +29,7 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	referalHandler := handlers.NewReferalHandler(referalService, uploadService)
 	authHandler := handlers.NewAuthHandler(userService)
 	projectHandler := handlers.NewProjectHandler(projectService, uploadService)
+	statsHandler := handlers.NewStatsHandler(statsService)
 	invoiceHandler := handlers.NewInvoiceHandler(invoiceService, projectService)
 	subscriptionHandler := handlers.NewSubscriptionHandler(subscriptionService, projectService, membershipService, shopService)
 	membershipHandler := handlers.NewMembershipHandler(membershipService, projectService)
@@ -52,6 +54,8 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 
 	// --> WEBSOCKET ROUTES <--
 	//protectedGroup.GET("ws/ticket", manager.Connect)
+
+	protectedGroup.GET("dashboard", statsHandler.DashboardPage)
 
 	// --> PROJECT ROUTES <--
 	protectedGroup.GET("project", projectHandler.ListPage)
