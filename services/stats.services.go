@@ -20,9 +20,7 @@ func NewStatisticcServices(s models.Stats, db *gorm.DB) *StatisticsServices {
 	}
 }
 
-func (ss *StatisticsServices) GetALL() ([]models.Stats, error) {
-	today := time.Now()
-	year := today.Year()
+func (ss *StatisticsServices) GetYearly(year string) ([]models.Stats, error) {
 	var statistics []models.Stats
 	result := ss.DB.Where("year = ?", year).Find(&statistics)
 	if result.Error != nil {
