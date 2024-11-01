@@ -5,16 +5,14 @@ import (
 	"time"
 
 	"github.com/gonext-tech/internal/models"
+	"github.com/gonext-tech/internal/views/stats_views"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 )
 
 type StatsService interface {
-	GetALL() ([]models.Stats, error)
+	GetYearly(year string) ([]models.Stats, error)
 	GetMonthly(month, year string) (models.Stats, error)
-	Create(models.Stats) (models.Stats, error)
-	Update(models.Stats) (models.Stats, error)
-	Delete(models.Stats) error
 }
 
 type StatsHandler struct {
@@ -42,6 +40,12 @@ func (ss *StatsHandler) DashboardPage(c echo.Context) error {
 	if err != nil {
 		setFlashmessages(c, "error", errorMsg)
 	}
+
+	yearlyStats, err := ss.StatsServices.GetYearly(year)
+	if err != nil {
+		setFlashmessages(c, "error", errorMsg)
+	}
+	previousMonth := ss.FindPreviousMonthStats(stats, yearlyStats)
 	var params models.ParamResponse
 	if month != "" {
 		params.Month = month
@@ -51,14 +55,14 @@ func (ss *StatsHandler) DashboardPage(c echo.Context) error {
 	}
 
 	titlePage := "Dashboard"
-	return renderView(c, subscription_views.Index(
+	return renderView(c, stats_views.Index(
 		titlePage,
 		c.Get(email_key).(string),
 		fromProtected,
 		isError,
 		getFlashmessages(c, "error"),
 		getFlashmessages(c, "success"),
-		subscription_views.List(titlePage, stats, params),
+		stats_views.StatsView(stats, previousMonth, yearlyStats, params),
 	))
 }
 
@@ -70,11 +74,25 @@ func (ss *StatsHandler) GetStatsApi(c echo.Context) error {
 		response := map[string]interface{}{"message": "something went wrong"}
 		return c.JSON(400, response)
 	}
-	stats, err := ss.StatsServices.GetALL()
+	year := c.QueryParam("year")
+	today := time.Now()
+	if year == "" {
+		year = strconv.Itoa(today.Year())
+	}
+	stats, err := ss.StatsServices.GetYearly(year)
 	if err != nil {
 		setFlashmessages(c, "error", "can't fetch stats")
 		response := map[string]interface{}{"message": "can't fetch stats"}
 		return c.JSON(400, response)
 	}
 	return c.JSON(200, stats)
+}
+
+func (ss *StatsHandler) FindPreviousMonthStats(stats models.Stats, allStats []models.Stats) models.Stats {
+	for _, s := range allStats {
+		if stats.Month == s.Month-1 && stats.Year == s.Year {
+			return s
+		}
+	}
+	return models.Stats{}
 }
