@@ -31,7 +31,7 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	projectHandler := handlers.NewProjectHandler(projectService, uploadService)
 	statsHandler := handlers.NewStatsHandler(statsService)
 	invoiceHandler := handlers.NewInvoiceHandler(invoiceService, projectService)
-	subscriptionHandler := handlers.NewSubscriptionHandler(subscriptionService, projectService, membershipService, shopService)
+	subscriptionHandler := handlers.NewSubscriptionHandler(subscriptionService, projectService, membershipService, shopService, statsService)
 	membershipHandler := handlers.NewMembershipHandler(membershipService, projectService)
 	shopHandler := handlers.NewShopHandler(shopService, projectService, membershipService, uploadService)
 	automationHandler := handlers.NewAutomationHandler(projectStores)

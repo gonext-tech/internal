@@ -38,14 +38,61 @@ func (ss *StatisticsServices) GetMonthly(month, year string) (models.Stats, erro
 	return statistics, nil
 }
 
+func (ss *StatisticsServices) HandleStatsSubscription(oldSubscription, subscription models.Subscription) error {
+	if oldSubscription.ID == 0 && subscription.PaymentStatus != "NOT_PAID" {
+		subscription.ID = 0
+		if subscription.PaymentStatus == "TOPAY" {
+			subscription.Amount = 0
+		}
+		err := ss.AddStatsSubscription(subscription)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	if oldSubscription.PaymentStatus != "PAID" && subscription.PaymentStatus == "PAID" {
+		err := ss.AddStatsSubscription(subscription)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+	if oldSubscription.PaymentStatus == "PAID" && subscription.PaymentStatus != "PAID" {
+		err := ss.RemoveStatsSubscription(subscription)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+	if oldSubscription.PaymentStatus == "PAID" && subscription.PaymentStatus == "PAID" && oldSubscription.Amount != subscription.Amount {
+		subscription.Amount = subscription.Amount - oldSubscription.Amount
+		err := ss.AddStatsSubscription(subscription)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	return nil
+}
+
 func (ss *StatisticsServices) AddStatsSubscription(subscription models.Subscription) error {
 	today := time.Now()
 	currentMonth := int(today.Month())
 	currentYear := today.Year()
 	var stats models.Stats
 	ss.DB.Find(&stats, "month = ? AND year = ?", currentMonth, currentYear)
+
+	if subscription.ID == 0 {
+		stats.TotalSubscriptions += 1
+	}
+	if subscription.Tag == "NEW" {
+		stats.NewSubscriptions += 1
+	}
 	stats.TotalRevenue += subscription.Amount
-	stats.TotalSubscriptions += 1
+	stats.NetProfit += subscription.Amount
+
 	if stats.ID == 0 {
 		stats.Month = currentMonth
 		stats.Year = currentYear
@@ -67,7 +114,13 @@ func (ss *StatisticsServices) RemoveStatsSubscription(subscription models.Subscr
 	ss.DB.Find(&stats, "month = ? AND year = ?", currentMonth, currentYear)
 	stats.TotalRevenue -= subscription.Amount
 	stats.NetProfit -= subscription.Amount
-	stats.TotalSubscriptions -= 1
+	if subscription.ID == 0 {
+		stats.TotalSubscriptions -= 1
+	}
+
+	if subscription.Tag == "NEW" {
+		stats.NewSubscriptions -= 1
+	}
 
 	if stats.ID == 0 {
 		stats.Month = currentMonth
