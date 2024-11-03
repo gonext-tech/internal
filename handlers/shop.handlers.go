@@ -117,7 +117,7 @@ func (sh *ShopHandler) SearchUser(c echo.Context) error {
 	if sortBy == "" {
 		sortBy = "id"
 	}
-	status := c.QueryParam("status")
+	status := "ACTIVE"
 	project := c.QueryParam("project_name")
 	searchTerm := c.QueryParam("searchTerm")
 	shops, _, err := sh.ShopServices.GetALL(limit, page, orderBy, sortBy, project, status, searchTerm)
@@ -160,7 +160,7 @@ func (ss *ShopHandler) ViewPage(c echo.Context) error {
 func (sh *ShopHandler) CreatePage(c echo.Context) error {
 	isError = false
 	titlePage := "Membership | Create"
-	projects, _, _ := sh.ProjectServices.GetALL(50, 1, "desc", "id", "", "")
+	projects, _, _ := sh.ProjectServices.GetALL(50, 1, "desc", "id", "", "ACTIVE")
 	return renderView(c, shop_views.Index(
 		titlePage,
 		c.Get(email_key).(string),
@@ -210,7 +210,7 @@ func (sh *ShopHandler) UpdatePage(c echo.Context) error {
 		setFlashmessages(c, "error", errorMsg)
 	}
 
-	projects, _, _ := sh.ProjectServices.GetALL(50, 1, "desc", "id", "", "")
+	projects, _, _ := sh.ProjectServices.GetALL(50, 1, "desc", "id", "", "ACTIVE")
 	memberships, _, _ := sh.MembershipServices.GetALL(50, 1, "desc", "id", projectName, "", "")
 	return renderView(c, shop_views.Index(
 		titlePage,

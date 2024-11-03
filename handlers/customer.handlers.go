@@ -155,7 +155,7 @@ func (ch *CustomerHandler) ViewPage(c echo.Context) error {
 func (ch *CustomerHandler) CreatePage(c echo.Context) error {
 	isError = false
 	titlePage := "Customer | Create"
-	projects, _, _ := ch.ProjectServices.GetALL(50, 1, "desc", "id", "", "")
+	projects, _, _ := ch.ProjectServices.GetALL(50, 1, "desc", "id", "", "ACTIVE")
 	return renderView(c, customer_views.Index(
 		titlePage,
 		c.Get(email_key).(string),
@@ -224,7 +224,7 @@ func (ch *CustomerHandler) UpdatePage(c echo.Context) error {
 		setFlashmessages(c, "error", errorMsg)
 	}
 
-	projects, _, _ := ch.ProjectServices.GetALL(50, 1, "desc", "id", "", "")
+	projects, _, _ := ch.ProjectServices.GetALL(50, 1, "desc", "id", "", "ACTIVE")
 	return renderView(c, customer_views.Index(
 		titlePage,
 		c.Get(email_key).(string),

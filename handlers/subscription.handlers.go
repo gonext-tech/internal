@@ -174,8 +174,8 @@ func (sh *SubscriptionHandler) ViewPage(c echo.Context) error {
 
 func (sh *SubscriptionHandler) CreatePage(c echo.Context) error {
 	isError = false
-	titlePage := "Membership | Create"
-	projects, _, _ := sh.ProjectServices.GetALL(50, 1, "desc", "id", "", "")
+	titlePage := "Subscription | Create"
+	projects, _, _ := sh.ProjectServices.GetALL(50, 1, "desc", "id", "", "ACTIVE")
 	return renderView(c, subscription_views.Index(
 		titlePage,
 		c.Get(email_key).(string),
@@ -244,7 +244,7 @@ func (sh *SubscriptionHandler) UpdatePage(c echo.Context) error {
 		setFlashmessages(c, "error", errorMsg)
 	}
 
-	projects, _, _ := sh.ProjectServices.GetALL(50, 1, "desc", "id", "", "")
+	projects, _, _ := sh.ProjectServices.GetALL(50, 1, "desc", "id", "", "ACTIVE")
 	memberships, _, _ := sh.MembershipServices.GetALL(50, 1, "desc", "id", projectName, "", "")
 	return renderView(c, subscription_views.Index(
 		titlePage,

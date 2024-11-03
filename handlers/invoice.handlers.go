@@ -116,7 +116,7 @@ func (ih *InvoiceHandler) CreatePage(c echo.Context) error {
 
 	isError = false
 	titlePage := "Invoice | Create"
-	projects, _, _ := ih.ProjectServices.GetALL(50, 1, "desc", "id", "", "")
+	projects, _, _ := ih.ProjectServices.GetALL(50, 1, "desc", "id", "", "ACTIVE")
 	return renderView(c, invoice_views.Index(
 		titlePage,
 		c.Get(email_key).(string),
@@ -161,7 +161,7 @@ func (ih *InvoiceHandler) UpdatePage(c echo.Context) error {
 		setFlashmessages(c, "error", errorMsg)
 	}
 
-	projects, _, _ := ih.ProjectServices.GetALL(50, 1, "desc", "id", "", "")
+	projects, _, _ := ih.ProjectServices.GetALL(50, 1, "desc", "id", "", "ACTIVE")
 	return renderView(c, invoice_views.Index(
 		titlePage,
 		c.Get(email_key).(string),
