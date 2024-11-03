@@ -121,7 +121,7 @@ func (mh *MembershipHandler) ViewPage(c echo.Context) error {
 func (mh *MembershipHandler) CreatePage(c echo.Context) error {
 	isError = false
 	titlePage := "Membership | Create"
-	projects, _, _ := mh.ProjectServices.GetALL(50, 1, "desc", "id", "", "")
+	projects, _, _ := mh.ProjectServices.GetALL(50, 1, "desc", "id", "", "ACTIVE")
 	return renderView(c, membership_views.Index(
 		titlePage,
 		c.Get(email_key).(string),
@@ -160,7 +160,7 @@ func (mh *MembershipHandler) UpdatePage(c echo.Context) error {
 		setFlashmessages(c, "error", errorMsg)
 	}
 
-	projects, _, _ := mh.ProjectServices.GetALL(50, 1, "desc", "id", "", "")
+	projects, _, _ := mh.ProjectServices.GetALL(50, 1, "desc", "id", "", "ACTIVE")
 	return renderView(c, membership_views.Index(
 		titlePage,
 		c.Get(email_key).(string),
