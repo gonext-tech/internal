@@ -115,7 +115,7 @@ func (ss *SubscriptionServices) Create(subscription models.Subscription) (models
 }
 func (ss *SubscriptionServices) Update(subscription models.Subscription) (models.Subscription, error) {
 	DB := utils.GetCurrentDB(subscription.ProjectName, ss.STORES)
-	if result := DB.Table("subscriptions").Updates(&subscription); result.Error != nil {
+	if result := DB.Table("subscriptions").Save(&subscription); result.Error != nil {
 		return models.Subscription{}, result.Error
 	}
 	return subscription, nil
@@ -123,7 +123,7 @@ func (ss *SubscriptionServices) Update(subscription models.Subscription) (models
 
 func (ss *SubscriptionServices) Delete(subscription models.Subscription) (models.Subscription, error) {
 	DB := utils.GetCurrentDB(subscription.ProjectName, ss.STORES)
-	if result := DB.Table("memberships").Delete(&subscription); result.Error != nil {
+	if result := DB.Table("subscriptions").Delete(&subscription); result.Error != nil {
 		return models.Subscription{}, result.Error
 	}
 	return subscription, nil

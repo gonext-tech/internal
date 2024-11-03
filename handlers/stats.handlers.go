@@ -13,6 +13,7 @@ import (
 type StatsService interface {
 	GetYearly(year string) ([]models.Stats, error)
 	GetMonthly(month, year string) (models.Stats, error)
+	HandleStatsSubscription(oldSubscription, subscription models.Subscription) error
 }
 
 type StatsHandler struct {
