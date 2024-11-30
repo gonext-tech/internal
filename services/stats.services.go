@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"log"
 	"time"
 
 	"github.com/gonext-tech/internal/models"
@@ -21,6 +22,7 @@ func NewStatisticcServices(s models.Stats, db *gorm.DB) *StatisticsServices {
 }
 
 func (ss *StatisticsServices) GetYearly(year string) ([]models.Stats, error) {
+	log.Println("wtf is this??")
 	var statistics []models.Stats
 	result := ss.DB.Where("year = ?", year).Find(&statistics)
 	if result.Error != nil {
