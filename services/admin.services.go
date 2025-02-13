@@ -8,20 +8,20 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewUserServices(u models.User, uStore *gorm.DB) *UserServices {
-	return &UserServices{
-		User: u,
-		DB:   uStore,
+func NewUserServices(u models.Admin, uStore *gorm.DB) *AdminServices {
+	return &AdminServices{
+		Admin: u,
+		DB:    uStore,
 	}
 }
 
-type UserServices struct {
-	User models.User
-	DB   *gorm.DB
+type AdminServices struct {
+	Admin models.Admin
+	DB    *gorm.DB
 }
 
-func (us *UserServices) GetALL(limit, page int, orderBy, sortBy, searchTerm, status string) ([]models.User, models.Meta, error) {
-	var users []models.User
+func (us *AdminServices) GetALL(limit, page int, orderBy, sortBy, searchTerm, status string) ([]models.Admin, models.Meta, error) {
+	var users []models.Admin
 	query := us.DB
 	totalQuery := query
 
@@ -38,7 +38,7 @@ func (us *UserServices) GetALL(limit, page int, orderBy, sortBy, searchTerm, sta
 	offset := (page - 1) * limit
 	query.Order(sortBy + " " + orderBy).Offset(offset).Limit(limit).Find(&users)
 	totalRecords := int64(0)
-	totalQuery.Model(&us.User).Count(&totalRecords)
+	totalQuery.Model(&us.Admin).Count(&totalRecords)
 	lastPage := int64(0)
 	if limit > 0 {
 		lastPage = (totalRecords + int64(limit) - 1) / int64(limit)
@@ -53,7 +53,7 @@ func (us *UserServices) GetALL(limit, page int, orderBy, sortBy, searchTerm, sta
 	return users, meta, nil
 }
 
-func (us *UserServices) CreateUser(u models.User, passwordConfirm string) error {
+func (us *AdminServices) CreateUser(u models.Admin, passwordConfirm string) error {
 	if u.Password != passwordConfirm {
 		return errors.New("password not match")
 	}
@@ -68,12 +68,13 @@ func (us *UserServices) CreateUser(u models.User, passwordConfirm string) error 
 	return nil
 }
 
-func (us *UserServices) CheckEmail(email string) (models.User, error) {
-	result := us.DB.Where("email = ?", email).First(&us.User)
+func (us *AdminServices) CheckEmail(email string) (models.Admin, error) {
+	var admin models.Admin
+	result := us.DB.Where("email = ?", email).First(&admin)
 	if result.Error != nil {
-		return models.User{}, result.Error
+		return us.Admin, result.Error
 	}
-	return us.User, nil
+	return admin, nil
 }
 
 /* func (us *UserServices) GetUserById(id int) (User, error) {

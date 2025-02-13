@@ -30,23 +30,23 @@ templ Base(title, username string, fromProtected, isError bool, errMsgs, sucMsgs
 </head>
 
 <body id="main-content" class="sample-transition bg-base-100" hx-boost="true">
-  <div class="flex">
+  <div class="flex overflow-x-auto">
     if !isError && len(username) > 0 {
     <aside class="sticky top-0 h-screen w-64">
       @partials.Sidebar(username, fromProtected)
     </aside>
     }
-    <div class="flex-1">
-      <main class={ templ.KV("pt-10 px-2 min-h-screen w-full", !isError) }>
-        { children... }
-        <div className="relative">
-          @partials.FlashMessages(errMsgs, sucMsgs)
-        </div>
-      </main>
-      <footer class="w-full">
-        @partials.Footer()
-      </footer>
+    <div class="flex-1 overflow-x-auto">
+      <main class={ templ.KV("pt-10 px-2 min-h-screen w-full ", !isError) }>
+						{ children... }
+						<div className=" relative">
+        @partials.FlashMessages(errMsgs, sucMsgs)
     </div>
+    </main>
+    <footer class="overflow-x-hidden">
+      @partials.Footer()
+    </footer>
+  </div>
   </div>
 </body>
 <script>

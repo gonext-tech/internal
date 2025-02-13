@@ -5,7 +5,7 @@ import (
 "strconv"
 )
 
-templ CustomerResult(customers []models.Customer) {
+templ CustomerResult(customers []models.User) {
 if len(customers) != 0 {
 for _, customer := range customers {
 <p data-id={ strconv.Itoa(int(customer.ID)) } data-name={ customer.Name } onclick="myFunction(event);"

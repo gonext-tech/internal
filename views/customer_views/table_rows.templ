@@ -6,7 +6,7 @@ import (
 "strings"
 )
 
-templ TableRows(customers []models.Customer) {
+templ TableRows(customers []models.User) {
 if len(customers) > 0 {
 for index , s := range customers {
 <tr>

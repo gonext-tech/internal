@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -159,7 +158,7 @@ func (ss *ShopHandler) ViewPage(c echo.Context) error {
 
 func (sh *ShopHandler) CreatePage(c echo.Context) error {
 	isError = false
-	titlePage := "Membership | Create"
+	titlePage := "Shop | Create"
 	projects, _, _ := sh.ProjectServices.GetALL(50, 1, "desc", "id", "", "ACTIVE")
 	return renderView(c, shop_views.Index(
 		titlePage,
@@ -228,7 +227,6 @@ func (sh *ShopHandler) UpdateHandler(c echo.Context) error {
 	id := c.Param("id")
 	projectName := c.Param("name")
 	shop, err := sh.ShopServices.GetID(id, projectName)
-	log.Println("errrrr", err)
 	if err != nil {
 		errorMsg = fmt.Sprintf("shop with %s not found", id)
 		setFlashmessages(c, "error", errorMsg)
@@ -236,11 +234,11 @@ func (sh *ShopHandler) UpdateHandler(c echo.Context) error {
 	}
 
 	if err := c.Bind(&shop); err != nil {
-		log.Println("errrr-bind-shop", err)
 		errorMsg = "cannot parse the shop body"
 		setFlashmessages(c, "error", errorMsg)
 		return sh.UpdatePage(c)
 	}
+
 	shop.Owner = models.User{}
 	imageURLs := UploadImage(c, sh.UploadServices, "internal", fmt.Sprintf("shop/%d", shop.ID))
 	if len(imageURLs) > 0 {

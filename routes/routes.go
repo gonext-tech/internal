@@ -12,7 +12,7 @@ import (
 func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB) {
 
 	// --> SERVICES INIT <--
-	userService := services.NewUserServices(models.User{}, store)
+	userService := services.NewUserServices(models.Admin{}, store)
 	referalService := services.NewReferalService(models.Referal{}, store)
 	subscriptionService := services.NewSubscriptionService(projectStores)
 	membershipService := services.NewMembershipService(projectStores)

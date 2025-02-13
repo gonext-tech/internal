@@ -53,7 +53,7 @@ templ Update(shop models.Shop, projects []models.Project, memberships []models.M
             </div>
             <ul tabindex="0" id="owner-results"
               class="dropdown-content mt-2 z-[1] menu p-2 shadow bg-base-100 rounded-md  w-52">
-              @components.CustomerResult([]models.Customer{})
+              @components.CustomerResult([]models.User{})
             </ul>
           </div>
         </div>

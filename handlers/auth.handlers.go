@@ -28,21 +28,21 @@ const (
 /********** Handlers for Auth Views **********/
 
 type AuthService interface {
-	GetALL(limit, page int, orderBy, sortBy, searchTerm, statuss string) ([]models.User, models.Meta, error)
-	CreateUser(u models.User, passwordConfirm string) error
-	CheckEmail(email string) (models.User, error)
+	GetALL(limit, page int, orderBy, sortBy, searchTerm, statuss string) ([]models.Admin, models.Meta, error)
+	CreateUser(u models.Admin, passwordConfirm string) error
+	CheckEmail(email string) (models.Admin, error)
 	// GetUserById(id int) (services.User, error)
 }
 
 func NewAuthHandler(us AuthService) *AuthHandler {
 
 	return &AuthHandler{
-		UserServices: us,
+		AdminServices: us,
 	}
 }
 
 type AuthHandler struct {
-	UserServices AuthService
+	AdminServices AuthService
 }
 
 func (ah *AuthHandler) HomeHandler(c echo.Context) error {
@@ -71,14 +71,14 @@ func (ah *AuthHandler) RegisterHandler(c echo.Context) error {
 	isError = false
 
 	if c.Request().Method == "POST" {
-		user := models.User{
+		user := models.Admin{
 			Email:    c.FormValue("email"),
 			Password: c.FormValue("password"),
 			//Username: c.FormValue("username"),
 		}
 		passwordConfirm := c.FormValue("password_confirm")
 
-		err := ah.UserServices.CreateUser(user, passwordConfirm)
+		err := ah.AdminServices.CreateUser(user, passwordConfirm)
 		if err != nil {
 			if strings.Contains(err.Error(), "UNIQUE constraint failed") {
 				err = errors.New("the email is already in use")
@@ -133,7 +133,7 @@ func (ah *AuthHandler) SearchUser(c echo.Context) error {
 	}
 	status := c.QueryParam("status")
 	searchTerm := c.QueryParam("searchTerm")
-	users, _, err := ah.UserServices.GetALL(limit, page, orderBy, sortBy, searchTerm, status)
+	users, _, err := ah.AdminServices.GetALL(limit, page, orderBy, sortBy, searchTerm, status)
 	if err != nil {
 		isError = false
 		errorMsg = "can't fetch projects"
@@ -156,7 +156,7 @@ func (ah *AuthHandler) LoginHandler(c echo.Context) error {
 			tzone = c.Request().Header["X-Timezone"][0]
 		}
 		// Authentication goes here
-		user, err := ah.UserServices.CheckEmail(c.FormValue("email"))
+		user, err := ah.AdminServices.CheckEmail(c.FormValue("email"))
 		if err != nil {
 			if strings.Contains(err.Error(), "no rows in result set") {
 				setFlashmessages(c, "error", "There is no user with that email")

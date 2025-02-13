@@ -6,7 +6,6 @@ import (
 	"strconv"
 
 	"github.com/gonext-tech/internal/models"
-	"github.com/gonext-tech/internal/utils"
 	"golang.org/x/crypto/bcrypt"
 
 	//"github.com/gonext-tech/internal/views/components"
@@ -18,11 +17,11 @@ import (
 )
 
 type CustomerService interface {
-	GetALL(limit, page int, orderBy, sortBy, project, status, searchTerm string) ([]models.Customer, models.Meta, error)
-	GetID(id, name string) (models.Customer, error)
-	Create(models.Customer) (models.Customer, error)
-	Update(models.Customer) (models.Customer, error)
-	Delete(models.Customer) (models.Customer, error)
+	GetALL(limit, page int, orderBy, sortBy, project, status, searchTerm string) ([]models.User, models.Meta, error)
+	GetID(id, name string) (models.User, error)
+	Create(models.User) (models.User, error)
+	Update(models.User) (models.User, error)
+	Delete(models.User) (models.User, error)
 }
 
 type CustomerHandler struct {
@@ -41,7 +40,6 @@ func NewCustomerHandler(cs CustomerService, ps ProjectService, us UploadService)
 
 func (ch *CustomerHandler) ListPage(c echo.Context) error {
 	isError = false
-
 	page, _ := strconv.Atoi(c.QueryParam("page"))
 	if page <= 0 {
 		page = 1
@@ -168,7 +166,7 @@ func (ch *CustomerHandler) CreatePage(c echo.Context) error {
 }
 
 func (ch *CustomerHandler) CreateHandler(c echo.Context) error {
-	var customer models.Customer
+	var customer models.User
 	if err := c.Bind(&customer); err != nil {
 		setFlashmessages(c, "error", errorMsg)
 		return ch.CreatePage(c)
@@ -198,10 +196,10 @@ func (ch *CustomerHandler) CreateHandler(c echo.Context) error {
 	}
 	setFlashmessages(c, "success", "customer created successfully!!")
 	if source != "" {
-		user := utils.ConvertCustomerToUser(customer)
+
 		successMsgs := getFlashmessages(c, "success")
 		successAlert := partials.FlashMessages(nil, successMsgs)
-		userCard := user_components.UserCard(user)
+		userCard := user_components.UserCard(customer)
 
 		err := renderView(c, successAlert)
 		if err != nil {
