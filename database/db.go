@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gonext-tech/internal/models"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -17,7 +18,7 @@ func DBInit() (d *gorm.DB, dd []models.ProjectsDB, err error) {
 	if database == nil {
 		log.Panic("Can't connect to Postgres!")
 	}
-	database.AutoMigrate(models.User{}, models.Project{}, models.Invoice{}, models.CommitStats{}, models.Subscription{}, models.Membership{}, models.Referal{}, models.Stats{})
+	database.AutoMigrate(models.Admin{}, models.User{}, models.Project{}, models.Invoice{}, models.CommitStats{}, models.Subscription{}, models.Membership{}, models.Referal{}, models.Stats{})
 	var projects []models.Project
 	database.Where("status = ?", "ACTIVE").Find(&projects)
 	var projectsDB []models.ProjectsDB
@@ -31,15 +32,12 @@ func DBInit() (d *gorm.DB, dd []models.ProjectsDB, err error) {
 			projectsDB = append(projectsDB, db)
 		}
 	}
-	//tableNames := []string{"appointment_services", "appointments", "clients", "expenses", "services", "shops", "statistics"}
+	var admin models.Admin
+	database.Where("email = ?", "admin@gmail.com").First(&admin)
+	if admin.ID == 0 {
+		createAdmin(database)
+	}
 
-	// Loop through the table names and drop each table
-	//for _, tableName := range tableNames {
-	//if err := database.Migrator().DropTable(tableName); err != nil {
-	// Handle error
-	//	log.Fatalf("Failed to drop table %s: %v", tableName, err)
-	//}
-	//}
 	return database, projectsDB, nil
 }
 
@@ -100,4 +98,16 @@ func projectDB(dbName string) *gorm.DB {
 		time.Sleep(1 * time.Second)
 		continue
 	}
+}
+
+func createAdmin(db *gorm.DB) {
+	hash, err := bcrypt.GenerateFromPassword([]byte("123456"), 10)
+	if err != nil {
+		log.Println(err)
+	}
+	admin := models.Admin{
+		Email:    "admin@gmail.com",
+		Password: string(hash),
+	}
+	db.Create(&admin)
 }
