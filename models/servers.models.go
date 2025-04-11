@@ -17,7 +17,7 @@ type MonitoredServer struct {
 
 	// Core info
 	Name      string `gorm:"not null" form:"name"`
-	IPAddress string `gorm:"uniqueIndex;not null" form:"ip_address"`
+	IPAddress string `gorm:"type:varchar(45);unique" form:"ip_address"`
 	Hostname  string `form:"hostname"`
 	Location  string `form:"location"`
 
