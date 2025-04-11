@@ -4,7 +4,7 @@ import "time"
 
 type Domain struct {
 	ID             uint            `form:"id" gorm:"primaryKey"`
-	Name           string          `gorm:"uniqueIndex;not null" form:"name"`
+	Name           string          `gorm:"type:varchar(255);unique" form:"name"`
 	Provider       string          `form:"provider"`
 	AccountEmail   string          `form:"account_email"`
 	ServerID       uint            `form:"server_id"`
