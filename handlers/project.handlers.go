@@ -2,10 +2,8 @@ package handlers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/gonext-tech/internal/models"
 	"github.com/gonext-tech/internal/views/project_views"
@@ -15,20 +13,22 @@ import (
 type ProjectService interface {
 	GetALL(limit, page int, orderBy, sortBy, searchTerm, status string) ([]models.Project, models.Meta, error)
 	GetID(id string) (models.Project, error)
-	Create(models.Project) (models.Project, error)
+	Create(*models.Project) (*models.Project, error)
 	Update(models.Project) (models.Project, error)
 	Delete(models.Project) error
 }
 
 type ProjectHandler struct {
 	ProjectServices ProjectService
+	ServerServices  ServerService
 	UploadServices  UploadService
 }
 
-func NewProjectHandler(ps ProjectService, us UploadService) *ProjectHandler {
+func NewProjectHandler(ps ProjectService, us UploadService, ss ServerService) *ProjectHandler {
 	return &ProjectHandler{
 		ProjectServices: ps,
 		UploadServices:  us,
+		ServerServices:  ss,
 	}
 }
 
@@ -59,6 +59,11 @@ func (ph *ProjectHandler) ListPage(c echo.Context) error {
 	}
 	if isError {
 		setFlashmessages(c, "error", errorMsg)
+	}
+
+	if err != nil {
+		isError = false
+		errorMsg = "can't fetch projects"
 	}
 
 	var params models.ParamResponse
@@ -113,6 +118,7 @@ func (ph *ProjectHandler) ViewPage(c echo.Context) error {
 func (ph *ProjectHandler) CreatePage(c echo.Context) error {
 	isError = false
 	titlePage := "Project | Create"
+	servers, _, _ := ph.ServerServices.GetALL(50, 1, "desc", "id", "", "UP")
 	return renderView(c, project_views.Index(
 		titlePage,
 		c.Get(email_key).(string),
@@ -120,18 +126,20 @@ func (ph *ProjectHandler) CreatePage(c echo.Context) error {
 		isError,
 		getFlashmessages(c, "error"),
 		getFlashmessages(c, "success"),
-		project_views.Create(),
+		project_views.Create(servers),
 	))
 }
 
 func (ph *ProjectHandler) CreateHandler(c echo.Context) error {
 	var project models.Project
 	if err := c.Bind(&project); err != nil {
-		return err
+		setFlashmessages(c, "error", "cannot parse project body")
+		return ph.CreatePage(c)
 	}
-	_, err := ph.ProjectServices.Create(project)
+	_, err := ph.ProjectServices.Create(&project)
 	if err != nil {
-		return err
+		setFlashmessages(c, "error", err.Error())
+		return ph.CreatePage(c)
 	}
 	imageURLs := UploadImage(c, ph.UploadServices, "internal", fmt.Sprintf("project/%d", project.ID))
 
@@ -157,6 +165,9 @@ func (ph *ProjectHandler) UpdatePage(c echo.Context) error {
 		errorMsg = fmt.Sprintf("project with %s not found", id)
 		setFlashmessages(c, "error", errorMsg)
 	}
+
+	servers, _, _ := ph.ServerServices.GetALL(50, 1, "desc", "id", "", "UP")
+
 	return renderView(c, project_views.Index(
 		titlePage,
 		c.Get(email_key).(string),
@@ -164,7 +175,7 @@ func (ph *ProjectHandler) UpdatePage(c echo.Context) error {
 		isError,
 		getFlashmessages(c, "error"),
 		getFlashmessages(c, "success"),
-		project_views.Update(project),
+		project_views.Update(project, servers),
 	))
 }
 
@@ -178,30 +189,20 @@ func (ph *ProjectHandler) UpdateHandler(c echo.Context) error {
 		setFlashmessages(c, "error", errorMsg)
 		return ph.UpdatePage(c)
 	}
-	var projectBody models.ProjectBody
+	var projectBody models.Project
 	if err := c.Bind(&projectBody); err != nil {
-		log.Println("err", err)
 		errorMsg = "cannot parse the project body"
 		setFlashmessages(c, "error", errorMsg)
 		return ph.UpdatePage(c)
 	}
-
 	imageURLs := UploadImage(c, ph.UploadServices, "internal", fmt.Sprintf("project/%d", project.ID))
 	project.Name = projectBody.Name
 	project.DBName = projectBody.DBName
 	project.RepoName = projectBody.RepoName
 	project.DomainURL = projectBody.DomainURL
 	project.Status = projectBody.Status
-	project.File = projectBody.Image
+	project.ServerID = projectBody.ServerID
 	project.Notes = projectBody.Notes
-	if projectBody.SSLExpiredAt != "" {
-		sslExpiredAt, err := time.Parse("2006-01-02", projectBody.SSLExpiredAt)
-		if err != nil {
-			log.Println("Error parsing ssl_expired_at:", err)
-			return err
-		}
-		project.SSLExpiredAt = sslExpiredAt
-	}
 
 	if len(imageURLs) > 0 {
 		project.File = imageURLs[0]

@@ -23,12 +23,16 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	customerService := services.NewCustomerService(projectStores)
 	uploadService := services.NewUploadServices(store)
 	appointmentService := services.NewAppointmentService(projectStores)
+	serverService := services.NewServerService(models.MonitoredServer{}, store)
+	domainService := services.NewDomainService(models.Domain{}, store)
 
 	// --> HANDLERS INIT <--
 	appointmentHandler := handlers.NewAppointmentHandler(appointmentService)
 	referalHandler := handlers.NewReferalHandler(referalService, uploadService)
 	authHandler := handlers.NewAuthHandler(userService)
-	projectHandler := handlers.NewProjectHandler(projectService, uploadService)
+	projectHandler := handlers.NewProjectHandler(projectService, uploadService, serverService)
+	serverHandler := handlers.NewServerHandler(serverService, uploadService)
+	domainHandler := handlers.NewDomainHandler(domainService, serverService)
 	statsHandler := handlers.NewStatsHandler(statsService)
 	invoiceHandler := handlers.NewInvoiceHandler(invoiceService, projectService)
 	subscriptionHandler := handlers.NewSubscriptionHandler(subscriptionService, projectService, membershipService, shopService, statsService)
@@ -95,6 +99,24 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	protectedGroup.GET("shop/subscription/:id/:name", subscriptionHandler.ShopListPage)
 	protectedGroup.POST("shop/edit/:id/:name", shopHandler.UpdateHandler)
 	protectedGroup.DELETE("shop/:id/:name", shopHandler.DeleteHandler)
+
+	// --> SERVER ROUTES <--
+	protectedGroup.GET("server", serverHandler.ListPage)
+	protectedGroup.GET("server/view/:id", serverHandler.ViewPage)
+	protectedGroup.GET("server/create", serverHandler.CreatePage)
+	protectedGroup.POST("server/create", serverHandler.CreateHandler)
+	protectedGroup.GET("server/edit/:id", serverHandler.UpdatePage)
+	protectedGroup.POST("server/edit/:id", serverHandler.UpdateHandler)
+	protectedGroup.DELETE("server/:id", serverHandler.DeleteHandler)
+
+	// --> DOMAIN ROUTES <--
+	protectedGroup.GET("domain", domainHandler.ListPage)
+	protectedGroup.GET("domain/view/:id", domainHandler.ViewPage)
+	protectedGroup.GET("domain/create", domainHandler.CreatePage)
+	protectedGroup.POST("domain/create", domainHandler.CreateHandler)
+	protectedGroup.GET("domain/edit/:id", domainHandler.UpdatePage)
+	protectedGroup.POST("domain/edit/:id", domainHandler.UpdateHandler)
+	protectedGroup.DELETE("domain/:id", domainHandler.DeleteHandler)
 
 	// --> CUSTOMER ROUTES <--
 	protectedGroup.GET("customer", customerHandler.ListPage)

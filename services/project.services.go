@@ -2,7 +2,6 @@ package services
 
 import (
 	"errors"
-	"log"
 
 	"github.com/gonext-tech/internal/models"
 	"gorm.io/gorm"
@@ -22,8 +21,9 @@ func NewProjectService(p models.Project, db *gorm.DB) *ProjectService {
 
 func (ps *ProjectService) GetALL(limit, page int, orderBy, sortBy, searchTerm, status string) ([]models.Project, models.Meta, error) {
 	var projects []models.Project
-	query := ps.DB
-	totalQuery := query
+	query := ps.DB.Preload("Server")
+	totalQuery := ps.DB.Preload("Server")
+
 	if searchTerm != "" {
 		searchTermWithWildcard := "%" + searchTerm + "%"
 		query = query.Where("name LIKE ?", searchTermWithWildcard)
@@ -60,13 +60,12 @@ func (ps *ProjectService) GetID(id string) (models.Project, error) {
 	if result := ps.DB.First(&project, id); result.Error != nil {
 		return models.Project{}, result.Error
 	}
-	log.Println("projecttttttt", project)
 	return project, nil
 }
 
-func (ps *ProjectService) Create(project models.Project) (models.Project, error) {
-	if result := ps.DB.Create(&project); result.Error != nil {
-		return models.Project{}, result.Error
+func (ps *ProjectService) Create(project *models.Project) (*models.Project, error) {
+	if result := ps.DB.Create(project); result.Error != nil {
+		return &ps.Project, result.Error
 	}
 	return project, nil
 }

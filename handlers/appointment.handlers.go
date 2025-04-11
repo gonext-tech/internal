@@ -6,7 +6,6 @@ import (
 	"strconv"
 
 	"github.com/gonext-tech/internal/models"
-	"github.com/gonext-tech/internal/views/project_views"
 	"github.com/gonext-tech/internal/views/shop_views/appointments"
 	"github.com/labstack/echo/v4"
 )
@@ -82,19 +81,5 @@ func (ah *AppointmentHandler) ListPage(c echo.Context) error {
 		getFlashmessages(c, "error"),
 		getFlashmessages(c, "success"),
 		appointments.List(titlePage, apts, meta, params, shopID),
-	))
-}
-
-func (ah *AppointmentHandler) CreatePage(c echo.Context) error {
-	isError = false
-	titlePage := "Project | Create"
-	return renderView(c, project_views.Index(
-		titlePage,
-		c.Get(email_key).(string),
-		fromProtected,
-		isError,
-		getFlashmessages(c, "error"),
-		getFlashmessages(c, "success"),
-		project_views.Create(),
 	))
 }

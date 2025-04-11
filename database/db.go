@@ -16,22 +16,12 @@ var counts int64
 func DBInit() (d *gorm.DB, dd []models.ProjectsDB, err error) {
 	database := connectToDB()
 	if database == nil {
-		log.Panic("Can't connect to Postgres!")
+		log.Panic("Can't connect to Mysql!")
 	}
-	database.AutoMigrate(models.Admin{}, models.User{}, models.Project{}, models.Invoice{}, models.CommitStats{}, models.Subscription{}, models.Membership{}, models.Referal{}, models.Stats{})
+	database.AutoMigrate(models.Admin{}, models.User{}, models.Project{}, models.Invoice{}, models.CommitStats{}, models.Subscription{}, models.Membership{}, models.Referal{}, models.Stats{}, models.MonitoredServer{}, models.Domain{})
 	var projects []models.Project
 	database.Where("status = ?", "ACTIVE").Find(&projects)
 	var projectsDB []models.ProjectsDB
-	for _, project := range projects {
-		conn := projectDB(project.DBName)
-		if conn != nil {
-			db := models.ProjectsDB{
-				Name: project.Name,
-				DB:   conn,
-			}
-			projectsDB = append(projectsDB, db)
-		}
-	}
 	var admin models.Admin
 	database.Where("email = ?", "admin@gmail.com").First(&admin)
 	if admin.ID == 0 {
