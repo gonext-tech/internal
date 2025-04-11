@@ -1,0 +1,92 @@
+package server_views
+
+import (
+"fmt"
+"github.com/gonext-tech/internal/models"
+)
+
+templ TableRows(servers []models.MonitoredServer) {
+if len(servers) > 0 {
+for index , p := range servers {
+<tr>
+  <td class="px-4 py-4 text-sm font-medium whitespace-nowrap">
+    <div>
+      <h2 class="font-medium text-gray-800 dark:text-white ">{ p.Name }</h2>
+    </div>
+  </td>
+  <td class="px-4 py-4 text-sm font-medium whitespace-nowrap">
+    <div>
+      <h2 class="font-medium text-gray-800 dark:text-white ">{ p.Hostname }</h2>
+    </div>
+  </td>
+  <td class="px-4 py-4 text-sm whitespace-nowrap">
+    <div>
+      <h4 class="text-gray-700 dark:text-gray-200">{ p.IPAddress }</h4>
+    </div>
+  </td>
+  <td class="px-4 py-4 text-sm whitespace-nowrap">
+    <div>
+      <h4 class="text-gray-700 dark:text-gray-200">{ fmt.Sprintf("RAM:%d - Storage:%d",p.RAMGB,p.StorageGB) }</h4>
+    </div>
+  </td>
+  <td class="px-4 py-4 text-sm whitespace-nowrap">
+    <div>
+      <h4 class="text-gray-700 dark:text-gray-200">{ fmt.Sprintf("$%.2f",p.AnnualCost) }</h4>
+    </div>
+  </td>
+  <td class="px-4 py-4 text-sm whitespace-nowrap">
+    <div>
+      <h4 class="text-gray-700 dark:text-gray-200">{ p.Location }</h4>
+    </div>
+  </td>
+  <td class="px-4 py-4 text-sm whitespace-nowrap">
+    if p.Status == "UP" {
+    <div class="inline-grid *:[grid-area:1/1]">
+      <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-ping duration-1000"></div>
+    </div> <span class="text-green-500 font-semibold ml-2">Server is up </span>
+    } else {
+    <div class="inline-grid gap-x-2 *:[grid-area:1/1]">
+      <div class="status status-error animate-ping"></div>
+      <div class="status status-error"></div>
+    </div> <span class="text-red-500 font-semibold ml-2">Server is down </span>
+    }
+  </td>
+  <td class="px-4 py-4 text-sm whitespace-nowrap">
+    <div>
+      <h4 class="text-gray-700 dark:text-gray-200">{ p.RenewalDate.Format("Jan, 02 2006") }</h4>
+    </div>
+  </td>
+  <td class="px-4 py-4 text-sm whitespace-nowrap">
+    <div class={ "dropdown dropdown-end" , templ.KV("dropdown-top", index + 1==len(servers) ) }>
+      <div tabindex="0" role="button">
+        <button
+          class="px-1 py-1 text-gray-500 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:bg-gray-100">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z">
+            </path>
+          </svg>
+        </button>
+      </div>
+      <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+        <li>
+          <a hx-swap="transition:true" href={ templ.URL(fmt.Sprintf("/server/edit/%d", p.ID)) }>
+            Edit
+          </a>
+        </li>
+        <li>
+          <button hx-swap="transition:true" hx-delete={ fmt.Sprintf("/server/%d", p.ID) } hx-target="body"
+            hx-confirm="are you sure you wanna delete this?">Delete</button>
+        </li>
+      </ul>
+    </div>
+  </td>
+</tr>
+}
+} else {
+<tr>
+  <td class="text-center" colspan="8">No servers available... add some </td>
+</tr>
+}
+}

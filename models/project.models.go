@@ -6,36 +6,25 @@ import (
 	"gorm.io/gorm"
 )
 
-type ProjectBody struct {
-	Name           string `form:"name" gorm:"unique"`
-	Image          string `form:"image"`
-	Notes          string `form:"notes"`
-	DomainURL      string `form:"domain_url"`
-	SSLExpiredAt   string `form:"ssl_expired_at"`
-	DBName         string `form:"db_name"`
-	RepoName       string `form:"repo_name"`
-	Status         string `form:"status" gorm:"default:ACTIVE"`
-	UpdateCommands string `form:"commands" gorm:"type:text"`
-}
-
 type Project struct {
-	ID              uint          `form:"id" gorm:"primaryKey"`
-	Name            string        `form:"name" gorm:"unique"`
-	File            string        `form:"file"`
-	TotalUser       float64       `form:"total_user"`
-	TotalActiveUser string        `form:"total_active_user"`
-	Notes           string        `form:"notes"`
-	DomainURL       string        `form:"domain_url"`
-	SSLExpiredAt    time.Time     `form:"ssl_expired_at"`
-	DBName          string        `form:"db_name"`
-	RepoName        string        `form:"repo_name"`
-	CommitStats     []CommitStats `form:"commit_stats" gorm:"foreignKey:ProjectID"`
-	Status          string        `form:"status" gorm:"default:ACTIVE"`
-	UpdateCommands  string        `form:"commands" gorm:"type:text"`
-	BackupAt        *time.Time    `form:"backup_at"`
-	LastBuildAt     *time.Time    `form:"last_build_at"`
-	CreatedAt       time.Time     `form:"created_at" gorm:"autoCreateTime"`
-	UpdatedAt       time.Time     `form:"updated_at" gorm:"autoUpdateTime"`
+	ID              uint            `form:"id" gorm:"primaryKey"`
+	Name            string          `form:"name" gorm:"unique"`
+	File            string          `form:"file"`
+	TotalUser       float64         `form:"total_user"`
+	TotalActiveUser string          `form:"total_active_user"`
+	Notes           string          `form:"notes"`
+	DomainURL       string          `form:"domain_url"`
+	DBName          string          `form:"db_name"`
+	RepoName        string          `form:"repo_name"`
+	CommitStats     []CommitStats   `form:"-" gorm:"foreignKey:ProjectID"`
+	ServerID        uint            `form:"server_id"`
+	Server          MonitoredServer `form:"-" gorm:"foreignKey:ServerID"`
+	Status          string          `form:"status" gorm:"default:ACTIVE"`
+	UpdateCommands  string          `form:"commands" gorm:"type:text"`
+	BackupAt        *time.Time      `form:"backup_at"`
+	LastBuildAt     *time.Time      `form:"last_build_at"`
+	CreatedAt       time.Time       `form:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt       time.Time       `form:"updated_at" gorm:"autoUpdateTime"`
 }
 
 type GithubStats struct {

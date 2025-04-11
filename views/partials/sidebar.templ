@@ -28,6 +28,18 @@ templ Sidebar(username string, bool bool) {
             </a>
           </li>
           <li>
+            <a href="/server" _="on load if window.location.pathname.startsWith('/server') then add .active to me">
+              <i class="fa-solid fa-network-wired"></i>
+              Server
+            </a>
+          </li>
+          <li>
+            <a href="/domain" _="on load if window.location.pathname.startsWith('/domain') then add .active to me">
+              <i class="fa-solid fa-store fa-fw"></i>
+              Domain
+            </a>
+          </li>
+          <li>
             <a href="/project" _="on load if window.location.pathname.startsWith('/project') then add .active to me">
               <i class="fa-solid fa-tasks fa-fw"></i>
               Project
