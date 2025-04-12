@@ -18,7 +18,7 @@ func DBInit() (d *gorm.DB, dd []models.ProjectsDB, err error) {
 	if database == nil {
 		log.Panic("Can't connect to Mysql!")
 	}
-	database.AutoMigrate(models.Admin{}, models.User{}, models.Project{}, models.Invoice{}, models.CommitStats{}, models.Subscription{}, models.Membership{}, models.Referal{}, models.Stats{}, models.MonitoredServer{}, models.Domain{})
+	database.AutoMigrate(models.Admin{}, models.Client{}, models.Project{}, models.Invoice{}, models.CommitStats{}, models.Subscription{}, models.Membership{}, models.Referal{}, models.Stats{}, models.MonitoredServer{}, models.Domain{})
 	var projects []models.Project
 	database.Where("status = ?", "ACTIVE").Find(&projects)
 	var projectsDB []models.ProjectsDB

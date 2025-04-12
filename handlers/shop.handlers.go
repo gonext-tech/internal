@@ -239,7 +239,7 @@ func (sh *ShopHandler) UpdateHandler(c echo.Context) error {
 		return sh.UpdatePage(c)
 	}
 
-	shop.Owner = models.User{}
+	shop.Owner = models.Admin{}
 	imageURLs := UploadImage(c, sh.UploadServices, "internal", fmt.Sprintf("shop/%d", shop.ID))
 	if len(imageURLs) > 0 {
 		shop.Image = imageURLs[0]

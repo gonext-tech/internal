@@ -13,13 +13,12 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 
 	// --> SERVICES INIT <--
 	referalService := services.NewReferalService(models.Referal{}, store)
-	subscriptionService := services.NewSubscriptionService(projectStores)
+	clientService := services.NewClientService(models.Client{}, store)
 	membershipService := services.NewMembershipService(projectStores)
 	shopService := services.NewShopService(projectStores)
 	projectService := services.NewProjectService(models.Project{}, store)
 	statsService := services.NewStatisticcServices(models.Stats{}, store)
 	invoiceService := services.NewInvoiceService(models.Invoice{}, store)
-	customerService := services.NewCustomerService(projectStores)
 	uploadService := services.NewUploadServices(store)
 	appointmentService := services.NewAppointmentService(projectStores)
 	serverService := services.NewServerService(models.MonitoredServer{}, store)
@@ -35,12 +34,13 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	domainHandler := handlers.NewDomainHandler(domainService, serverService)
 	statsHandler := handlers.NewStatsHandler(statsService)
 	invoiceHandler := handlers.NewInvoiceHandler(invoiceService, projectService)
-	subscriptionHandler := handlers.NewSubscriptionHandler(subscriptionService, projectService, membershipService, shopService, statsService)
+	//subscriptionHandler := handlers.NewSubscriptionHandler(subscriptionService, projectService, membershipService, shopService, statsService)
 	membershipHandler := handlers.NewMembershipHandler(membershipService, projectService)
 	shopHandler := handlers.NewShopHandler(shopService, projectService, membershipService, uploadService)
 	automationHandler := handlers.NewAutomationHandler(projectStores)
-	customerHandler := handlers.NewCustomerHandler(customerService, projectService, uploadService)
+	//customerHandler := handlers.NewCustomerHandler(customerService, projectService, uploadService)
 	adminHandler := handlers.NewAdminHandler(adminService, uploadService)
+	clientHandler := handlers.NewClientHandler(clientService, uploadService)
 	_ = handlers.NewUploadHandler(uploadService, projectService)
 
 	// --> UNPRTECTED ROUTES <--
@@ -106,7 +106,6 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	protectedGroup.GET("shop/create", shopHandler.CreatePage)
 	protectedGroup.POST("shop/create", shopHandler.CreateHandler)
 	protectedGroup.GET("shop/edit/:id/:name", shopHandler.UpdatePage)
-	protectedGroup.GET("shop/subscription/:id/:name", subscriptionHandler.ShopListPage)
 	protectedGroup.POST("shop/edit/:id/:name", shopHandler.UpdateHandler)
 	protectedGroup.DELETE("shop/:id/:name", shopHandler.DeleteHandler)
 
@@ -119,6 +118,15 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	protectedGroup.POST("server/edit/:id", serverHandler.UpdateHandler)
 	protectedGroup.DELETE("server/:id", serverHandler.DeleteHandler)
 
+	// --> CLIENT ROUTES <--
+	protectedGroup.GET("client", clientHandler.ListPage)
+	protectedGroup.GET("client/view/:id", clientHandler.ViewPage)
+	protectedGroup.GET("client/create", clientHandler.CreatePage)
+	protectedGroup.POST("client/create", clientHandler.CreateHandler)
+	protectedGroup.GET("client/edit/:id", clientHandler.UpdatePage)
+	protectedGroup.POST("client/edit/:id", clientHandler.UpdateHandler)
+	protectedGroup.DELETE("client/:id", clientHandler.DeleteHandler)
+
 	// --> DOMAIN ROUTES <--
 	protectedGroup.GET("domain", domainHandler.ListPage)
 	protectedGroup.GET("domain/view/:id", domainHandler.ViewPage)
@@ -127,16 +135,6 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	protectedGroup.GET("domain/edit/:id", domainHandler.UpdatePage)
 	protectedGroup.POST("domain/edit/:id", domainHandler.UpdateHandler)
 	protectedGroup.DELETE("domain/:id", domainHandler.DeleteHandler)
-
-	// --> CUSTOMER ROUTES <--
-	protectedGroup.GET("customer", customerHandler.ListPage)
-	protectedGroup.GET("customer/search", customerHandler.SearchUser)
-	protectedGroup.GET("customer/view/:id/:name", customerHandler.ViewPage)
-	protectedGroup.GET("customer/create", customerHandler.CreatePage)
-	protectedGroup.POST("customer/create", customerHandler.CreateHandler)
-	protectedGroup.GET("customer/edit/:id/:name", customerHandler.UpdatePage)
-	protectedGroup.POST("customer/edit/:id/:name", customerHandler.UpdateHandler)
-	protectedGroup.DELETE("customer/:id/:name", customerHandler.DeleteHandler)
 
 	// --> MEMBERSHIP ROUTES <--
 	protectedGroup.GET("membership", membershipHandler.ListPage)
@@ -147,17 +145,6 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	protectedGroup.GET("membership/edit/:id/:name", membershipHandler.UpdatePage)
 	protectedGroup.POST("membership/edit/:id/:name", membershipHandler.UpdateHandler)
 	protectedGroup.DELETE("membership/:id/:name", membershipHandler.DeleteHandler)
-
-	// --> SUBSCRIPTION ROUTES <--
-	protectedGroup.GET("subscription", subscriptionHandler.ListPage)
-	protectedGroup.GET("subscription/view/:id/:name", subscriptionHandler.ViewPage)
-	protectedGroup.GET("subscription/create", subscriptionHandler.CreatePage)
-	protectedGroup.POST("subscription/create", subscriptionHandler.CreateHandler)
-	protectedGroup.GET("subscription/edit/:id/:name", subscriptionHandler.UpdatePage)
-	protectedGroup.POST("subscription/edit/:id/:name", subscriptionHandler.UpdateHandler)
-	protectedGroup.DELETE("subscription/:id/:name", subscriptionHandler.DeleteHandler)
-
-	// --> SUBSCRIPTION ROUTES <--
 
 	protectedGroup.GET("user/search", authHandler.SearchUser)
 
