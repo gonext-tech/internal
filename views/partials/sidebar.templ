@@ -1,133 +1,147 @@
 package partials
 
+import "strings"
+
 templ Sidebar(username string, bool bool) {
-<div class="sticky ">
-  <aside class="h-screen max-w-64 sticky top-0 flex flex-col bg-base-200 overflow-y-auto ">
-    <!-- Header -->
-    <div class="flex justify-between p-2">
-      <!-- Logo -->
-      <a class="btn btn-ghost text-lg">
-        <img alt="Logo" src="/logo.svg" class="w-4" />
-        Internal
-      </a>
-      <a class="btn btn-ghost btn-circle text-lg">
-        <i class="fa-solid fa-gear"></i>
-      </a>
-    </div>
-    <!-- Body -->
-    <div class="flex flex-col border-y border-base-300 px-6 pt-4 grow">
-      <!-- Search input -->
-      <input class="input input-bordered" placeholder="Search..." />
-      <!-- Links -->
-      <div class="flex flex-col divide-y divide-base-300">
-        <ul class="menu px-0 py-4">
-          <li>
-            <a href="/" _="on load if window.location.pathname === '/' then add .active to me">
-              <i class="fa-solid fa-house fa-fw"></i>
-              Home
-            </a>
-          </li>
-          <li>
-            <a href="/server" _="on load if window.location.pathname.startsWith('/server') then add .active to me">
-              <i class="fa-solid fa-network-wired"></i>
-              Server
-            </a>
-          </li>
-          <li>
-            <a href="/domain" _="on load if window.location.pathname.startsWith('/domain') then add .active to me">
-              <i class="fa-solid fa-store fa-fw"></i>
-              Domain
-            </a>
-          </li>
-          <li>
-            <a href="/project" _="on load if window.location.pathname.startsWith('/project') then add .active to me">
-              <i class="fa-solid fa-tasks fa-fw"></i>
-              Project
-            </a>
-          </li>
-          <li>
-            <a href="/shop" _="on load if window.location.pathname.startsWith('/shop') then add .active to me">
-              <i class="fa-solid fa-store fa-fw"></i>
-              Shop
-            </a>
-          </li>
-          <li>
-            <a href="/subscription"
-              _="on load if window.location.pathname.startsWith('/subscription') then add .active to me">
-              <i class="fa-solid fa-receipt fa-fw"></i>
-              Subscription
-            </a>
-          </li>
-          <li>
-            <a href="/membership"
-              _="on load if window.location.pathname.startsWith('/membership') then add .active to me">
-              <i class="fa-solid fa-toolbox fa-fw"></i>
-              Membership
-            </a>
-          </li>
-        </ul>
-        <ul class="menu px-0 py-4">
-          <li>
-            <a href="/customer" _="on load if window.location.pathname.startsWith('/customer') then add .active to me">
-              <i class="fa-solid fa-user-plus fa-fw"></i>
-              Customer
-            </a>
-          </li>
-          <li>
-            <a href="/referal" _="on load if window.location.pathname.startsWith('/referal') then add .active to me">
-              <i class="fa-solid fa-network-wired"></i>
-              Referal
-            </a>
-          </li>
-          <li>
-            <a href="/invoice" _="on load if window.location.pathname.startsWith('/invoice') then add .active to me">
-              <i class="fa-solid fa-file-invoice-dollar fa-fw"></i>
-              Invoice
-            </a>
-          </li>
-        </ul>
-        <ul class="menu px-0 py-4">
-          <li>
-            <a href="/admin" _="on load if window.location.pathname.startsWith('/admin') then add .active to me">
-              <i class="fa-solid fa-user-tie"></i>
-              Admin
-            </a>
-          </li>
-          <li>
-            <a>
-              <i class="fa-solid fa-box fa-fw"></i>
-              Products
-            </a>
-          </li>
-          <li>
-            <a>
-              <i class="fa-solid fa-store fa-fw"></i>
-              Store
-            </a>
-          </li>
-          <li>
-            <a>
-              <i class="fa-solid fa-lemon fa-fw"></i>
-              Fruits
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
-    <!-- Footer -->
-    <div class="flex justify-between items-center p-2">
-      <a class="btn">
-        <img alt="Profile" src="/avatar.png" class="w-8 rounded-full" />
-        <div class="flex flex-col text-start">
-          <span class="font-bold">{ username }</span>
-          <span class="text-sm text-accent"></span>
-        </div>
-      </a>
-      <a hx-post="/logout" hx-swap="transition:true" class="btn btn-error btn-sm mr-3"
-        hx-on="htmx:afterRequest: if(event.detail.successful) {  window.location.reload(); }" title="Logout">
-        <i class="fa-solid fa-door-open"></i>
-      </a>
-    </div>
-  </aside>
-</div>
+	<div class="sticky">
+		<aside class="h-screen max-w-56 sticky top-0 flex flex-col bg-base-200 overflow-y-auto ">
+			<!-- Header -->
+			<div class="flex justify-between p-2">
+				<!-- Logo -->
+				<a class="btn btn-ghost text-lg">
+					<img alt="Logo" src="/logo.svg" class="w-4"/>
+					Internal
+				</a>
+				<a class="btn btn-ghost btn-circle text-lg">
+					<i class="fa-solid fa-gear"></i>
+				</a>
+			</div>
+			<!-- Body -->
+			<div class="flex flex-col border-y border-base-300 px-6 pt-4 grow">
+				<!-- Search input -->
+				<input class="input input-bordered" placeholder="Search..."/>
+				<!-- Links -->
+				<div class="flex flex-col divide-y divide-base-300">
+					<ul class="menu px-0 py-4">
+						<li>
+							<a href="/" _="on load if window.location.pathname === '/' then add .active to me">
+								<i class="fa-solid fa-house fa-fw"></i>
+								Home
+							</a>
+						</li>
+						<li>
+							<a href="/server" _="on load if window.location.pathname.startsWith('/server') then add .active to me">
+								<i class="fa-solid fa-network-wired"></i>
+								Server
+							</a>
+						</li>
+						<li>
+							<a href="/domain" _="on load if window.location.pathname.startsWith('/domain') then add .active to me">
+								<i class="fa-solid fa-store fa-fw"></i>
+								Domain
+							</a>
+						</li>
+						<li>
+							<a href="/project" _="on load if window.location.pathname.startsWith('/project') then add .active to me">
+								<i class="fa-solid fa-tasks fa-fw"></i>
+								Project
+							</a>
+						</li>
+						<li>
+							<a href="/shop" _="on load if window.location.pathname.startsWith('/shop') then add .active to me">
+								<i class="fa-solid fa-store fa-fw"></i>
+								Shop
+							</a>
+						</li>
+						<li>
+							<a
+								href="/subscription"
+								_="on load if window.location.pathname.startsWith('/subscription') then add .active to me"
+							>
+								<i class="fa-solid fa-receipt fa-fw"></i>
+								Subscription
+							</a>
+						</li>
+						<li>
+							<a
+								href="/membership"
+								_="on load if window.location.pathname.startsWith('/membership') then add .active to me"
+							>
+								<i class="fa-solid fa-toolbox fa-fw"></i>
+								Membership
+							</a>
+						</li>
+					</ul>
+					<ul class="menu px-0 py-4">
+						<li>
+							<a href="/customer" _="on load if window.location.pathname.startsWith('/customer') then add .active to me">
+								<i class="fa-solid fa-user-plus fa-fw"></i>
+								Customer
+							</a>
+						</li>
+						<li>
+							<a href="/referal" _="on load if window.location.pathname.startsWith('/referal') then add .active to me">
+								<i class="fa-solid fa-network-wired"></i>
+								Referal
+							</a>
+						</li>
+						<li>
+							<a href="/invoice" _="on load if window.location.pathname.startsWith('/invoice') then add .active to me">
+								<i class="fa-solid fa-file-invoice-dollar fa-fw"></i>
+								Invoice
+							</a>
+						</li>
+					</ul>
+					<ul class="menu px-0 py-4">
+						<li>
+							<a href="/admin" _="on load if window.location.pathname.startsWith('/admin') then add .active to me">
+								<i class="fa-solid fa-user-tie"></i>
+								Admin
+							</a>
+						</li>
+						<li>
+							<a>
+								<i class="fa-solid fa-box fa-fw"></i>
+								Products
+							</a>
+						</li>
+						<li>
+							<a>
+								<i class="fa-solid fa-store fa-fw"></i>
+								Store
+							</a>
+						</li>
+						<li>
+							<a>
+								<i class="fa-solid fa-lemon fa-fw"></i>
+								Fruits
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<!-- Footer -->
+			<div class="dropdown dropdown-top dropdown-end">
+				<div tabindex="0" role="button" class="btn m-1">
+					<img alt="Profile" src="/avatar.png" class="w-6 h-6 rounded-lg"/>
+					<div class="flex flex-col text-start">
+						<span>{ strings.Split(username,"@")[0] }</span>
+					</div>
+				</div>
+				<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm gap-y-2">
+					<h2 class="text-sm font-bold mb-2">{ "ramy7rivalz@gmail.com" }</h2>
+					<li><a href="/profile">Profile</a></li>
+					<li>
+						<a
+							hx-post="/logout"
+							hx-swap="transition:true"
+							class="btn btn-error btn-sm "
+							hx-on="htmx:afterRequest: if(event.detail.successful) {  window.location.reload(); }"
+							title="Logout"
+						>Logout</a>
+					</li>
+				</ul>
+			</div>
+		</aside>
+	</div>
 }

@@ -22,6 +22,7 @@ const (
 	auth_key          string = "authenticated"
 	user_id_key       string = "user_id"
 	email_key         string = "email"
+	name_key          string = "name"
 	tzone_key         string = "time_zone"
 )
 
@@ -196,6 +197,7 @@ func (ah *AuthHandler) LoginHandler(c echo.Context) error {
 			auth_key:    true,
 			user_id_key: user.ID,
 			email_key:   user.Email,
+			name_key:    user.Name,
 			tzone_key:   tzone,
 		}
 
@@ -259,6 +261,9 @@ func (ah *AuthHandler) AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 
 		if email, ok := sess.Values[email_key].(string); ok && len(email) != 0 {
 			c.Set(email_key, email) // set the username in the context
+		}
+		if name, ok := sess.Values[name_key].(string); ok && len(name) != 0 {
+			c.Set(email_key, name) //set the name in the context
 		}
 
 		if tzone, ok := sess.Values[tzone_key].(string); ok && len(tzone) != 0 {

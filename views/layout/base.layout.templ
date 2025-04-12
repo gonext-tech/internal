@@ -33,7 +33,7 @@ templ Base(title, username string, fromProtected, isError bool, errMsgs, sucMsgs
 		<body id="main-content" class="sample-transition bg-base-100" hx-boost="true">
 			<div class="flex overflow-x-auto">
 				if !isError && len(username) > 0 {
-					<aside class="sticky top-0 h-screen w-64">
+					<aside class="sticky top-0 h-screen w-56">
 						@partials.Sidebar(username, fromProtected)
 					</aside>
 				}
