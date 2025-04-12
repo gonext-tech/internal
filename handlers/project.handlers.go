@@ -21,13 +21,15 @@ type ProjectService interface {
 type ProjectHandler struct {
 	ProjectServices ProjectService
 	ServerServices  ServerService
+	AdminServices   AdminService
 	UploadServices  UploadService
 }
 
-func NewProjectHandler(ps ProjectService, us UploadService, ss ServerService) *ProjectHandler {
+func NewProjectHandler(ps ProjectService, us UploadService, ss ServerService, u AdminService) *ProjectHandler {
 	return &ProjectHandler{
 		ProjectServices: ps,
 		UploadServices:  us,
+		AdminServices:   u,
 		ServerServices:  ss,
 	}
 }
@@ -119,6 +121,7 @@ func (ph *ProjectHandler) CreatePage(c echo.Context) error {
 	isError = false
 	titlePage := "Project | Create"
 	servers, _, _ := ph.ServerServices.GetALL(50, 1, "desc", "id", "", "UP")
+	leads, _, _ := ph.AdminServices.GetALL(50, 1, "desc", "id", "", "ACTIVE")
 	return renderView(c, project_views.Index(
 		titlePage,
 		c.Get(email_key).(string),
@@ -126,7 +129,7 @@ func (ph *ProjectHandler) CreatePage(c echo.Context) error {
 		isError,
 		getFlashmessages(c, "error"),
 		getFlashmessages(c, "success"),
-		project_views.Create(servers),
+		project_views.Create(servers, leads),
 	))
 }
 
@@ -167,6 +170,7 @@ func (ph *ProjectHandler) UpdatePage(c echo.Context) error {
 	}
 
 	servers, _, _ := ph.ServerServices.GetALL(50, 1, "desc", "id", "", "UP")
+	leads, _, _ := ph.AdminServices.GetALL(50, 1, "desc", "id", "", "ACTIVE")
 
 	return renderView(c, project_views.Index(
 		titlePage,
@@ -175,7 +179,7 @@ func (ph *ProjectHandler) UpdatePage(c echo.Context) error {
 		isError,
 		getFlashmessages(c, "error"),
 		getFlashmessages(c, "success"),
-		project_views.Update(project, servers),
+		project_views.Update(project, servers, leads),
 	))
 }
 
@@ -189,20 +193,12 @@ func (ph *ProjectHandler) UpdateHandler(c echo.Context) error {
 		setFlashmessages(c, "error", errorMsg)
 		return ph.UpdatePage(c)
 	}
-	var projectBody models.Project
-	if err := c.Bind(&projectBody); err != nil {
+	if err := c.Bind(&project); err != nil {
 		errorMsg = "cannot parse the project body"
 		setFlashmessages(c, "error", errorMsg)
 		return ph.UpdatePage(c)
 	}
 	imageURLs := UploadImage(c, ph.UploadServices, "internal", fmt.Sprintf("project/%d", project.ID))
-	project.Name = projectBody.Name
-	project.DBName = projectBody.DBName
-	project.RepoName = projectBody.RepoName
-	project.DomainURL = projectBody.DomainURL
-	project.Status = projectBody.Status
-	project.ServerID = projectBody.ServerID
-	project.Notes = projectBody.Notes
 
 	if len(imageURLs) > 0 {
 		project.File = imageURLs[0]

@@ -19,6 +19,8 @@ type Project struct {
 	CommitStats     []CommitStats   `form:"-" gorm:"foreignKey:ProjectID"`
 	ServerID        uint            `form:"server_id"`
 	Server          MonitoredServer `form:"-" gorm:"foreignKey:ServerID"`
+	LeadID          uint            `form:"lead_id"`
+	Lead            Admin           `form:"-" gorm:"foreignKey:LeadID"`
 	Status          string          `form:"status" gorm:"default:ACTIVE"`
 	UpdateCommands  string          `form:"commands" gorm:"type:text"`
 	BackupAt        *time.Time      `form:"backup_at"`

@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewUserServices(u models.Admin, uStore *gorm.DB) *AdminServices {
+func NewAdminService(u models.Admin, uStore *gorm.DB) *AdminServices {
 	return &AdminServices{
 		Admin: u,
 		DB:    uStore,
@@ -23,7 +23,7 @@ type AdminServices struct {
 func (us *AdminServices) GetALL(limit, page int, orderBy, sortBy, searchTerm, status string) ([]models.Admin, models.Meta, error) {
 	var users []models.Admin
 	query := us.DB
-	totalQuery := query
+	totalQuery := us.DB
 
 	if searchTerm != "" {
 		searchTermWithWildcard := "%" + searchTerm + "%"
@@ -75,6 +75,38 @@ func (us *AdminServices) CheckEmail(email string) (models.Admin, error) {
 		return us.Admin, result.Error
 	}
 	return admin, nil
+}
+
+func (us *AdminServices) GetID(id string) (models.Admin, error) {
+	var admin models.Admin
+	result := us.DB.Where("id = ?", id).First(&admin)
+	if result.Error != nil {
+		return us.Admin, result.Error
+	}
+	return admin, nil
+}
+
+func (us *AdminServices) Create(u models.Admin) (models.Admin, error) {
+	if result := us.DB.Create(&u); result.Error != nil {
+		return us.Admin, result.Error
+	}
+	return u, nil
+}
+
+func (us *AdminServices) Update(u models.Admin) (models.Admin, error) {
+
+	if result := us.DB.Model(&u).Updates(u); result.Error != nil {
+		return us.Admin, result.Error
+	}
+	return u, nil
+}
+
+func (us *AdminServices) Delete(u models.Admin) error {
+	u.Status = "NOT_ACTIVE"
+	if result := us.DB.Model(&u).Updates(u); result.Error != nil {
+		return result.Error
+	}
+	return nil
 }
 
 /* func (us *UserServices) GetUserById(id int) (User, error) {

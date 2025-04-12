@@ -1,4 +1,4 @@
-package project_views
+package admin_views
 
 import (
 "fmt"
@@ -6,62 +6,50 @@ import (
 "strings"
 )
 
-templ TableRows(projects []models.Project) {
-if len(projects) > 0 {
-for index , p := range projects {
+templ TableRows(admins []models.Admin) {
+if len(admins) > 0 {
+for index , p := range admins {
 <tr>
   <td class="px-4 py-4 text-sm font-medium whitespace-nowrap">
-    <div>
-      <h2 class="font-medium text-gray-800 dark:text-white ">{ p.Name }</h2>
-    </div>
-  </td>
-  <td class="px-4 py-4 text-sm font-medium whitespace-nowrap ">
     <div class="flex items-center gap-x-2 mt-1">
-      if p.Lead.Image != "" {
-      <img src={ p.Lead.Image } onerror="this.onerror=null; this.src='/not-found-person.png';"
-        class="w-5 h-5 rounded-lg" />
+      if p.Image != "" {
+      <img src={ p.Image } onerror="this.onerror=null; this.src='/not-found-person.png';" class="w-5 h-5 rounded-lg" />
       } else {
       <img src="/not-found-person.png" class="w-5 h-5 rounded-lg" />
       }
-      <h2 class="font-medium text-gray-800 dark:text-white ">{ p.Lead.Name }</h2>
+      <h2 class="font-medium text-gray-800 dark:text-white ">{ p.Name }</h2>
     </div>
   </td>
   <td class="px-4 py-4 text-sm font-medium whitespace-nowrap">
     <div>
-      <h2 class="font-medium text-gray-800 dark:text-white ">{ p.DBName }</h2>
+      <h2 class="font-medium text-gray-800 dark:text-white ">{ p.Email }</h2>
     </div>
   </td>
   <td class="px-4 py-4 text-sm whitespace-nowrap">
     <div>
-      <h4 class="text-gray-700 dark:text-gray-200">{ p.DomainURL }</h4>
+      <h4 class="text-gray-700 dark:text-gray-200">{ p.Phone }</h4>
     </div>
-  </td>
-  <td class="px-4 py-4 text-sm whitespace-nowrap">
-    <div>
-      <h4 class="text-gray-700 dark:text-gray-200">{ p.RepoName }</h4>
-    </div>
-  </td>
-  <td class="px-4 py-4 text-sm whitespace-nowrap">
-    <h4 class="text-gray-700 dark:text-gray-200">{ p.Server.Name }</h4>
   </td>
   <td class="px-4 py-4 text-sm font-medium whitespace-nowrap">
     <div class={ "inline text-sm text-white text-center  font-normal capitalize px-2 py-1 rounded-lg" ,
-      templ.KV("bg-blue-500", p.Status=="ACTIVE" ) , templ.KV("bg-red-500", p.Status=="NOT_ACTIVE" ) }>
+      templ.KV("bg-blue-500", p.Role=="ADMIN" ) , templ.KV("bg-yellow-500", p.Role=="USER" ) }>
+      { strings.ToLower(p.Role) }
+    </div>
+  </td>
+  <td class="px-4 py-4 text-sm font-medium whitespace-nowrap">
+    <div class={ "inline text-sm text-white text-center  font-normal capitalize px-2 py-1 rounded-lg" ,
+      templ.KV("bg-green-500", p.Status=="ACTIVE" ) , templ.KV("bg-red-500", p.Status=="NOT_ACTIVE" ) }>
       { strings.ToLower(p.Status) }
     </div>
   </td>
   <td class="px-4 py-4 text-sm whitespace-nowrap">
     <div>
-      if p.BackupAt != nil {
-      <h4 class="text-gray-700 dark:text-gray-200">{ p.BackupAt.Format("Jan, 02 2006") }</h4>
-      }
-      if p.LastBuildAt != nil {
-      <h4 class="text-gray-700 dark:text-gray-200">{ p.LastBuildAt.Format("Jan, 02 2006") }</h4>
-      }
+      <h4 class="text-gray-700 dark:text-gray-200">{ p.UpdatedAt.Format("Jan, 02 2006") }</h4>
+      <h4 class="text-gray-700 dark:text-gray-200">{ p.CreatedAt.Format("Jan, 02 2006") }</h4>
     </div>
   </td>
   <td class="px-4 py-4 text-sm whitespace-nowrap">
-    <div class={ "dropdown dropdown-end" , templ.KV("dropdown-top", index + 1==len(projects) ) }>
+    <div class={ "dropdown dropdown-end" , templ.KV("dropdown-top", index + 1==len(admins) ) }>
       <div tabindex="0" role="button">
         <button
           class="px-1 py-1 text-gray-500 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:bg-gray-100">
@@ -75,12 +63,12 @@ for index , p := range projects {
       </div>
       <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
         <li>
-          <a hx-swap="transition:true" href={ templ.URL(fmt.Sprintf("/project/edit/%d", p.ID)) }>
+          <a hx-swap="transition:true" href={ templ.URL(fmt.Sprintf("/admin/edit/%d", p.ID)) }>
             Edit
           </a>
         </li>
         <li>
-          <button hx-swap="transition:true" hx-delete={ fmt.Sprintf("/project/%d", p.ID) } hx-target="body"
+          <button hx-swap="transition:true" hx-delete={ fmt.Sprintf("/admin/%d", p.ID) } hx-target="body"
             hx-confirm="are you sure you wanna delete this?">Delete</button>
         </li>
       </ul>
@@ -90,7 +78,7 @@ for index , p := range projects {
 }
 } else {
 <tr>
-  <td class="text-center" colspan="5">No project available... add some </td>
+  <td class="text-center" colspan="5">No admin available... add some </td>
 </tr>
 }
 }

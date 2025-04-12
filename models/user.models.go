@@ -5,27 +5,28 @@ import (
 )
 
 type Admin struct {
-	ID          uint          `json:"id" gorm:"primaryKey"`
-	Email       string        `json:"username" gorm:"unique"`
-	ShopID      uint          `json:"shop_id"`
-	Name        string        `json:"name"`
-	Image       string        `json:"image"`
-	Phone       string        `json:"phone"`
-	Address     string        `json:"address"`
-	Status      string        `json:"status" gorm:"default:ACTIVE"`
-	ProjectName string        `form:"project_name"`
-	Password    string        `json:"-"`
-	Portfolio   string        `json:"portfolio"`
-	Role        string        `json:"role" gorm:"default:'USER'"`
-	Skills      *[]UserSkills `json:"skills" gorm:"foreignKey:UserID"`
-	CreatedAt   time.Time     `json:"created_at" gorm:"autoCreateTime"`
-	UpdatedAt   time.Time     `json:"updated_at" gorm:"autoUpdateTime"`
+	ID        uint      `json:"id" gorm:"primaryKey"`
+	Email     string    `form:"email" gorm:"unique"`
+	Name      string    `form:"name"`
+	Image     string    `form:"image"`
+	Phone     string    `form:"phone"`
+	Address   string    `form:"address"`
+	Status    string    `form:"status" gorm:"default:ACTIVE"`
+	Password  string    `form:"-"`
+	Role      string    `form:"role" gorm:"default:USER"`
+	CreatedAt time.Time ` gorm:"autoCreateTime"`
+	UpdatedAt time.Time ` gorm:"autoUpdateTime"`
 }
 
-type UserSkills struct {
-	ID     uint `json:"id" gorm:"primaryKey"`
-	UserID uint `json:"user_id"`
-	TagID  uint `json:"tag_id"`
+type AdminBody struct {
+	Email    string `form:"email" gorm:"unique"`
+	Name     string `form:"name"`
+	Image    string `form:"image"`
+	Phone    string `form:"phone"`
+	Address  string `form:"address"`
+	Status   string `form:"status" gorm:"default:ACTIVE"`
+	Password string `form:"password"`
+	Role     string `form:"role" gorm:"default:USER"`
 }
 
 type PaginationResponse struct {

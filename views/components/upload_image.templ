@@ -13,7 +13,7 @@ templ UploadImage(image, source string) {
       class="w-full h-full object-center rounded-full bg-white"
       onerror="this.onerror=null; this.src='/not-found.png';" />
     } else {
-    if source == "customer" || source == "referal" || source == "user" {
+    if source == "customer" || source == "referal" || source == "admin" {
     <img id="placeholder-image" src="/not-found-person.png" alt="Placeholder"
       class="w-full h-full object-center rounded-full" />
     }

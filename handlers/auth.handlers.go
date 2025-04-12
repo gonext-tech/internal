@@ -177,7 +177,6 @@ func (ah *AuthHandler) LoginHandler(c echo.Context) error {
 		)
 
 		if err != nil {
-			// In production you have to give the user a generic message
 			setFlashmessages(c, "error", "Incorrect password")
 
 			return c.Redirect(http.StatusSeeOther, "/login")
