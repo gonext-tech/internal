@@ -1,73 +1,120 @@
 package user_components
 
 import (
-"fmt"
-"github.com/gonext-tech/internal/models"
+	"fmt"
+	"github.com/gonext-tech/internal/models"
 )
 
-templ UserCard(customer models.User) {
-<div id={ fmt.Sprintf("user-%d", customer.ID) } key={ fmt.Sprintf("user-%d", customer.ID) }
-  class="relative card  bg-base-200 shadow-md">
-  <div class="card-body">
-    <!-- Top Right Three Dots Dropdown Button -->
-    <div class="absolute top-2 right-2">
-      <!-- Dropdown toggle button -->
-      <div class="dropdown dropdown-end">
-        <label tabindex="0" class="cursor-pointer btn btn-xs btn-outline">
-          <svg class="w-6 h-6 text-gray-500 hover:text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none"
-            viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M6 12h.01M12 12h.01M18 12h.01M6 12h.01M12 12h.01M18 12h.01"></path>
-          </svg>
-        </label>
-        <!-- Dropdown content -->
-        <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-48">
-          <li>
-            <a href={ templ.URL(fmt.Sprintf("/customer/view/%d/%s", customer.ID, customer.ProjectName)) }
-              class="flex items-center space-x-2">
-              <svg class="w-5 h-5 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M15 10l4.94 2.94A2 2 0 0118 16H6a2 2 0 01-1.94-3.06L9 10m3 0h0m0 0h0m0 4h0"></path>
-              </svg>
-              <span>View</span>
-            </a>
-          </li>
-          <li>
-            <a href={ templ.URL(fmt.Sprintf("/customer/edit/%d/%s", customer.ID, customer.ProjectName)) }
-              class="flex items-center space-x-2">
-              <svg class="w-5 h-5 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M11 5h2M11 9h2m0 4h-2m6 2H9m12-3.5a3.5 3.5 0 11-7 0 3.5 3.5 0 017 0z"></path>
-              </svg>
-              <span>Edit</span>
-            </a>
-          </li>
-          <li>
-            <div hx-delete={ fmt.Sprintf("/customer/%d/%s", customer.ID, customer.ProjectName) }
-              hx-headers='{"HX-Source": "card"}' hx-confirm="are you sure you wanna delete this user?"
-              class="flex items-center space-x-2" hx-on::after-request="handleResponse(event)">
-              <svg class="w-5 h-5 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M16 9v10a2 2 0 01-2 2H10a2 2 0 01-2-2V9m4-5v5m-5 4h10"></path>
-              </svg>
-              <span class="text-red-600">Delete</span>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </div>
-    <!-- Card Content -->
-    <h2 class="card-title">{ customer.Name }</h2>
-    <p>Email: { customer.Email }</p>
-    <p>Phone: { customer.Phone }</p>
-    <p class="truncate line-clamp-2">Address: { customer.Address }</p>
-    <p class="badge badge-md badge-success mt-2">Role: { customer.Role }</p>
-  </div>
-</div>
-<script>
+templ UserCard(customer models.Admin) {
+	<div
+		id={ fmt.Sprintf("user-%d", customer.ID) }
+		key={ fmt.Sprintf("user-%d", customer.ID) }
+		class="relative card  bg-base-200 shadow-md"
+	>
+		<div class="card-body">
+			<!-- Top Right Three Dots Dropdown Button -->
+			<div class="absolute top-2 right-2">
+				<!-- Dropdown toggle button -->
+				<div class="dropdown dropdown-end">
+					<label tabindex="0" class="cursor-pointer btn btn-xs btn-outline">
+						<svg
+							class="w-6 h-6 text-gray-500 hover:text-gray-700"
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M6 12h.01M12 12h.01M18 12h.01M6 12h.01M12 12h.01M18 12h.01"
+							></path>
+						</svg>
+					</label>
+					<!-- Dropdown content -->
+					<ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-48">
+						<li>
+							<a
+								href={ templ.URL(fmt.Sprintf("/customer/view/%d/%s", customer.ID, "")) }
+								class="flex items-center space-x-2"
+							>
+								<svg
+									class="w-5 h-5 text-gray-600"
+									xmlns="http://www.w3.org/2000/svg"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke="currentColor"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M15 10l4.94 2.94A2 2 0 0118 16H6a2 2 0 01-1.94-3.06L9 10m3 0h0m0 0h0m0 4h0"
+									></path>
+								</svg>
+								<span>View</span>
+							</a>
+						</li>
+						<li>
+							<a
+								href={ templ.URL(fmt.Sprintf("/customer/edit/%d/%s", customer.ID, "")) }
+								class="flex items-center space-x-2"
+							>
+								<svg
+									class="w-5 h-5 text-gray-600"
+									xmlns="http://www.w3.org/2000/svg"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke="currentColor"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M11 5h2M11 9h2m0 4h-2m6 2H9m12-3.5a3.5 3.5 0 11-7 0 3.5 3.5 0 017 0z"
+									></path>
+								</svg>
+								<span>Edit</span>
+							</a>
+						</li>
+						<li>
+							<div
+								hx-delete={ fmt.Sprintf("/customer/%d/%s", customer.ID, "") }
+								hx-headers='{"HX-Source": "card"}'
+								hx-confirm="are you sure you wanna delete this user?"
+								class="flex items-center space-x-2"
+								hx-on::after-request="handleResponse(event)"
+							>
+								<svg
+									class="w-5 h-5 text-red-600"
+									xmlns="http://www.w3.org/2000/svg"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke="currentColor"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M16 9v10a2 2 0 01-2 2H10a2 2 0 01-2-2V9m4-5v5m-5 4h10"
+									></path>
+								</svg>
+								<span class="text-red-600">Delete</span>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<!-- Card Content -->
+			<h2 class="card-title">{ customer.Name }</h2>
+			<p>Email: { customer.Email }</p>
+			<p>Phone: { customer.Phone }</p>
+			<p class="truncate line-clamp-2">Address: { customer.Address }</p>
+			<p class="badge badge-md badge-success mt-2">Role: { customer.Role }</p>
+		</div>
+	</div>
+	<script>
   function handleResponse() {
     const xhr = event.detail.xhr;
 

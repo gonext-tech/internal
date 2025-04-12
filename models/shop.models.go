@@ -6,10 +6,10 @@ type Shop struct {
 	ID              uint           `json:"id" form:"id" gorm:"primaryKey"`
 	Name            string         `json:"name" form:"name"`
 	OwnerID         uint           `json:"owner_id" form:"owner_id"`
-	Owner           User           `json:"owner" form:"owner" gorm:"foreignKey:OwnerID"`
+	Owner           Admin          `json:"owner" form:"owner" gorm:"foreignKey:OwnerID"`
 	Address         string         `json:"address" form:"address"`
 	Image           string         `json:"image" form:"image"`
-	Workers         []User         `json:"workers" form:"workers" gorm:"foreignKey:ShopID"`
+	Workers         []Admin        `json:"workers" form:"workers" gorm:"foreignKey:ShopID"`
 	Subscriptions   []Subscription `json:"subscriptions" form:"subscriptions" gorm:"foreignKey:ShopID"`
 	NextBillingDate *time.Time     `json:"next_billing_date" form:"next_billing_date,omitempty"`
 	SendWP          bool           `json:"send_wp" form:"send_wp"`

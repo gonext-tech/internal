@@ -17,11 +17,11 @@ func NewCustomerService(db []models.ProjectsDB) *CustomerServices {
 	}
 }
 
-func (cs *CustomerServices) GetALL(limit, page int, orderBy, sortBy, project, status, searchTerm string) ([]models.User, models.Meta, error) {
-	allCustomers := []models.User{}
+func (cs *CustomerServices) GetALL(limit, page int, orderBy, sortBy, project, status, searchTerm string) ([]models.Admin, models.Meta, error) {
+	allCustomers := []models.Admin{}
 	var totalRecords int64
 	for _, store := range cs.STORES {
-		var customers []models.User
+		var customers []models.Admin
 		if project != "" && project != store.Name {
 			continue
 		}
@@ -89,35 +89,35 @@ func (cs *CustomerServices) GetALL(limit, page int, orderBy, sortBy, project, st
 	return paginatedCusotmer, meta, nil
 }
 
-func (cs *CustomerServices) GetID(id, dbName string) (models.User, error) {
-	var customer models.User
+func (cs *CustomerServices) GetID(id, dbName string) (models.Admin, error) {
+	var customer models.Admin
 	DB := utils.GetCurrentDB(dbName, cs.STORES)
 	if result := DB.Preload("Shop").First(&customer, id); result.Error != nil {
-		return models.User{}, result.Error
+		return models.Admin{}, result.Error
 	}
 
 	return customer, nil
 }
 
-func (cs *CustomerServices) Create(customer models.User) (models.User, error) {
-	DB := utils.GetCurrentDB(customer.ProjectName, cs.STORES)
+func (cs *CustomerServices) Create(customer models.Admin) (models.Admin, error) {
+	DB := utils.GetCurrentDB("", cs.STORES)
 	if result := DB.Create(&customer); result.Error != nil {
-		return models.User{}, result.Error
+		return models.Admin{}, result.Error
 	}
 	return customer, nil
 }
-func (cs *CustomerServices) Update(customer models.User) (models.User, error) {
-	DB := utils.GetCurrentDB(customer.ProjectName, cs.STORES)
+func (cs *CustomerServices) Update(customer models.Admin) (models.Admin, error) {
+	DB := utils.GetCurrentDB("", cs.STORES)
 	if result := DB.Table("users").Select("*").Updates(&customer); result.Error != nil {
-		return models.User{}, result.Error
+		return models.Admin{}, result.Error
 	}
 	return customer, nil
 }
 
-func (cs *CustomerServices) Delete(customer models.User) (models.User, error) {
-	DB := utils.GetCurrentDB(customer.ProjectName, cs.STORES)
+func (cs *CustomerServices) Delete(customer models.Admin) (models.Admin, error) {
+	DB := utils.GetCurrentDB("", cs.STORES)
 	if result := DB.Table("users").Delete(&customer); result.Error != nil {
-		return models.User{}, result.Error
+		return models.Admin{}, result.Error
 	}
 	return customer, nil
 }

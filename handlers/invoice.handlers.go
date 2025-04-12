@@ -141,7 +141,7 @@ func (ih *InvoiceHandler) CreateHandler(c echo.Context) error {
 	if err := c.Bind(&invoice); err != nil {
 		return err
 	}
-	invoice.UserID = userID
+	invoice.CreatedByID = userID
 	_, err := ih.InvoiceServices.Create(invoice)
 	if err != nil {
 		return err

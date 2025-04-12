@@ -9,7 +9,7 @@ type Appointment struct {
 	ClientID            uint                 `json:"client_id" form:"client_id"`
 	Client              Client               `json:"client" form:"client" gorm:"foreignKey:ClientID"`
 	UserID              uint                 `json:"user_id" form:"user_id"`
-	User                User                 `json:"user" form:"user" gorm:"foreignKey:UserID"`
+	User                Admin                `json:"user" form:"user" gorm:"foreignKey:UserID"`
 	Date                time.Time            `json:"date" form:"date"`
 	ServiceID           uint                 `json:"service_id" form:"service_id"`
 	Service             Service              `json:"service" form:"service" gorm:"foreignKey:ServiceID"`
