@@ -12,7 +12,6 @@ import (
 func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB) {
 
 	// --> SERVICES INIT <--
-	userService := services.NewUserServices(models.Admin{}, store)
 	referalService := services.NewReferalService(models.Referal{}, store)
 	subscriptionService := services.NewSubscriptionService(projectStores)
 	membershipService := services.NewMembershipService(projectStores)
@@ -25,12 +24,13 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	appointmentService := services.NewAppointmentService(projectStores)
 	serverService := services.NewServerService(models.MonitoredServer{}, store)
 	domainService := services.NewDomainService(models.Domain{}, store)
+	adminService := services.NewAdminService(models.Admin{}, store)
 
 	// --> HANDLERS INIT <--
 	appointmentHandler := handlers.NewAppointmentHandler(appointmentService)
 	referalHandler := handlers.NewReferalHandler(referalService, uploadService)
-	authHandler := handlers.NewAuthHandler(userService)
-	projectHandler := handlers.NewProjectHandler(projectService, uploadService, serverService)
+	authHandler := handlers.NewAuthHandler(adminService)
+	projectHandler := handlers.NewProjectHandler(projectService, uploadService, serverService, adminService)
 	serverHandler := handlers.NewServerHandler(serverService, uploadService)
 	domainHandler := handlers.NewDomainHandler(domainService, serverService)
 	statsHandler := handlers.NewStatsHandler(statsService)
@@ -40,6 +40,7 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	shopHandler := handlers.NewShopHandler(shopService, projectService, membershipService, uploadService)
 	automationHandler := handlers.NewAutomationHandler(projectStores)
 	customerHandler := handlers.NewCustomerHandler(customerService, projectService, uploadService)
+	adminHandler := handlers.NewAdminHandler(adminService, uploadService)
 	_ = handlers.NewUploadHandler(uploadService, projectService)
 
 	// --> UNPRTECTED ROUTES <--
@@ -70,7 +71,16 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	protectedGroup.POST("project/edit/:id", projectHandler.UpdateHandler)
 	protectedGroup.DELETE("project/:id", projectHandler.DeleteHandler)
 
-	// --> PROJECT ROUTES <--
+	// --> ADMIN ROUTES <--
+	protectedGroup.GET("admin", adminHandler.ListPage)
+	protectedGroup.GET("admin/view", adminHandler.ViewPage)
+	protectedGroup.GET("admin/create", adminHandler.CreatePage)
+	protectedGroup.POST("admin/create", adminHandler.CreateHandler)
+	protectedGroup.GET("admin/edit/:id", adminHandler.UpdatePage)
+	protectedGroup.POST("admin/edit/:id", adminHandler.UpdateHandler)
+	protectedGroup.DELETE("admin/:id", adminHandler.DeleteHandler)
+
+	// --> INVOICE ROUTES <--
 	protectedGroup.GET("invoice", invoiceHandler.ListPage)
 	protectedGroup.GET("invoice/view", invoiceHandler.ViewPage)
 	protectedGroup.GET("invoice/create", invoiceHandler.CreatePage)

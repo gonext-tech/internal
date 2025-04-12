@@ -21,8 +21,8 @@ func NewProjectService(p models.Project, db *gorm.DB) *ProjectService {
 
 func (ps *ProjectService) GetALL(limit, page int, orderBy, sortBy, searchTerm, status string) ([]models.Project, models.Meta, error) {
 	var projects []models.Project
-	query := ps.DB.Preload("Server")
-	totalQuery := ps.DB.Preload("Server")
+	query := ps.DB.Preload("Server").Preload("Lead")
+	totalQuery := ps.DB.Preload("Server").Preload("Lead")
 
 	if searchTerm != "" {
 		searchTermWithWildcard := "%" + searchTerm + "%"
@@ -57,7 +57,7 @@ func (ps *ProjectService) GetID(id string) (models.Project, error) {
 	if id == "0" || id == "" {
 		return models.Project{}, errors.New("no id provided")
 	}
-	if result := ps.DB.First(&project, id); result.Error != nil {
+	if result := ps.DB.Preload("Server").Preload("Lead").First(&project, id); result.Error != nil {
 		return models.Project{}, result.Error
 	}
 	return project, nil

@@ -88,9 +88,9 @@ templ Sidebar(username string, bool bool) {
         </ul>
         <ul class="menu px-0 py-4">
           <li>
-            <a>
-              <i class="fa-solid fa-truck fa-fw"></i>
-              Deliver
+            <a href="/admin" _="on load if window.location.pathname.startsWith('/admin') then add .active to me">
+              <i class="fa-solid fa-user-tie"></i>
+              Admin
             </a>
           </li>
           <li>

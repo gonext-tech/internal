@@ -4,7 +4,7 @@ import "github.com/gonext-tech/internal/views/components"
 import "github.com/gonext-tech/internal/models"
 import "fmt"
 
-templ Create(servers []models.MonitoredServer) {
+templ Create(servers []models.MonitoredServer, leads []models.Admin) {
 <section class=" bg-base-200 rounded-md relative">
   @components.BackButton("project")
   <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">
@@ -17,7 +17,7 @@ templ Create(servers []models.MonitoredServer) {
           <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
           <input type="text" name="name" id="name"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-            placeholder="Cutest shop" required="" />
+            placeholder="Project 1" required="" />
         </div>
         <div class="">
           <label for="db_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">DB Name</label>
@@ -27,7 +27,7 @@ templ Create(servers []models.MonitoredServer) {
         </div>
         <div>
           <label for="project" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Project</label>
-          <input type="number" name="server_id" class="" id="server_id" />
+          <input type="number" name="server_id" class="hidden" id="server_id" />
           <select id="server" name="server"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
             onchange="handleServerChange(event);">
@@ -36,6 +36,21 @@ templ Create(servers []models.MonitoredServer) {
             for _, server := range servers {
             <option value={ fmt.Sprintf("%d", server.ID) }>
               { server.Name }
+            </option>
+            }
+          </select>
+        </div>
+        <div>
+          <label for="lead" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Lead</label>
+          <input type="number" name="lead_id" class="hidden" id="lead_id" />
+          <select id="lead" name="lead"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+            onchange="handleLeadChange(event);">
+            >
+            <option disabled selected>Select leader</option>
+            for _, lead := range leads {
+            <option value={ fmt.Sprintf("%d", lead.ID) }>
+              { lead.Name }
             </option>
             }
           </select>
@@ -85,6 +100,10 @@ templ Create(servers []models.MonitoredServer) {
   function handleServerChange(event) {
     const server_id = document.getElementById("server_id")
     server_id.value = Number(event.target.value)
+  }
+  function handleLeadChange(event) {
+    const lead_id = document.getElementById("lead_id")
+    lead_id.value = Number(event.target.value)
   }
 </script>
 }
