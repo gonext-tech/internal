@@ -1,6 +1,7 @@
 build:
 	@templ generate view
 	@go build -o bin/internal cmd/main.go
+	@pm2 restart pm2.config.js
 
 test:
 	@go test -v ./...
