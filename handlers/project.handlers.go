@@ -22,14 +22,16 @@ type ProjectHandler struct {
 	ProjectServices ProjectService
 	ServerServices  ServerService
 	AdminServices   AdminService
+	ClientServices  ClientService
 	UploadServices  UploadService
 }
 
-func NewProjectHandler(ps ProjectService, us UploadService, ss ServerService, u AdminService) *ProjectHandler {
+func NewProjectHandler(ps ProjectService, us UploadService, ss ServerService, u AdminService, cs ClientService) *ProjectHandler {
 	return &ProjectHandler{
 		ProjectServices: ps,
 		UploadServices:  us,
 		AdminServices:   u,
+		ClientServices:  cs,
 		ServerServices:  ss,
 	}
 }
@@ -122,6 +124,7 @@ func (ph *ProjectHandler) CreatePage(c echo.Context) error {
 	titlePage := "Project | Create"
 	servers, _, _ := ph.ServerServices.GetALL(50, 1, "desc", "id", "", "UP")
 	leads, _, _ := ph.AdminServices.GetALL(50, 1, "desc", "id", "", "ACTIVE")
+	clients, _, _ := ph.ClientServices.GetALL(50, 1, "desc", "id", "", "ACTIVE")
 	return renderView(c, project_views.Index(
 		titlePage,
 		c.Get(email_key).(string),
@@ -129,7 +132,7 @@ func (ph *ProjectHandler) CreatePage(c echo.Context) error {
 		isError,
 		getFlashmessages(c, "error"),
 		getFlashmessages(c, "success"),
-		project_views.Create(servers, leads),
+		project_views.Create(servers, leads, clients),
 	))
 }
 
@@ -171,6 +174,7 @@ func (ph *ProjectHandler) UpdatePage(c echo.Context) error {
 
 	servers, _, _ := ph.ServerServices.GetALL(50, 1, "desc", "id", "", "UP")
 	leads, _, _ := ph.AdminServices.GetALL(50, 1, "desc", "id", "", "ACTIVE")
+	clients, _, _ := ph.ClientServices.GetALL(50, 1, "desc", "id", "", "ACTIVE")
 
 	return renderView(c, project_views.Index(
 		titlePage,
@@ -179,7 +183,7 @@ func (ph *ProjectHandler) UpdatePage(c echo.Context) error {
 		isError,
 		getFlashmessages(c, "error"),
 		getFlashmessages(c, "success"),
-		project_views.Update(project, servers, leads),
+		project_views.Update(project, servers, leads, clients),
 	))
 }
 

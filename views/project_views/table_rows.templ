@@ -30,9 +30,8 @@ templ TableRows(projects []models.Project) {
 					</a>
 				</td>
 				<td class="px-4 py-4 text-sm font-medium whitespace-nowrap">
-					<div>
-						<h2 class="font-medium text-gray-800 dark:text-white ">{ p.DBName }</h2>
-					</div>
+					<h2 class="font-medium text-gray-800 dark:text-white "><span class="text-xs">DB: </span>{ p.DBName }</h2>
+					<h4 class="text-gray-700 dark:text-gray-200"><span class="text-xs">Repo: </span>{ p.RepoName }</h4>
 				</td>
 				<td class="px-4 py-4 text-sm whitespace-nowrap">
 					<div>
@@ -40,9 +39,18 @@ templ TableRows(projects []models.Project) {
 					</div>
 				</td>
 				<td class="px-4 py-4 text-sm whitespace-nowrap">
-					<div>
-						<h4 class="text-gray-700 dark:text-gray-200">{ p.RepoName }</h4>
-					</div>
+					<a href={ templ.URL(fmt.Sprintf("/client/view/%d", p.ClientID)) } class="flex items-center gap-x-2 mt-1">
+						if p.Client.Image != "" {
+							<img
+								src={ p.Client.Image }
+								onerror="this.onerror=null; this.src='/not-found-person.png';"
+								class="w-5 h-5 rounded-lg"
+							/>
+						} else {
+							<img src="/not-found-person.png" class="w-5 h-5 rounded-lg"/>
+						}
+						<h2 class="font-medium text-gray-800 dark:text-white ">{ p.Client.Name }</h2>
+					</a>
 				</td>
 				<td class="px-4 py-4 text-sm whitespace-nowrap">
 					<h4 class="text-gray-700 dark:text-gray-200">{ p.Server.Name }</h4>

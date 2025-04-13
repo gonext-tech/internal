@@ -29,7 +29,7 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 	appointmentHandler := handlers.NewAppointmentHandler(appointmentService)
 	referalHandler := handlers.NewReferalHandler(referalService, uploadService)
 	authHandler := handlers.NewAuthHandler(adminService)
-	projectHandler := handlers.NewProjectHandler(projectService, uploadService, serverService, adminService)
+	projectHandler := handlers.NewProjectHandler(projectService, uploadService, serverService, adminService, clientService)
 	serverHandler := handlers.NewServerHandler(serverService, uploadService)
 	domainHandler := handlers.NewDomainHandler(domainService, serverService)
 	statsHandler := handlers.NewStatsHandler(statsService)

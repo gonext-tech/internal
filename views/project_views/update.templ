@@ -6,7 +6,7 @@ import (
 	"github.com/gonext-tech/internal/views/components"
 )
 
-templ Update(project models.Project, servers []models.MonitoredServer, leads []models.Admin) {
+templ Update(project models.Project, servers []models.MonitoredServer, leads []models.Admin, clients []models.Client) {
 	<section class=" bg-base-200 rounded-md relative">
 		@components.BackButton("project")
 		<div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">
@@ -75,6 +75,29 @@ templ Update(project models.Project, servers []models.MonitoredServer, leads []m
 							for _, lead := range leads {
 								<option selected?={ lead.ID==project.LeadID } value={ fmt.Sprintf("%d", lead.ID) }>
 									{ lead.Name }
+								</option>
+							}
+						</select>
+					</div>
+					<div>
+						<label for="client" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Client</label>
+						<input
+							type="number"
+							value={ fmt.Sprintf("%d", project.ClientID) }
+							name="client_id"
+							class="hidden"
+							id="client_id"
+						/>
+						<select
+							id="client"
+							name="client"
+							class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+							onchange="handleClientChange(event);"
+						>
+							<option disabled selected>Select client</option>
+							for _, client := range clients {
+								<option selected?={ client.ID==project.ClientID } value={ fmt.Sprintf("%d", client.ID) }>
+									{ client.Name }
 								</option>
 							}
 						</select>
@@ -153,6 +176,10 @@ templ Update(project models.Project, servers []models.MonitoredServer, leads []m
   function handleLeadChange(event) {
     const lead_id = document.getElementById("lead_id")
     lead_id.value = Number(event.target.value)
+  }
+  function handleClientChange(event) {
+    const client_id = document.getElementById("client_id")
+    client_id.value = Number(event.target.value)
   }
 </script>
 }
