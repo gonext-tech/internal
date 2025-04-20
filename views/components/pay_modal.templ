@@ -1,0 +1,65 @@
+package components
+
+import "fmt"
+
+templ PayModal(id uint, remaining float64, errorMsg string) {
+<div class="tooltip" data-tip="pay invoice">
+  <button class="btn btn-square btn-sm btn-accent  mt-2" _={ fmt.Sprintf("on click toggle .hidden on #pay-modal-%d", id)
+    }>
+    <i class="fa-solid fa-money-bill"></i>
+  </button>
+</div>
+<!-- Modal -->
+<div id={ fmt.Sprintf("pay-modal-%d", id) }
+  class=" fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+  <div class="modal-box">
+    <div id={ fmt.Sprintf("pay-error-%d", id) }>
+      if errorMsg != "" {
+      <h3 class="text-[11px] text-red-600 mb-2">{ errorMsg }</h3>
+      }
+    </div>
+    <h2 class="text-lg font-bold mb-1">Payment Form</h2>
+    <h4 class="text[11px] mb-4">Remaining:{ fmt.Sprintf("$%.2f",remaining) }</h4>
+    <form hx-post={ fmt.Sprintf("/invoice/pay/%d", id) } hx-target={ fmt.Sprintf("#pay-error-%d", id) }
+      hx-swap="innerHTML" class="space-y-4">
+      <div class="">
+        <label for="amount_paid" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+          Amount
+          Paid
+        </label>
+        <input type="number" name="amount_paid" id="amount_paid"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+          placeholder="30$" required="" />
+      </div>
+      <div class="">
+        <label for="notes" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Notes</label>
+        <textarea id="notes" name="notes" rows="3"
+          class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+          placeholder="notes"></textarea>
+      </div>
+      <div class="flex justify-end gap-2">
+        <button type="button"
+          class="mt-6 inline-flex items-center justify-center px-4 py-2 text-sm font-medium tracking-wide text-white transition-colors duration-200 bg-red-600 rounded-md hover:bg-red-700 focus:ring-2 focus:ring-offset-2 focus:ring-red-700 focus:shadow-outline focus:outline-none"
+          _={ fmt.Sprintf("on click toggle .hidden on #pay-modal-%d", id) }>
+          Close
+        </button>
+        <button type="submit"
+          class="mt-6 inline-flex items-center justify-center px-4 py-2 text-sm font-medium tracking-wide text-white transition-colors duration-200 bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-700 focus:shadow-outline focus:outline-none">
+          Pay
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- HTMX response target -->
+<div id="payment-response" class="mt-4"></div>
+<script>
+  function openModal() {
+    document.getElementById('pay-modal').classList.remove('hidden');
+  }
+
+  function closeModal() {
+    document.getElementById('pay-modal').classList.add('hidden');
+  }
+</script>
+}

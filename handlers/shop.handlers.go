@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gonext-tech/internal/models"
+	"github.com/gonext-tech/internal/queries"
 	"github.com/gonext-tech/internal/views/components"
 	"github.com/gonext-tech/internal/views/shop_views"
 	"github.com/labstack/echo/v4"
@@ -159,7 +160,13 @@ func (ss *ShopHandler) ViewPage(c echo.Context) error {
 func (sh *ShopHandler) CreatePage(c echo.Context) error {
 	isError = false
 	titlePage := "Shop | Create"
-	projects, _, _ := sh.ProjectServices.GetALL(50, 1, "desc", "id", "", "ACTIVE")
+	projects, _, _ := sh.ProjectServices.GetALL(queries.InvoiceQueryParams{
+		Status:  "ACTIVE",
+		OrderBy: "desc",
+		SortBy:  "id",
+		Page:    1,
+		Limit:   50,
+	})
 	return renderView(c, shop_views.Index(
 		titlePage,
 		c.Get(email_key).(string),
@@ -209,7 +216,12 @@ func (sh *ShopHandler) UpdatePage(c echo.Context) error {
 		setFlashmessages(c, "error", errorMsg)
 	}
 
-	projects, _, _ := sh.ProjectServices.GetALL(50, 1, "desc", "id", "", "ACTIVE")
+	projects, _, _ := sh.ProjectServices.GetALL(queries.InvoiceQueryParams{
+		Status:  "ACTIVE",
+		OrderBy: "desc",
+		Page:    1,
+		Limit:   50,
+	})
 	memberships, _, _ := sh.MembershipServices.GetALL(50, 1, "desc", "id", projectName, "", "")
 	return renderView(c, shop_views.Index(
 		titlePage,

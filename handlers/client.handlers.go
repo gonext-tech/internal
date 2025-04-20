@@ -3,20 +3,21 @@ package handlers
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/gonext-tech/internal/models"
+	"github.com/gonext-tech/internal/queries"
 	"github.com/gonext-tech/internal/views/client_views"
+	"github.com/gonext-tech/internal/views/components"
 	"github.com/gonext-tech/internal/views/domain_views"
 	"github.com/labstack/echo/v4"
 )
 
 type ClientService interface {
-	GetALL(limit, page int, orderBy, sortBy, searchTerm, status string) ([]models.Client, models.Meta, error)
-	GetID(id string) (models.Client, error)
-	Create(models.Client) (models.Client, error)
-	Update(models.Client) (models.Client, error)
-	Delete(models.Client) error
+	GetALL(queries.InvoiceQueryParams) ([]models.Client, models.Meta, error)
+	GetID(id string) (*models.Client, error)
+	Create(*models.Client) error
+	Update(*models.Client) error
+	Delete(*models.Client) error
 }
 
 type ClientHandler struct {
@@ -33,25 +34,13 @@ func NewClientHandler(cs ClientService, us UploadService) *ClientHandler {
 
 func (ch *ClientHandler) ListPage(c echo.Context) error {
 	isError = false
-	page, _ := strconv.Atoi(c.QueryParam("page"))
-	if page <= 0 {
-		page = 1
+	var query queries.InvoiceQueryParams
+	if err := c.Bind(&query); err != nil {
+		errorMsg = "can't read query params"
+		setFlashmessages(c, "error", errorMsg)
 	}
-	limit, _ := strconv.Atoi(c.QueryParam("limit"))
-	if limit <= 0 {
-		limit = 20
-	}
-	orderBy := c.QueryParam("orderBy")
-	if orderBy == "" {
-		orderBy = "desc"
-	}
-	sortBy := c.QueryParam("sortBy")
-	if sortBy == "" {
-		sortBy = "id"
-	}
-	status := c.QueryParam("status")
-	searchTerm := c.QueryParam("searchTerm")
-	clients, meta, err := ch.ClientServices.GetALL(limit, page, orderBy, sortBy, searchTerm, status)
+	query.SetDefaults()
+	clients, meta, err := ch.ClientServices.GetALL(query)
 	if err != nil {
 		isError = false
 		errorMsg = "can't fetch clients"
@@ -60,29 +49,53 @@ func (ch *ClientHandler) ListPage(c echo.Context) error {
 		setFlashmessages(c, "error", errorMsg)
 	}
 
-	var params models.ParamResponse
-	if searchTerm != "" {
-		params.Search = searchTerm
+	if c.Request().Header.Get("X-Partial-Content") == "true" {
+		// Return only the table content
+		return renderView(c, client_views.List(
+			fmt.Sprintf("Client List(%d)", meta.TotalCount),
+			clients,
+			meta,
+			query,
+		))
 	}
-	if status != "" {
-		params.Status = status
-	}
-	params.Page = page
-	params.Limit = limit
-	params.SortBy = sortBy
-	params.OrderBy = orderBy
 
 	titlePage := fmt.Sprintf(
 		"Client List(%d)", meta.TotalCount)
-	return renderView(c, domain_views.Index(
+	return renderView(c, client_views.Index(
 		titlePage,
 		c.Get(email_key).(string),
 		fromProtected,
 		isError,
 		getFlashmessages(c, "error"),
 		getFlashmessages(c, "success"),
-		client_views.List(titlePage, clients, meta, params),
+		client_views.List(titlePage, clients, meta, query),
 	))
+}
+
+func (ch *ClientHandler) Search(c echo.Context) error {
+	isError = false
+	var query queries.InvoiceQueryParams
+	if err := c.Bind(&query); err != nil {
+		errorMsg = "can't read query params"
+		setFlashmessages(c, "error", errorMsg)
+	}
+	query.Page = 1
+	query.Limit = 5
+	query.SortBy = "id"
+	query.OrderBy = "desc"
+
+	clients, _, err := ch.ClientServices.GetALL(query)
+	if err != nil {
+		isError = false
+		errorMsg = "can't fetch clients"
+	}
+	if isError {
+		setFlashmessages(c, "error", errorMsg)
+		renderView(c, components.ClientResult([]models.Client{}))
+
+	}
+
+	return renderView(c, components.ClientResult(clients))
 }
 
 func (ch *ClientHandler) ViewPage(c echo.Context) error {
@@ -129,7 +142,7 @@ func (ch *ClientHandler) CreateHandler(c echo.Context) error {
 	if err := c.Bind(&client); err != nil {
 		return err
 	}
-	_, err := ch.ClientServices.Create(client)
+	err := ch.ClientServices.Create(&client)
 	if err != nil {
 		return err
 	}
@@ -137,7 +150,7 @@ func (ch *ClientHandler) CreateHandler(c echo.Context) error {
 
 	if len(imageURLs) > 0 {
 		client.Image = imageURLs[0]
-		_, err = ch.ClientServices.Update(client)
+		err = ch.ClientServices.Update(&client)
 		if err != nil {
 			setFlashmessages(c, "error", "cannot upload client image")
 			return ch.CreatePage(c)
@@ -180,13 +193,13 @@ func (ch *ClientHandler) UpdateHandler(c echo.Context) error {
 		return ch.UpdatePage(c)
 	}
 
-	if err := c.Bind(&client); err != nil {
+	if err := c.Bind(client); err != nil {
 		errorMsg = err.Error()
 		setFlashmessages(c, "error", errorMsg)
 		return ch.UpdatePage(c)
 	}
 
-	client, err = ch.ClientServices.Update(client)
+	err = ch.ClientServices.Update(client)
 	if err != nil {
 		errorMsg = fmt.Sprintf("cannot update client with id %s", id)
 		setFlashmessages(c, "error", errorMsg)
@@ -197,7 +210,7 @@ func (ch *ClientHandler) UpdateHandler(c echo.Context) error {
 
 	if len(imageURLs) > 0 {
 		client.Image = imageURLs[0]
-		_, err = ch.ClientServices.Update(client)
+		err = ch.ClientServices.Update(client)
 		if err != nil {
 			setFlashmessages(c, "error", "cannot upload client image")
 			return ch.CreatePage(c)

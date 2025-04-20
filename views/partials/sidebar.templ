@@ -29,94 +29,22 @@ templ Sidebar(username string, bool bool) {
 								Home
 							</a>
 						</li>
-						<li>
-							<a href="/server" _="on load if window.location.pathname.startsWith('/server') then add .active to me">
-								<i class="fa-solid fa-network-wired"></i>
-								Server
-							</a>
-						</li>
-						<li>
-							<a href="/domain" _="on load if window.location.pathname.startsWith('/domain') then add .active to me">
-								<i class="fa-solid fa-store fa-fw"></i>
-								Domain
-							</a>
-						</li>
-						<li>
-							<a href="/project" _="on load if window.location.pathname.startsWith('/project') then add .active to me">
-								<i class="fa-solid fa-tasks fa-fw"></i>
-								Project
-							</a>
-						</li>
-						<li>
-							<a href="/shop" _="on load if window.location.pathname.startsWith('/shop') then add .active to me">
-								<i class="fa-solid fa-store fa-fw"></i>
-								Shop
-							</a>
-						</li>
-						<li>
-							<a
-								href="/subscription"
-								_="on load if window.location.pathname.startsWith('/subscription') then add .active to me"
-							>
-								<i class="fa-solid fa-receipt fa-fw"></i>
-								Subscription
-							</a>
-						</li>
-						<li>
-							<a
-								href="/membership"
-								_="on load if window.location.pathname.startsWith('/membership') then add .active to me"
-							>
-								<i class="fa-solid fa-toolbox fa-fw"></i>
-								Membership
-							</a>
-						</li>
+						@NavItem("server", "fa-solid fa-network-wired")
+						@NavItem("domain", "fa-solid fa-store fa-fw")
+						@NavItem("project", "fa-solid fa-tasks fa-fw")
+						@NavItem("shop", "fa-solid fa-store fa-fw")
+						@NavItem("subscription", "fa-solid fa-receipt fa-fw")
+						@NavItem("membership", "fa-solid fa-toolbox fa-fw")
 					</ul>
 					<ul class="menu px-0 py-4">
-						<li>
-							<a href="/client" _="on load if window.location.pathname.startsWith('/client') then add .active to me">
-								<i class="fa-solid fa-user-plus fa-fw"></i>
-								Client
-							</a>
-						</li>
-						<li>
-							<a href="/referal" _="on load if window.location.pathname.startsWith('/referal') then add .active to me">
-								<i class="fa-solid fa-network-wired"></i>
-								Referal
-							</a>
-						</li>
-						<li>
-							<a href="/invoice" _="on load if window.location.pathname.startsWith('/invoice') then add .active to me">
-								<i class="fa-solid fa-file-invoice-dollar fa-fw"></i>
-								Invoice
-							</a>
-						</li>
+						@NavItem("client", "fa-solid fa-user-plus fa-fw")
+						@NavItem("referal", "fa-solid fa-network-wired")
+						@NavItem("invoice", "fa-solid fa-file-invoice-dollar fa-fw")
 					</ul>
 					<ul class="menu px-0 py-4">
-						<li>
-							<a href="/admin" _="on load if window.location.pathname.startsWith('/admin') then add .active to me">
-								<i class="fa-solid fa-user-tie"></i>
-								Admin
-							</a>
-						</li>
-						<li>
-							<a>
-								<i class="fa-solid fa-box fa-fw"></i>
-								Products
-							</a>
-						</li>
-						<li>
-							<a>
-								<i class="fa-solid fa-store fa-fw"></i>
-								Store
-							</a>
-						</li>
-						<li>
-							<a>
-								<i class="fa-solid fa-lemon fa-fw"></i>
-								Fruits
-							</a>
-						</li>
+						@NavItem("admin", "fa-solid fa-user-tie")
+						@NavItem("product", "fa-solid fa-box fa-fw")
+						@NavItem("store", "fa-solid fa-store fa-fw")
 					</ul>
 				</div>
 			</div>
@@ -144,4 +72,16 @@ templ Sidebar(username string, bool bool) {
 			</div>
 		</aside>
 	</div>
+}
+
+templ NavItem(href, icon string) {
+	<li>
+		<a
+			_={ "on load if window.location.pathname.startsWith('/" + href + "') then add .active to me" }
+			href={ templ.URL("/" + href) }
+		>
+			<i class={ icon }></i>
+			<span class="capitalize">{ href }</span>
+		</a>
+	</li>
 }

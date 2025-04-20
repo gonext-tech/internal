@@ -4,81 +4,79 @@ import (
 	"errors"
 
 	"github.com/gonext-tech/internal/models"
+	"github.com/gonext-tech/internal/queries"
 	"gorm.io/gorm"
 )
 
 type DomainService struct {
-	Domain models.Domain
-	DB     *gorm.DB
+	DB *gorm.DB
 }
 
-func NewDomainService(p models.Domain, db *gorm.DB) *DomainService {
+func NewDomainService(db *gorm.DB) *DomainService {
 	return &DomainService{
-		Domain: p,
-		DB:     db,
+		DB: db,
 	}
 }
 
-func (ss *DomainService) GetALL(limit, page int, orderBy, sortBy, searchTerm, status string) ([]models.Domain, models.Meta, error) {
+func (ss *DomainService) GetALL(query queries.InvoiceQueryParams) ([]models.Domain, models.Meta, error) {
 	var domains []models.Domain
-	query := ss.DB.Preload("Server")
-	totalQuery := ss.DB.Preload("Server")
-	if searchTerm != "" {
-		searchTermWithWildcard := "%" + searchTerm + "%"
-		query = query.Where("name LIKE ?", searchTermWithWildcard)
-		totalQuery = query
-	}
+	var totalCount int64
 
-	if status != "" {
-		query = query.Where("status = ?", status)
-		totalQuery = totalQuery.Where("status = ?", status)
-	}
-	offset := (page - 1) * limit
-	query.Order(sortBy + " " + orderBy).Offset(offset).Limit(limit).Find(&domains)
-	totalRecords := int64(0)
-	totalQuery.Model(&ss.Domain).Count(&totalRecords)
+	dbQuery := ss.buildInvoicesURL(query)
+	dbQuery.Session(&gorm.Session{}).Model(&models.Invoice{}).Count(&totalCount)
+	offset := (query.Page - 1) * query.Limit
+	dbQuery.Order(query.SortBy + " " + query.OrderBy).Offset(offset).Limit(query.Limit).Find(&domains)
 	lastPage := int64(0)
-	if limit > 0 {
-		lastPage = (totalRecords + int64(limit) - 1) / int64(limit)
+	if query.Limit > 0 {
+		lastPage = (totalCount + int64(query.Limit) - 1) / int64(query.Limit)
 	}
 	meta := models.Meta{
-		CurrentPage: page,
-		TotalCount:  int(totalRecords),
+		CurrentPage: query.Page,
+		TotalCount:  int(totalCount),
 		LastPage:    int(lastPage),
-		Limit:       limit,
+		Limit:       query.Limit,
 	}
 
 	return domains, meta, nil
 }
 
-func (ds *DomainService) GetID(id string) (models.Domain, error) {
+func (ds *DomainService) GetID(id string) (*models.Domain, error) {
 	var domain models.Domain
 	if id == "0" || id == "" {
-		return ds.Domain, errors.New("no id provided")
+		return nil, errors.New("no id provided")
 	}
 	if result := ds.DB.First(&domain, id); result.Error != nil {
-		return ds.Domain, result.Error
+		return nil, result.Error
 	}
-	return domain, nil
+	return &domain, nil
 }
 
-func (ds *DomainService) Create(domain models.Domain) (models.Domain, error) {
-	if result := ds.DB.Create(&domain); result.Error != nil {
-		return ds.Domain, result.Error
-	}
-	return domain, nil
+func (ds *DomainService) Create(domain *models.Domain) error {
+	return ds.DB.Create(&domain).Error
+
 }
 
-func (ds *DomainService) Update(domain models.Domain) (models.Domain, error) {
-	if result := ds.DB.Model(&domain).Updates(domain); result.Error != nil {
-		return ds.Domain, result.Error
-	}
-	return domain, nil
+func (ds *DomainService) Update(domain *models.Domain) error {
+	return ds.DB.Model(&domain).Updates(domain).Error
+
 }
 
-func (ds *DomainService) Delete(domain models.Domain) error {
-	if result := ds.DB.Delete(&domain); result.Error != nil {
-		return result.Error
+func (ds *DomainService) Delete(domain *models.Domain) error {
+	return ds.DB.Delete(&domain).Error
+
+}
+
+func (ds *DomainService) buildInvoicesURL(query queries.InvoiceQueryParams) *gorm.DB {
+	dbQuery := ds.DB.Preload("Server")
+
+	if query.SearchTerm != "" {
+		term := "%" + query.SearchTerm + "%"
+		dbQuery = dbQuery.Where("name LIKE ?", term)
 	}
-	return nil
+	if query.Status != "" {
+		dbQuery = dbQuery.Where("status = ?", query.Status)
+	}
+
+	return dbQuery
+
 }

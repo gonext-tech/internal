@@ -2,7 +2,7 @@ package server_views
 
 import "github.com/gonext-tech/internal/models"
 
-templ View(server models.MonitoredServer) {
+templ View(server *models.MonitoredServer) {
 	<h1 class="text-2xl font-bold text-center mb-8">
 		View Server #{ server.Name }
 	</h1>

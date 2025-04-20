@@ -3,20 +3,20 @@ package handlers
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/gonext-tech/internal/models"
+	"github.com/gonext-tech/internal/queries"
 	"github.com/gonext-tech/internal/views/admin_views"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type AdminService interface {
-	GetALL(limit, page int, orderBy, sortBy, searchTerm, status string) ([]models.Admin, models.Meta, error)
-	GetID(id string) (models.Admin, error)
-	Create(models.Admin) (models.Admin, error)
-	Update(models.Admin) (models.Admin, error)
-	Delete(models.Admin) error
+	GetALL(queries.InvoiceQueryParams) ([]models.Admin, models.Meta, error)
+	GetID(id string) (*models.Admin, error)
+	Create(*models.Admin) error
+	Update(*models.Admin) error
+	Delete(*models.Admin) error
 }
 
 type AdminHandler struct {
@@ -33,25 +33,13 @@ func NewAdminHandler(as AdminService, us UploadService) *AdminHandler {
 
 func (ah *AdminHandler) ListPage(c echo.Context) error {
 	isError = false
-	page, _ := strconv.Atoi(c.QueryParam("page"))
-	if page <= 0 {
-		page = 1
+	var query queries.InvoiceQueryParams
+	if err := c.Bind(&query); err != nil {
+		errorMsg = "can't read query params"
+		setFlashmessages(c, "error", errorMsg)
 	}
-	limit, _ := strconv.Atoi(c.QueryParam("limit"))
-	if limit <= 0 {
-		limit = 20
-	}
-	orderBy := c.QueryParam("orderBy")
-	if orderBy == "" {
-		orderBy = "desc"
-	}
-	sortBy := c.QueryParam("sortBy")
-	if sortBy == "" {
-		sortBy = "id"
-	}
-	status := c.QueryParam("status")
-	searchTerm := c.QueryParam("searchTerm")
-	admins, meta, err := ah.AdminServices.GetALL(limit, page, orderBy, sortBy, searchTerm, status)
+	query.SetDefaults()
+	admins, meta, err := ah.AdminServices.GetALL(query)
 	if err != nil {
 		isError = false
 		errorMsg = "can't fetch admins"
@@ -60,18 +48,15 @@ func (ah *AdminHandler) ListPage(c echo.Context) error {
 		setFlashmessages(c, "error", errorMsg)
 	}
 
-	var params models.ParamResponse
-	if searchTerm != "" {
-		params.Search = searchTerm
+	if c.Request().Header.Get("X-Partial-Content") == "true" {
+		// Return only the table content
+		return renderView(c, admin_views.List(
+			fmt.Sprintf("Admin List(%d)", meta.TotalCount),
+			admins,
+			meta,
+			query,
+		))
 	}
-	if status != "" {
-		params.Status = status
-	}
-	params.Page = page
-	params.Limit = limit
-	params.SortBy = sortBy
-	params.OrderBy = orderBy
-
 	titlePage := fmt.Sprintf(
 		"Admin List(%d)", meta.TotalCount)
 	return renderView(c, admin_views.Index(
@@ -81,7 +66,7 @@ func (ah *AdminHandler) ListPage(c echo.Context) error {
 		isError,
 		getFlashmessages(c, "error"),
 		getFlashmessages(c, "success"),
-		admin_views.List(titlePage, admins, meta, params),
+		admin_views.List(titlePage, admins, meta, query),
 	))
 }
 
@@ -136,7 +121,7 @@ func (ah *AdminHandler) CreateHandler(c echo.Context) error {
 		return ah.CreatePage(c)
 	}
 
-	newAdmin := models.Admin{
+	newAdmin := &models.Admin{
 		Email:    admin.Email,
 		Phone:    admin.Phone,
 		Address:  admin.Address,
@@ -146,7 +131,7 @@ func (ah *AdminHandler) CreateHandler(c echo.Context) error {
 		Image:    admin.Image,
 	}
 
-	newAdmin, err = ah.AdminServices.Create(newAdmin)
+	err = ah.AdminServices.Create(newAdmin)
 	if err != nil {
 		setFlashmessages(c, "error", "cannot create a new admin")
 		return ah.CreatePage(c)
@@ -155,14 +140,13 @@ func (ah *AdminHandler) CreateHandler(c echo.Context) error {
 
 	if len(imageURLs) > 0 {
 		newAdmin.Image = imageURLs[0]
-		_, err = ah.AdminServices.Update(newAdmin)
+		err = ah.AdminServices.Update(newAdmin)
 		if err != nil {
 			setFlashmessages(c, "error", "cannot upload admin image")
 			return ah.CreatePage(c)
 		}
 	}
 	setFlashmessages(c, "success", "admin created successfully!!")
-
 	return c.Redirect(http.StatusSeeOther, "/admin")
 }
 
@@ -197,13 +181,13 @@ func (ah *AdminHandler) UpdateHandler(c echo.Context) error {
 		return ah.UpdatePage(c)
 	}
 
-	if err := c.Bind(&admin); err != nil {
+	if err := c.Bind(admin); err != nil {
 		errorMsg = err.Error()
 		setFlashmessages(c, "error", errorMsg)
 		return ah.UpdatePage(c)
 	}
 
-	admin, err = ah.AdminServices.Update(admin)
+	err = ah.AdminServices.Update(admin)
 	if err != nil {
 		errorMsg = fmt.Sprintf("cannot update admin with id %s ", id)
 		setFlashmessages(c, "error", errorMsg)
@@ -213,7 +197,7 @@ func (ah *AdminHandler) UpdateHandler(c echo.Context) error {
 
 	if len(imageURLs) > 0 {
 		admin.Image = imageURLs[0]
-		_, err = ah.AdminServices.Update(admin)
+		err = ah.AdminServices.Update(admin)
 		if err != nil {
 			setFlashmessages(c, "error", "cannot upload admin image")
 			return ah.CreatePage(c)

@@ -31,12 +31,14 @@ type MonitoredServer struct {
 	StorageGB int `form:"storage_gb"`
 
 	// Monitoring data
-	Status     ServerStatus   `gorm:"type:varchar(10);default:'down'" form:"status"`
+	Status     ServerStatus   ` form:"status"`
 	LastSeen   *time.Time     `form:"last_seen"`
 	Uptime     *time.Duration `form:"uptime"`
 	Downtime   *time.Duration `form:"downtime"`
 	LastChange *time.Time     `form:"last_change"`
 	Notes      string         `form:"notes"`
+	Deleted    bool           `form:"-" gorm:"default:false"`
+	DeletedAt  *time.Time     `form:"-"`
 
 	// Logs
 	//Logs []ServerLog `gorm:"foreignKey:ServerID" json:"logs"`

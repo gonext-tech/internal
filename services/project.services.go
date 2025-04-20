@@ -2,84 +2,85 @@ package services
 
 import (
 	"errors"
+	"time"
 
 	"github.com/gonext-tech/internal/models"
+	"github.com/gonext-tech/internal/queries"
 	"gorm.io/gorm"
 )
 
 type ProjectService struct {
-	Project models.Project
-	DB      *gorm.DB
+	DB *gorm.DB
 }
 
 func NewProjectService(p models.Project, db *gorm.DB) *ProjectService {
 	return &ProjectService{
-		Project: p,
-		DB:      db,
+		DB: db,
 	}
 }
 
-func (ps *ProjectService) GetALL(limit, page int, orderBy, sortBy, searchTerm, status string) ([]models.Project, models.Meta, error) {
+func (ps *ProjectService) GetALL(query queries.InvoiceQueryParams) ([]models.Project, models.Meta, error) {
 	var projects []models.Project
-	query := ps.DB.Preload("Server").Preload("Lead").Preload("Client")
-	totalQuery := ps.DB.Preload("Server").Preload("Lead").Preload("Client")
+	var totalCount int64
 
-	if searchTerm != "" {
-		searchTermWithWildcard := "%" + searchTerm + "%"
-		query = query.Where("name LIKE ?", searchTermWithWildcard)
-		totalQuery = query
-	}
-
-	if status != "" {
-		query = query.Where("status = ?", status)
-		totalQuery = totalQuery.Where("status = ?", status)
-	}
-	offset := (page - 1) * limit
-	query.Order(sortBy + " " + orderBy).Offset(offset).Limit(limit).Find(&projects)
-	totalRecords := int64(0)
-	totalQuery.Model(&ps.Project).Count(&totalRecords)
+	dbQuery := ps.buildInvoicesURL(query)
+	dbQuery.Session(&gorm.Session{}).Model(&models.Invoice{}).Count(&totalCount)
+	offset := (query.Page - 1) * query.Limit
+	dbQuery.Order(query.SortBy + " " + query.OrderBy).Offset(offset).Limit(query.Limit).Find(&projects)
 	lastPage := int64(0)
-	if limit > 0 {
-		lastPage = (totalRecords + int64(limit) - 1) / int64(limit)
+	if query.Limit > 0 {
+		lastPage = (totalCount + int64(query.Limit) - 1) / int64(query.Limit)
 	}
 	meta := models.Meta{
-		CurrentPage: page,
-		TotalCount:  int(totalRecords),
+		CurrentPage: query.Page,
+		TotalCount:  int(totalCount),
 		LastPage:    int(lastPage),
-		Limit:       limit,
+		Limit:       query.Limit,
 	}
-
 	return projects, meta, nil
 }
 
-func (ps *ProjectService) GetID(id string) (models.Project, error) {
+func (ps *ProjectService) GetID(id string) (*models.Project, error) {
 	var project models.Project
 	if id == "0" || id == "" {
-		return models.Project{}, errors.New("no id provided")
+		return &models.Project{}, errors.New("no id provided")
 	}
 	if result := ps.DB.Preload("Server").Preload("Lead").Preload("Client").First(&project, id); result.Error != nil {
-		return models.Project{}, result.Error
+		return &models.Project{}, result.Error
 	}
-	return project, nil
+	return &project, nil
 }
 
-func (ps *ProjectService) Create(project *models.Project) (*models.Project, error) {
-	if result := ps.DB.Create(project); result.Error != nil {
-		return &ps.Project, result.Error
-	}
-	return project, nil
+func (ps *ProjectService) Create(project *models.Project) error {
+	return ps.DB.Create(project).Error
+
 }
 
-func (ps *ProjectService) Update(project models.Project) (models.Project, error) {
-	if result := ps.DB.Model(&project).Updates(project); result.Error != nil {
-		return models.Project{}, result.Error
-	}
-	return project, nil
+func (ps *ProjectService) Update(project *models.Project) error {
+	return ps.DB.Model(&project).Updates(project).Error
 }
 
-func (ps *ProjectService) Delete(project models.Project) error {
-	if result := ps.DB.Delete(&project); result.Error != nil {
-		return result.Error
+func (ps *ProjectService) Delete(project *models.Project) error {
+	now := time.Now()
+	project.DeletedAt = &now
+	project.Deleted = true
+	return ps.DB.Model(&project).Updates(project).Error
+
+}
+
+func (ps *ProjectService) buildInvoicesURL(query queries.InvoiceQueryParams) *gorm.DB {
+	dbQuery := ps.DB.Preload("Server").Preload("Lead").Preload("Client")
+
+	if query.SearchTerm != "" {
+		term := "%" + query.SearchTerm + "%"
+		dbQuery = dbQuery.Where("name LIKE ?", term)
 	}
-	return nil
+	if query.Status != "" {
+		dbQuery = dbQuery.Where("status = ?", query.Status)
+	}
+	if query.InvoiceType != "" {
+		dbQuery = dbQuery.Where("invoice_type = ?", query.InvoiceType)
+	}
+	return dbQuery
+
 }

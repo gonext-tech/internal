@@ -3,13 +3,17 @@ package components
 import "fmt"
 
 templ BackButton(url string) {
-<a id="back_button" href={ templ.URL(fmt.Sprintf("/%s", url)) } hx-swap="transition:true"
-  class="btn btn-ghost px-3 absolute top-0 left-0">
-  <i class="fa-solid fa-arrow-left-long text-2xl"></i>
-</a>
-<script>
+	<a
+		id="back_button"
+		href={ templ.URL(fmt.Sprintf("/%s", url)) }
+		hx-swap="transition:true"
+		hx-boost="false"
+		class="btn btn-ghost px-3 absolute top-0 left-0"
+	>
+		<i class="fa-solid fa-arrow-left-long text-2xl"></i>
+	</a>
+	<script>
   function swapClasses(event) {
-    console.log("did we enter here")
     const element = event.target;
     const container = element.closest('.sample-transition');
 

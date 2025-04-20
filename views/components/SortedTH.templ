@@ -1,0 +1,33 @@
+package components
+
+import (
+	"fmt"
+	"github.com/gonext-tech/internal/functions"
+	"github.com/gonext-tech/internal/queries"
+)
+
+templ SortedTH(name, title, table string, queries queries.InvoiceQueryParams) {
+	<th scope="col" class="py-3.5 px-4 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+		<button
+			hx-get={ functions.GetLink(name, table, queries) }
+			hx-target={ fmt.Sprintf("#%s-table", table) }
+			hx-headers='{"X-Partial-Content": "true"}'
+			class={ templ.KV("font-bold ", queries.SortBy == name) }
+		>
+			<span class=" capitalize">{ title } </span>
+			if queries.SortBy == name {
+				if queries.OrderBy == "desc" {
+					<i class="fa-solid fa-arrow-up-wide-short"></i>
+				} else {
+					<i class="fa-solid fa-arrow-down-wide-short"></i>
+				}
+			}
+		</button>
+	</th>
+}
+
+templ TH(title string) {
+	<th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+		{ title }
+	</th>
+}

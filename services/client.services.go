@@ -4,84 +4,80 @@ import (
 	"time"
 
 	"github.com/gonext-tech/internal/models"
+	"github.com/gonext-tech/internal/queries"
 	"gorm.io/gorm"
 )
 
-func NewClientService(u models.Client, uStore *gorm.DB) *ClientServices {
+func NewClientService(uStore *gorm.DB) *ClientServices {
 	return &ClientServices{
-		Client: u,
-		DB:     uStore,
+		DB: uStore,
 	}
 }
 
 type ClientServices struct {
-	Client models.Client
-	DB     *gorm.DB
+	DB *gorm.DB
 }
 
-func (cs *ClientServices) GetALL(limit, page int, orderBy, sortBy, searchTerm, status string) ([]models.Client, models.Meta, error) {
+func (cs *ClientServices) GetALL(query queries.InvoiceQueryParams) ([]models.Client, models.Meta, error) {
 	var clients []models.Client
-	query := cs.DB.Preload("Invoices").Preload("Projects")
-	totalQuery := cs.DB.Preload("Invoices").Preload("Projects")
+	var totalCount int64
 
-	if searchTerm != "" {
-		searchTermWithWildcard := "%" + searchTerm + "%"
-		query = query.Where("name LIKE ?", searchTermWithWildcard)
-		totalQuery = query
-	}
-
-	if status != "" {
-		query = query.Where("status = ?", status)
-		totalQuery = totalQuery.Where("status = ?", status)
-	}
-	offset := (page - 1) * limit
-	query.Order(sortBy + " " + orderBy).Offset(offset).Limit(limit).Find(&clients)
-	totalRecords := int64(0)
-	totalQuery.Model(&cs.Client).Count(&totalRecords)
+	dbQuery := cs.buildInvoicesURL(query)
+	dbQuery.Session(&gorm.Session{}).Model(&models.Invoice{}).Count(&totalCount)
+	offset := (query.Page - 1) * query.Limit
+	dbQuery.Order(query.SortBy + " " + query.OrderBy).Offset(offset).Limit(query.Limit).Find(&clients)
 	lastPage := int64(0)
-	if limit > 0 {
-		lastPage = (totalRecords + int64(limit) - 1) / int64(limit)
+	if query.Limit > 0 {
+		lastPage = (totalCount + int64(query.Limit) - 1) / int64(query.Limit)
 	}
 	meta := models.Meta{
-		CurrentPage: page,
-		TotalCount:  int(totalRecords),
+		CurrentPage: query.Page,
+		TotalCount:  int(totalCount),
 		LastPage:    int(lastPage),
-		Limit:       limit,
+		Limit:       query.Limit,
 	}
 
 	return clients, meta, nil
 }
 
-func (cs *ClientServices) GetID(id string) (models.Client, error) {
+func (cs *ClientServices) GetID(id string) (*models.Client, error) {
 	var client models.Client
 	result := cs.DB.Where("id = ?", id).First(&client)
 	if result.Error != nil {
-		return cs.Client, result.Error
+		return &models.Client{}, result.Error
 	}
-	return client, nil
+	return &client, nil
 }
 
-func (cs *ClientServices) Create(client models.Client) (models.Client, error) {
-	if result := cs.DB.Create(&client); result.Error != nil {
-		return cs.Client, result.Error
-	}
-	return client, nil
+func (cs *ClientServices) Create(client *models.Client) error {
+	return cs.DB.Create(&client).Error
+}
+func (cs *ClientServices) Update(client *models.Client) error {
+	return cs.DB.Model(&client).Updates(client).Error
 }
 
-func (cs *ClientServices) Update(client models.Client) (models.Client, error) {
-
-	if result := cs.DB.Model(&client).Updates(client); result.Error != nil {
-		return cs.Client, result.Error
-	}
-	return client, nil
-}
-
-func (cs *ClientServices) Delete(client models.Client) error {
+func (cs *ClientServices) Delete(client *models.Client) error {
 	client.Deleted = true
 	now := time.Now()
 	client.DeletedAt = &now
-	if result := cs.DB.Model(&client).Updates(client); result.Error != nil {
-		return result.Error
+	return cs.DB.Model(&client).Updates(client).Error
+}
+
+func (cs *ClientServices) buildInvoicesURL(query queries.InvoiceQueryParams) *gorm.DB {
+	dbQuery := cs.DB.
+		Preload("Projects").
+		Preload("Invoices")
+
+	if query.SearchTerm != "" {
+		term := "%" + query.SearchTerm + "%"
+		dbQuery = dbQuery.Where("name LIKE ?", term)
 	}
-	return nil
+	if query.Status != "" {
+		dbQuery = dbQuery.Where("status = ?", query.Status)
+	}
+	if query.InvoiceType != "" {
+		dbQuery = dbQuery.Where("invoice_type = ?", query.InvoiceType)
+	}
+	return dbQuery
+
 }

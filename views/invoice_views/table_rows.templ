@@ -1,87 +1,141 @@
 package invoice_views
 
 import (
-	"fmt"
-	"github.com/gonext-tech/internal/models"
-	"strings"
+"fmt"
+"github.com/gonext-tech/internal/functions"
+"github.com/gonext-tech/internal/models"
+"github.com/gonext-tech/internal/views/components"
+"strings"
 )
 
 templ TableRows(invoices []models.Invoice) {
-	if len(invoices) > 0 {
-		for index , s := range invoices {
-			<tr>
-				<td class="px-4 py-4 text-sm whitespace-nowrap">
-					<h4 class="text-gray-700 dark:text-gray-200">{ fmt.Sprintf("#%d",s.ID) }</h4>
-				</td>
-				<td class="px-4 py-4 text-sm whitespace-nowrap">
-					<h4 class="text-gray-700 dark:text-gray-200">{ fmt.Sprintf("$%.2f",s.Amount) }</h4>
-				</td>
-				<td class="px-4 py-4 text-sm whitespace-nowrap">
-					<h4 class="text-gray-700 dark:text-gray-200">{ s.InvoiceDate.Format("Jan, 02 2006") }</h4>
-				</td>
-				<td class="px-4 py-4 text-sm font-medium whitespace-nowrap">
-					<div
-						class={ "inline text-sm text-white text-center  font-normal capitalize px-2 py-1 rounded-lg" ,
-      templ.KV("bg-green-500", s.InvoiceType=="PAYIN" ) , templ.KV("bg-red-500", s.InvoiceType=="PAYOUT" ) }
-					>
-						{ strings.ToLower(s.InvoiceType) }
-					</div>
-				</td>
-				<td class="px-4 py-4 text-sm whitespace-nowrap">
-					<h4 class="text-gray-700 dark:text-gray-200">{ s.Client.Name }</h4>
-				</td>
-				<td class="px-4 py-4 text-sm whitespace-nowrap">
-					<h4 class="text-gray-700 dark:text-gray-200">{ s.Project.Name }</h4>
-				</td>
-				<td class="px-4 py-4 text-sm whitespace-nowrap flex gap-x-2 items-center justify-end">
-					<div class={ "dropdown  dropdown-left" , templ.KV("dropdown-top dropdown-end", index + 1==len(invoices) ) }>
-						<div tabindex="0" role="button">
-							<button
-								class="px-1 py-1 text-gray-500 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:bg-gray-100"
-							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke-width="1.5"
-									stroke="currentColor"
-									class="w-6 h-6"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z"
-									></path>
-								</svg>
-							</button>
-						</div>
-						<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-							<li>
-								<a hx-swap="transition:true" href={ templ.URL(fmt.Sprintf("/invoice/view/%d", s.ID)) }>
-									View
-								</a>
-							</li>
-							<li>
-								<a hx-swap="transition:true" href={ templ.URL(fmt.Sprintf("/invoice/edit/%d", s.ID)) }>
-									Edit
-								</a>
-							</li>
-							<li>
-								<button
-									hx-swap="transition:true"
-									hx-delete={ fmt.Sprintf("/invoice/%d", s.ID) }
-									hx-target="body"
-									hx-confirm="are you sure you wanna delete this?"
-								>Delete</button>
-							</li>
-						</ul>
-					</div>
-				</td>
-			</tr>
-		}
-	} else {
-		<tr>
-			<td class="text-center py-5" colspan="7">No invoice available... add some </td>
-		</tr>
-	}
+if len(invoices) > 0 {
+for index , s := range invoices {
+<tr>
+  <td class="px-4 py-4 text-sm whitespace-nowrap">
+    <a href={ templ.URL(fmt.Sprintf("/invoice/view/%d", s.ID)) }>
+      <h4 class="text-gray-700 dark:text-gray-200 hover:text-blue-600 hover:underline">{ fmt.Sprintf("#%d",s.ID) }</h4>
+    </a>
+  </td>
+  <td class="px-4 py-4 text-sm whitespace-nowrap">
+    <h4 class="">
+      <span class="text-[11px]">Amount:</span>
+      <span class="text-gray-700 dark:text-gray-200">{ fmt.Sprintf("$%.2f",s.Amount) }</span>
+    </h4>
+    <h4>
+      <span class="text-[11px]">Discount:</span>
+      <span class="text-gray-700 dark:text-gray-200">{ fmt.Sprintf("$%.2f",s.Discount) }</span>
+    </h4>
+    <h4>
+      <span class="text-[11px]">Total:</span>
+      <span class="text-green-300 dark:text-green-600">{ fmt.Sprintf("$%.2f",s.Total) }</span>
+    </h4>
+  </td>
+  <td class="px-4 py-4 text-sm whitespace-nowrap ">
+    <h4>
+      <span class="text-[11px]">Paid Amount:</span>
+      <span class="text-green-300 dark:text-green-600">{ fmt.Sprintf("$%.2f",s.AmountPaid) }</span>
+    </h4>
+    <h4>
+      <span class="text-[11px]">Paid To:</span>
+      <span class="text-gray-700 dark:text-gray-200">{ s.PaidTo.Name }</span>
+    </h4>
+    <h4>
+      <span class="text-[11px]">Paid At:</span>
+      <span class="text-gray-700 dark:text-gray-200">{ functions.PrintDate(s.PaidAt) }</span>
+    </h4>
+  </td>
+  <td class="px-4 py-4 text-sm whitespace-nowrap">
+    <h4>
+      <span class="text-[11px]">Due:</span>
+      <span class="text-gray-700 dark:text-gray-200">{ functions.PrintDate(&s.DueDate) }</span>
+    </h4>
+    <h4>
+      <span class="text-[11px]">Issue:</span>
+      <span class="text-gray-700 dark:text-gray-200">{ functions.PrintDate(&s.IssueDate) }</span>
+    </h4>
+  </td>
+  <td class="px-4 py-4 text-sm font-medium whitespace-nowrap">
+    <div class={ functions.GetStatusClass(s.InvoiceType) }>
+      { strings.ToLower(s.InvoiceType) }
+    </div>
+  </td>
+  <td class="px-4 py-4 text-sm font-medium whitespace-nowrap">
+    <div class={ functions.GetStatusClass(s.PaymentStatus) }>
+      { strings.ToLower(s.PaymentStatus) }
+    </div>
+  </td>
+  <td class="px-4 py-4 text-sm whitespace-nowrap">
+    <h4>
+      <span class="text-[11px]">By:</span>
+      <span class="text-gray-700 dark:text-gray-200">{ s.CreatedBy.Name }</span>
+    </h4>
+    <h4>
+      <span class="text-[11px]">At:</span>
+      <span class="text-gray-700 dark:text-gray-200">{ functions.PrintDate(&s.CreatedAt) }</span>
+    </h4>
+  </td>
+  <td class="px-4 py-4 text-sm whitespace-nowrap">
+    <h4>
+      <span class="text-[11px]">Client:</span>
+      <span class="text-gray-700 dark:text-gray-200">{ functions.PrintName(s.Client.Name) }</span>
+    </h4>
+    <h4>
+      <span class="text-[11px]">Project:</span>
+      <span class="text-gray-700 dark:text-gray-200">{ functions.PrintName(s.Project.Name) }</span>
+    </h4>
+    <h4>
+      <span class="text-[11px]">Category:</span>
+      <span class="text-gray-700 dark:text-gray-200">{ functions.PrintName(s.Category) }</span>
+    </h4>
+  </td>
+  <td class="px-4 py-4 text-sm whitespace-nowrap flex gap-x-2 items-center justify-end">
+    if s.PaymentStatus != "PAID" && s.Total != s.AmountPaid {
+    @components.PayModal(s.ID, s.Total-s.AmountPaid, "")
+    }
+    if s.PaymentStatus == "PAID" && s.Total == s.AmountPaid {
+    <div class="tooltip" data-tip="print">
+      <a href={ templ.URL(fmt.Sprintf("/invoice/pdf/%d", s.ID)) } class="btn btn-square btn-sm btn-secondary  mt-2"
+        target="_blank">
+        <i class="fa-solid fa-file-pdf"></i>
+      </a>
+    </div>
+    }
+    <div class={ "dropdown  dropdown-left" , templ.KV("dropdown-top dropdown-end", index + 1==len(invoices) ) }>
+      <div tabindex="0" role="button">
+        <button
+          class="px-1 py-1 text-gray-500 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:bg-gray-100 mt-3">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z">
+            </path>
+          </svg>
+        </button>
+      </div>
+      <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+        <li>
+          <a hx-swap="transition:true" href={ templ.URL(fmt.Sprintf("/invoice/view/%d", s.ID)) }>
+            View
+          </a>
+        </li>
+        <li>
+          <a hx-swap="transition:true" href={ templ.URL(fmt.Sprintf("/invoice/edit/%d", s.ID)) }>
+            Edit
+          </a>
+        </li>
+        <li>
+          <button hx-swap="transition:true" hx-delete={ fmt.Sprintf("/invoice/%d", s.ID) } hx-target="body"
+            hx-confirm="are you sure you wanna delete this?">Delete</button>
+        </li>
+      </ul>
+    </div>
+  </td>
+</tr>
+}
+} else {
+<tr>
+  <td class="text-center py-5" colspan="8">No invoice available... add some </td>
+</tr>
+}
 }
