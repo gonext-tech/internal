@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"image"
 	"io"
+	"log"
 	"mime/multipart"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
+	"github.com/chai2010/webp"
 	"github.com/disintegration/imaging"
 	"github.com/google/uuid"
 	"github.com/mitchellh/go-homedir"
@@ -49,6 +51,9 @@ func (us *UploadServices) Upload(file *multipart.FileHeader, project string, fol
 	if err != nil {
 		return "", err
 	}
+
+	log.Println("err", err)
+	log.Println("imageeee", src)
 	defer src.Close()
 
 	// Decode image
@@ -56,6 +61,7 @@ func (us *UploadServices) Upload(file *multipart.FileHeader, project string, fol
 	if err != nil {
 		return "", err
 	}
+	log.Println("imageeee", img)
 
 	// Resize image if necessary
 	img = us.resizeImage(img)
@@ -86,9 +92,10 @@ func (us *UploadServices) Upload(file *multipart.FileHeader, project string, fol
 	defer dst.Close()
 
 	// Save resized image to destination
-	if err := imaging.Encode(dst, img, imaging.PNG); err != nil {
+	if err := webp.Encode(dst, img, &webp.Options{Quality: 80}); err != nil {
 		return "", err
 	}
+	log.Println("err-aferencode", err)
 	// Generate URL for the uploaded image
 
 	bucketURL := os.Getenv("BUCKET_URL")
@@ -178,5 +185,6 @@ func (us *UploadServices) generateFileName(originalName string) string {
 
 func (us *UploadServices) isValidImageExtension(filename string) bool {
 	ext := strings.ToLower(filepath.Ext(filename))
+	log.Println("extt", ext)
 	return allowedExtensions[ext]
 }
