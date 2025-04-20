@@ -5,7 +5,7 @@ import (
 	"github.com/gonext-tech/internal/views/components"
 )
 
-templ Update(client models.Client) {
+templ Update(client *models.Client) {
 	<section class=" bg-base-200 rounded-md relative">
 		@components.BackButton("client")
 		<div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">

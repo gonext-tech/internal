@@ -4,10 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/gonext-tech/internal/models"
+	"github.com/gonext-tech/internal/queries"
 	"github.com/gonext-tech/internal/views/auth_views"
 	"github.com/gonext-tech/internal/views/components"
 	"golang.org/x/crypto/bcrypt"
@@ -29,7 +29,7 @@ const (
 /********** Handlers for Auth Views **********/
 
 type AuthService interface {
-	GetALL(limit, page int, orderBy, sortBy, searchTerm, statuss string) ([]models.Admin, models.Meta, error)
+	GetALL(queries.InvoiceQueryParams) ([]models.Admin, models.Meta, error)
 	CreateUser(u models.Admin, passwordConfirm string) error
 	CheckEmail(email string) (models.Admin, error)
 	// GetUserById(id int) (services.User, error)
@@ -116,25 +116,10 @@ func (ah *AuthHandler) RegisterHandler(c echo.Context) error {
 }
 
 func (ah *AuthHandler) SearchUser(c echo.Context) error {
-	page, _ := strconv.Atoi(c.QueryParam("page"))
-	if page <= 0 {
-		page = 1
-	}
-	limit, _ := strconv.Atoi(c.QueryParam("limit"))
-	if limit <= 0 {
-		limit = 5
-	}
-	orderBy := c.QueryParam("orderBy")
-	if orderBy == "" {
-		orderBy = "desc"
-	}
-	sortBy := c.QueryParam("sortBy")
-	if sortBy == "" {
-		sortBy = "id"
-	}
-	status := c.QueryParam("status")
-	searchTerm := c.QueryParam("searchTerm")
-	users, _, err := ah.AdminServices.GetALL(limit, page, orderBy, sortBy, searchTerm, status)
+	var queries queries.InvoiceQueryParams
+	queries.SetDefaults()
+	queries.Limit = 5
+	users, _, err := ah.AdminServices.GetALL(queries)
 	if err != nil {
 		isError = false
 		errorMsg = "can't fetch projects"

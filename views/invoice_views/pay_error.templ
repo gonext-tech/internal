@@ -1,0 +1,11 @@
+package invoice_views
+
+import "fmt"
+
+templ PayError(id uint, errorMsg string) {
+<div id={ fmt.Sprintf("pay-error-%d", id) }>
+  if errorMsg != "" {
+  <h3 class="text-[11px] text-red-600 mb-2">{ errorMsg }</h3>
+  }
+</div>
+}

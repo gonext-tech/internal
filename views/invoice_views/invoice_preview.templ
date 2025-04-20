@@ -1,0 +1,125 @@
+package invoice_views
+
+import (
+"fmt"
+"github.com/gonext-tech/internal/models"
+)
+
+templ PrintInvoicePage(invoice *models.Invoice) {
+<html>
+
+<head>
+  <title>{ fmt.Sprintf("Invoice #%d", invoice.ID) }</title>
+  <style>
+    @media print {
+      body {
+        width: 210mm;
+        height: 297mm;
+        margin: 0;
+      }
+    }
+
+    body {
+      font-family: sans-serif;
+      width: 210mm;
+      min-height: 297mm;
+      padding: 20mm;
+      box-sizing: border-box;
+      color: #333;
+    }
+
+    .header,
+    .footer {
+      text-align: center;
+    }
+
+    .details {
+      margin-top: 20px;
+      margin-bottom: 30px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    th,
+    td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+    }
+
+    .sub-title {
+      margin-top: 30px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    h1,
+    h2 {
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <h1>Your Company Name</h1>
+    <p>123 Business St, City</p>
+    <p>Phone: +123456789</p>
+  </div>
+  <div class="details">
+    <h2>{ fmt.Sprintf("Invoice #%d", invoice.ID) }</h2>
+    <p><strong>Client:</strong> { invoice.Client.Name }</p>
+    <p><strong>Phone:</strong> { invoice.Client.Phone }</p>
+    <p><strong>Address:</strong> { invoice.Client.Address }</p>
+    <p><strong>Date:</strong> { invoice.PaidAt.Format("Jan 2, 2006 - 3:04 PM") }</p>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th>Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Main Invoice</td>
+        <td>${ fmt.Sprintf("%.2f", invoice.AmountPaid) }</td>
+      </tr>
+    </tbody>
+  </table>
+  if len(invoice.SubInvoices) > 0 {
+  <div class="sub-title">Sub Invoices</div>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Paid At</th>
+        <th>Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      for _, sub := range invoice.SubInvoices {
+      <tr>
+        <td>{ fmt.Sprintf("#%d",sub.ID) }</td>
+        <td>{ sub.PaidAt.Format("Jan 2, 2006 - 3:04 PM") }</td>
+        <td>${ fmt.Sprintf("%.2f", sub.AmountPaid) }</td>
+      </tr>
+      }
+    </tbody>
+  </table>
+  }
+  <div class="footer">
+    <p><strong>Total:</strong> ${ fmt.Sprintf("%.2f", invoice.Total) }</p>
+    <p><strong>Paid To:</strong> { invoice.PaidTo.Name }</p>
+  </div>
+  <script>
+    window.onload = () => window.print();
+  </script>
+</body>
+
+</html>
+}

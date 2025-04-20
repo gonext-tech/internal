@@ -3,19 +3,19 @@ package handlers
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/gonext-tech/internal/models"
+	"github.com/gonext-tech/internal/queries"
 	"github.com/gonext-tech/internal/views/project_views"
 	"github.com/labstack/echo/v4"
 )
 
 type ProjectService interface {
-	GetALL(limit, page int, orderBy, sortBy, searchTerm, status string) ([]models.Project, models.Meta, error)
-	GetID(id string) (models.Project, error)
-	Create(*models.Project) (*models.Project, error)
-	Update(models.Project) (models.Project, error)
-	Delete(models.Project) error
+	GetALL(queries.InvoiceQueryParams) ([]models.Project, models.Meta, error)
+	GetID(id string) (*models.Project, error)
+	Create(*models.Project) error
+	Update(*models.Project) error
+	Delete(*models.Project) error
 }
 
 type ProjectHandler struct {
@@ -38,25 +38,24 @@ func NewProjectHandler(ps ProjectService, us UploadService, ss ServerService, u 
 
 func (ph *ProjectHandler) ListPage(c echo.Context) error {
 	isError = false
-	page, _ := strconv.Atoi(c.QueryParam("page"))
-	if page <= 0 {
-		page = 1
+	var query queries.InvoiceQueryParams
+	if err := c.Bind(&query); err != nil {
+		errorMsg = "can't read query params"
+		setFlashmessages(c, "error", errorMsg)
 	}
-	limit, _ := strconv.Atoi(c.QueryParam("limit"))
-	if limit <= 0 {
-		limit = 20
+	query.SetDefaults()
+
+	projects, meta, err := ph.ProjectServices.GetALL(query)
+
+	if c.Request().Header.Get("X-Partial-Content") == "true" {
+		// Return only the table content
+		return renderView(c, project_views.List(
+			fmt.Sprintf("Project List(%d)", meta.TotalCount),
+			projects,
+			meta,
+			query,
+		))
 	}
-	orderBy := c.QueryParam("orderBy")
-	if orderBy == "" {
-		orderBy = "desc"
-	}
-	sortBy := c.QueryParam("sortBy")
-	if sortBy == "" {
-		sortBy = "id"
-	}
-	status := c.QueryParam("status")
-	searchTerm := c.QueryParam("searchTerm")
-	projects, meta, err := ph.ProjectServices.GetALL(limit, page, orderBy, sortBy, searchTerm, status)
 	if err != nil {
 		isError = false
 		errorMsg = "can't fetch projects"
@@ -70,18 +69,6 @@ func (ph *ProjectHandler) ListPage(c echo.Context) error {
 		errorMsg = "can't fetch projects"
 	}
 
-	var params models.ParamResponse
-	if searchTerm != "" {
-		params.Search = searchTerm
-	}
-	if status != "" {
-		params.Status = status
-	}
-	params.Page = page
-	params.Limit = limit
-	params.SortBy = sortBy
-	params.OrderBy = orderBy
-
 	titlePage := fmt.Sprintf(
 		"Project List(%d)", meta.TotalCount)
 	return renderView(c, project_views.Index(
@@ -91,7 +78,7 @@ func (ph *ProjectHandler) ListPage(c echo.Context) error {
 		isError,
 		getFlashmessages(c, "error"),
 		getFlashmessages(c, "success"),
-		project_views.List(titlePage, projects, meta, params),
+		project_views.List(titlePage, projects, meta, query),
 	))
 }
 
@@ -115,16 +102,19 @@ func (ph *ProjectHandler) ViewPage(c echo.Context) error {
 		isError,
 		getFlashmessages(c, "error"),
 		getFlashmessages(c, "success"),
-		project_views.View(project),
+		project_views.View(*project),
 	))
 }
 
 func (ph *ProjectHandler) CreatePage(c echo.Context) error {
 	isError = false
 	titlePage := "Project | Create"
-	servers, _, _ := ph.ServerServices.GetALL(50, 1, "desc", "id", "", "UP")
-	leads, _, _ := ph.AdminServices.GetALL(50, 1, "desc", "id", "", "ACTIVE")
-	clients, _, _ := ph.ClientServices.GetALL(50, 1, "desc", "id", "", "ACTIVE")
+	queries := queries.InvoiceQueryParams{}
+	queries.SearchDefaults()
+	leads, _, _ := ph.AdminServices.GetALL(queries)
+	clients, _, _ := ph.ClientServices.GetALL(queries)
+	queries.Status = "UP"
+	servers, _, _ := ph.ServerServices.GetALL(queries)
 	return renderView(c, project_views.Index(
 		titlePage,
 		c.Get(email_key).(string),
@@ -142,7 +132,7 @@ func (ph *ProjectHandler) CreateHandler(c echo.Context) error {
 		setFlashmessages(c, "error", "cannot parse project body")
 		return ph.CreatePage(c)
 	}
-	_, err := ph.ProjectServices.Create(&project)
+	err := ph.ProjectServices.Create(&project)
 	if err != nil {
 		setFlashmessages(c, "error", err.Error())
 		return ph.CreatePage(c)
@@ -151,7 +141,7 @@ func (ph *ProjectHandler) CreateHandler(c echo.Context) error {
 
 	if len(imageURLs) > 0 {
 		project.File = imageURLs[0]
-		_, err = ph.ProjectServices.Update(project)
+		err = ph.ProjectServices.Update(&project)
 		if err != nil {
 			setFlashmessages(c, "error", "Can't create project")
 			return ph.CreatePage(c)
@@ -172,9 +162,13 @@ func (ph *ProjectHandler) UpdatePage(c echo.Context) error {
 		setFlashmessages(c, "error", errorMsg)
 	}
 
-	servers, _, _ := ph.ServerServices.GetALL(50, 1, "desc", "id", "", "UP")
-	leads, _, _ := ph.AdminServices.GetALL(50, 1, "desc", "id", "", "ACTIVE")
-	clients, _, _ := ph.ClientServices.GetALL(50, 1, "desc", "id", "", "ACTIVE")
+	queries := queries.InvoiceQueryParams{}
+	queries.SearchDefaults()
+
+	leads, _, _ := ph.AdminServices.GetALL(queries)
+	clients, _, _ := ph.ClientServices.GetALL(queries)
+	queries.Status = "UP"
+	servers, _, _ := ph.ServerServices.GetALL(queries)
 
 	return renderView(c, project_views.Index(
 		titlePage,
@@ -183,7 +177,7 @@ func (ph *ProjectHandler) UpdatePage(c echo.Context) error {
 		isError,
 		getFlashmessages(c, "error"),
 		getFlashmessages(c, "success"),
-		project_views.Update(project, servers, leads, clients),
+		project_views.Update(*project, servers, leads, clients),
 	))
 }
 
@@ -197,7 +191,7 @@ func (ph *ProjectHandler) UpdateHandler(c echo.Context) error {
 		setFlashmessages(c, "error", errorMsg)
 		return ph.UpdatePage(c)
 	}
-	if err := c.Bind(&project); err != nil {
+	if err := c.Bind(project); err != nil {
 		errorMsg = "cannot parse the project body"
 		setFlashmessages(c, "error", errorMsg)
 		return ph.UpdatePage(c)
@@ -208,7 +202,7 @@ func (ph *ProjectHandler) UpdateHandler(c echo.Context) error {
 		project.File = imageURLs[0]
 	}
 
-	project, err = ph.ProjectServices.Update(project)
+	err = ph.ProjectServices.Update(project)
 	if err != nil {
 		errorMsg = fmt.Sprintf("project with id %s not found", id)
 		setFlashmessages(c, "error", errorMsg)

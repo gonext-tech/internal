@@ -1,41 +1,148 @@
 package invoice_views
 
 import (
-	"fmt"
-	"github.com/gonext-tech/internal/models"
+"fmt"
+"github.com/gonext-tech/internal/functions"
+"github.com/gonext-tech/internal/models"
+"github.com/gonext-tech/internal/queries"
+"github.com/gonext-tech/internal/views/components"
 )
 
-templ View(invoice models.Invoice) {
-	<div class="container mx-auto p-6">
-		<!-- Shop Details Section -->
-		<div class="rounded-lg shadow p-6 mb-4">
-			<div class="flex items-center gap-x-10">
-				<!-- Shop Image -->
-				<div class="mb-4"></div>
-				<div>
-					<!-- Shop Information -->
-					<div class="mb-4">
-						<h1 class="text-2xl font-bold">{ fmt.Sprintf("#%d",invoice.ID) }</h1>
-						<p class="text-gray-600">
-							{ invoice.InvoiceType } - { invoice.InvoiceDate.Format("Jan, 02 2006") } - { invoice.Project.Name }
-						</p>
-						<p class="text-gray-600"><strong>Address:</strong> { invoice.Description }</p>
-						<p class="text-gray-600"><strong>Category:</strong> { fmt.Sprintf("$%.2f", invoice.Amount) }</p>
-					</div>
-					<!-- Buttons for Edit and Add User -->
-					<div class="flex space-x-4">
-						<!-- Edit Button -->
-						<a
-							href={ templ.URL(fmt.Sprintf("/invoice/edit/%d", invoice.ID)) }
-							class="btn btn-primary btn-sm"
-							hx-swap="transition:true"
-						>
-							Edit invoice
-						</a>
-						<!-- Add User Button -->
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+templ View(invoice *models.Invoice) {
+@templ.JSONScript("progress-bar-data", invoice)
+<!-- Invoice Header -->
+<section class=" bg-base-200 rounded-md relative">
+  @components.BackButton("invoice")
+  <div class="dark:text-white p-10">
+    <div class="flex flex-col md:flex-row md:justify-between md:items-center">
+      <div class="mb-4 md:mb-0">
+        <h1 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center">
+          Invoice
+          <span class="ml-3 text-blue-600">{ fmt.Sprintf("#%d",invoice.ID) }</span>
+        </h1>
+        <div class="mt-2 text-gray-600 dark:text-gray-200">{ invoice.InvoiceType }</div>
+      </div>
+      <div class="flex flex-col items-start md:items-end space-y-2">
+        <span
+          class="px-3 py-1 text-sm font-medium rounded-full border bg-green-100 text-green-800 border-green-200 inline-flex items-center">
+          <span class="w-2 h-2 rounded-full mr-2 bg-green-500"></span>
+          { invoice.PaymentStatus }
+        </span>
+        <div class="text-sm text-gray-500 dark:text-gray-200">
+          Issued: { functions.GetDateValue(&invoice.IssueDate) }
+        </div>
+        <div class="text-sm text-gray-500 dark:text-gray-200">Due: { functions.GetDateValue(&invoice.DueDate) }</div>
+      </div>
+    </div>
+  </div>
+  <!-- Client & Project Info -->
+  <div class=" p-6 mb-6">
+    <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Client & Project Information</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-gray-700 rounded-lg p-4 hover:shadow-md transition-all duration-300">
+        <h3 class="text-sm font-medium text-gray-700 dark:text-white mb-1">Client</h3>
+        <p class="text-lg font-semibold text-gray-800 dark:text-white">{ invoice.Client.Name }</p>
+      </div>
+      <div class="bg-gray-700 rounded-lg p-4 hover:shadow-md transition-all duration-300">
+        <h3 class="text-sm font-medium text-gray-200 mb-1">Project</h3>
+        <p class="text-lg font-semibold text-gray-200">{ invoice.Project.Name }</p>
+      </div>
+    </div>
+    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <h3 class="text-sm font-medium text-gray-200 mb-2">Issue Date</h3>
+        <p class="text-gray-200">{ functions.GetDateValue(&invoice.IssueDate) }</p>
+      </div>
+      <div>
+        <h3 class="text-sm font-medium text-gray-200 mb-2">Due Date</h3>
+        <p class="text-gray-200">{ functions.GetDateValue(&invoice.DueDate) }</p>
+      </div>
+    </div>
+  </div>
+  <!-- Financial Summary -->
+  <div class=" p-6 mb-6">
+    <h2 class="text-xl font-semibold text-gray-200 mb-4">Financial Summary</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-blue-50 rounded-lg p-4 hover:shadow-md transition-all duration-300">
+        <h3 class="text-sm font-medium text-blue-700 mb-1">Total Amount</h3>
+        <p class="text-2xl font-bold text-blue-800">{ fmt.Sprintf("$%.2f",invoice.Total) }</p>
+      </div>
+      <div class="bg-green-50 rounded-lg p-4 hover:shadow-md transition-all duration-300">
+        <h3 class="text-sm font-medium text-green-700 mb-1">Total Paid</h3>
+        <p class="text-2xl font-bold text-green-800">{ fmt.Sprintf("$%.2f",invoice.AmountPaid) }</p>
+      </div>
+      <div class="bg-amber-50 rounded-lg p-4 hover:shadow-md transition-all duration-300">
+        <h3 class="text-sm font-medium text-amber-700 mb-1">Remaining</h3>
+        <p class="text-2xl font-bold text-amber-800">{ fmt.Sprintf("$%.2f",invoice.Total - invoice.AmountPaid) }</p>
+      </div>
+    </div>
+    <!-- Progress Bar -->
+    <div class="mt-6">
+      <div class="flex justify-between mb-1">
+        <span class="text-sm font-medium text-gray-200">Payment Progress</span>
+        <span class="text-sm font-medium text-gray-200">
+          { fmt.Sprintf("%.2f",(invoice.AmountPaid/invoice.Total)*100) }%
+        </span>
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-2.5">
+        <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-700 ease-out"></div>
+      </div>
+    </div>
+    <!-- Summary Section -->
+    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="border-t border-gray-100 pt-4">
+        <div class="flex justify-between py-2">
+          <span class="text-gray-200">Subtotal</span>
+          <span class="font-medium">{ fmt.Sprintf("$%.2f",invoice.Amount) }</span>
+        </div>
+        <div class="flex justify-between py-2">
+          <span class="text-gray-200">Discount</span>
+          <span class="font-medium text-red-600">-{ fmt.Sprintf("$%.2f",invoice.Discount) }</span>
+        </div>
+        <div class="flex justify-between py-2 border-t border-gray-100 mt-2 pt-2">
+          <span class="font-semibold">Total</span>
+          <span class="font-bold">{ fmt.Sprintf("$%.2f",invoice.Total) }</span>
+        </div>
+      </div>
+      <div class="border-t border-gray-100 pt-4">
+        <div class="flex justify-between py-2">
+          <span class="text-gray-200">Payment Date</span>
+          <span class="font-medium">{ functions.GetDateValue(invoice.PaidAt) }</span>
+        </div>
+        <div class="flex justify-between py-2">
+          <span class="text-gray-200">Paid To</span>
+          <span class="font-medium">{ invoice.PaidTo.Name }</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Related Invoices -->
+  <div class=" p-6 mb-6">
+    <h2 class="text-xl font-semibold text-gray-200 mb-4">Related Invoices</h2>
+    <div>
+      if len(invoice.SubInvoices) == 0 {
+      <p class="text-gray-500 italic">No related invoices found.</p>
+      } else {
+      <div class="overflow-hidden border border-gray-200 dark:border-gray-700 md:rounded-lg">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead class="bg-gray-50 dark:bg-gray-800">
+            @TableHeader(queries.InvoiceQueryParams{})
+          </thead>
+          <tbody id="sub-invoices" class="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
+            @TableRows(invoice.SubInvoices)
+          </tbody>
+        </table>
+      </div>
+      }
+    </div>
+  </div>
+</section>
+<script>
+  const data = JSON.parse(document.getElementById('progress-bar-data').textContent);
+  let percent = (data.AmountPaid / data.Total) * 100
+  const progressBar = document.getElementById('progress-bar')
+  if (percent > 100) percent = 100
+  if (progressBar && data) progressBar.style.width = `${percent}%`;
+
+</script>
 }

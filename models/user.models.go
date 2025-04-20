@@ -5,17 +5,19 @@ import (
 )
 
 type Admin struct {
-	ID        uint      `json:"id" gorm:"primaryKey"`
-	Email     string    `form:"email" gorm:"unique"`
-	Name      string    `form:"name"`
-	Image     string    `form:"image"`
-	Phone     string    `form:"phone"`
-	Address   string    `form:"address"`
-	Status    string    `form:"status" gorm:"default:ACTIVE"`
-	Password  string    `form:"-"`
-	Role      string    `form:"role" gorm:"default:USER"`
-	CreatedAt time.Time ` gorm:"autoCreateTime"`
-	UpdatedAt time.Time ` gorm:"autoUpdateTime"`
+	ID        uint       `json:"id" gorm:"primaryKey"`
+	Email     string     `form:"email" gorm:"unique"`
+	Name      string     `form:"name"`
+	Image     string     `form:"image"`
+	Phone     string     `form:"phone"`
+	Address   string     `form:"address"`
+	Status    string     `form:"status" gorm:"default:ACTIVE"`
+	Password  string     `form:"-"`
+	Role      string     `form:"role" gorm:"default:USER"`
+	CreatedAt time.Time  ` gorm:"autoCreateTime"`
+	UpdatedAt time.Time  ` gorm:"autoUpdateTime"`
+	Deleted   bool       `form:"-" gorm:"default:false"`
+	DeletedAt *time.Time `form:"-"`
 }
 
 type AdminBody struct {

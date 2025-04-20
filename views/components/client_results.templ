@@ -1,0 +1,55 @@
+package components
+
+import (
+"fmt"
+"github.com/gonext-tech/internal/models"
+"strconv"
+)
+
+templ SelectClient() {
+<div class="w-full">
+  <label for="client" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Client</label>
+  <input type="number" name="client_id" class="hidden" id="client_id" />
+  <div class="dropdown w-full">
+    <div tabindex="0" role="button" className="w-full">
+      <input hx-swap="transition:false" hx-trigger="load"
+        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+        type="search" name="searchTerm" id="client-search-input" placeholder="Search by name..." hx-get="/client/search"
+        hx-trigger="input changed delay:500ms, search" hx-target="#client-results" autocomplete="off" />
+    </div>
+    <ul tabindex="0" id="client-results"
+      class="dropdown-content mt-2 z-[1] menu p-2 shadow bg-base-100 rounded-md  w-64">
+      @ClientResult([]models.Client{})
+    </ul>
+  </div>
+</div>
+}
+
+templ ClientResult(clients []models.Client) {
+if len(clients) != 0 {
+for _, customer := range clients {
+<p id={ fmt.Sprintf("%d", customer.ID) } data-id={ strconv.Itoa(int(customer.ID)) } data-name={ fmt.Sprintf("%s",
+  customer.Name) } onclick="myFunction(event);" class="py-2 px-4 cursor-pointer hover:bg-slate-700" value={
+  strconv.Itoa(int(customer.ID)) }>
+  <span>{ customer.Name } </span>
+  <br />
+  <span>{ customer.Phone } </span>
+</p>
+}
+} else {
+<p class="text-center">
+  No Result found or
+  <br />
+  select client
+</p>
+}
+<script>
+  function myFunction(event) {
+    const clickedElement = event.target; // Get the clicked element
+    const owner_id = document.getElementById("client_id")
+    const search_input = document.getElementById("client-search-input")
+    search_input.value = clickedElement.dataset.name
+    owner_id.value = clickedElement.dataset.id
+  }
+</script>
+}

@@ -2,55 +2,44 @@ package services
 
 import (
 	"errors"
+	"time"
 
 	"github.com/gonext-tech/internal/models"
+	"github.com/gonext-tech/internal/queries"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
-func NewAdminService(u models.Admin, uStore *gorm.DB) *AdminServices {
+func NewAdminService(uStore *gorm.DB) *AdminServices {
 	return &AdminServices{
-		Admin: u,
-		DB:    uStore,
+		DB: uStore,
 	}
 }
 
 type AdminServices struct {
-	Admin models.Admin
-	DB    *gorm.DB
+	DB *gorm.DB
 }
 
-func (us *AdminServices) GetALL(limit, page int, orderBy, sortBy, searchTerm, status string) ([]models.Admin, models.Meta, error) {
-	var users []models.Admin
-	query := us.DB
-	totalQuery := us.DB
+func (us *AdminServices) GetALL(query queries.InvoiceQueryParams) ([]models.Admin, models.Meta, error) {
+	var admins []models.Admin
+	var totalCount int64
 
-	if searchTerm != "" {
-		searchTermWithWildcard := "%" + searchTerm + "%"
-		query = query.Where("name LIKE ?", searchTermWithWildcard)
-		totalQuery = query
-	}
-
-	if status != "" {
-		query = query.Where("status = ?", status)
-		totalQuery = totalQuery.Where("status = ?", status)
-	}
-	offset := (page - 1) * limit
-	query.Order(sortBy + " " + orderBy).Offset(offset).Limit(limit).Find(&users)
-	totalRecords := int64(0)
-	totalQuery.Model(&us.Admin).Count(&totalRecords)
+	dbQuery := us.buildInvoicesURL(query)
+	dbQuery.Session(&gorm.Session{}).Model(&models.Invoice{}).Count(&totalCount)
+	offset := (query.Page - 1) * query.Limit
+	dbQuery.Order(query.SortBy + " " + query.OrderBy).Offset(offset).Limit(query.Limit).Find(&admins)
 	lastPage := int64(0)
-	if limit > 0 {
-		lastPage = (totalRecords + int64(limit) - 1) / int64(limit)
+	if query.Limit > 0 {
+		lastPage = (totalCount + int64(query.Limit) - 1) / int64(query.Limit)
 	}
 	meta := models.Meta{
-		CurrentPage: page,
-		TotalCount:  int(totalRecords),
+		CurrentPage: query.Page,
+		TotalCount:  int(totalCount),
 		LastPage:    int(lastPage),
-		Limit:       limit,
+		Limit:       query.Limit,
 	}
 
-	return users, meta, nil
+	return admins, meta, nil
 }
 
 func (us *AdminServices) CreateUser(u models.Admin, passwordConfirm string) error {
@@ -72,41 +61,36 @@ func (us *AdminServices) CheckEmail(email string) (models.Admin, error) {
 	var admin models.Admin
 	result := us.DB.Where("email = ?", email).First(&admin)
 	if result.Error != nil {
-		return us.Admin, result.Error
+		return admin, result.Error
 	}
 	return admin, nil
 }
 
-func (us *AdminServices) GetID(id string) (models.Admin, error) {
+func (us *AdminServices) GetID(id string) (*models.Admin, error) {
 	var admin models.Admin
 	result := us.DB.Where("id = ?", id).First(&admin)
 	if result.Error != nil {
-		return us.Admin, result.Error
+		return nil, result.Error
 	}
-	return admin, nil
+	return &admin, nil
 }
 
-func (us *AdminServices) Create(u models.Admin) (models.Admin, error) {
-	if result := us.DB.Create(&u); result.Error != nil {
-		return us.Admin, result.Error
-	}
-	return u, nil
+func (us *AdminServices) Create(u *models.Admin) error {
+	return us.DB.Create(&u).Error
 }
 
-func (us *AdminServices) Update(u models.Admin) (models.Admin, error) {
+func (us *AdminServices) Update(u *models.Admin) error {
 
-	if result := us.DB.Model(&u).Updates(u); result.Error != nil {
-		return us.Admin, result.Error
-	}
-	return u, nil
+	return us.DB.Model(&u).Updates(u).Error
+
 }
 
-func (us *AdminServices) Delete(u models.Admin) error {
+func (us *AdminServices) Delete(u *models.Admin) error {
+	now := time.Now()
 	u.Status = "NOT_ACTIVE"
-	if result := us.DB.Model(&u).Updates(u); result.Error != nil {
-		return result.Error
-	}
-	return nil
+	u.Deleted = true
+	u.DeletedAt = &now
+	return us.DB.Model(&u).Updates(u).Error
 }
 
 /* func (us *UserServices) GetUserById(id int) (User, error) {
@@ -136,3 +120,20 @@ func (us *AdminServices) Delete(u models.Admin) error {
 
 	return us.User, nil
 } */
+
+func (us *AdminServices) buildInvoicesURL(query queries.InvoiceQueryParams) *gorm.DB {
+	dbQuery := us.DB
+
+	if query.SearchTerm != "" {
+		term := "%" + query.SearchTerm + "%"
+		dbQuery = dbQuery.Where("name LIKE ?", term)
+	}
+	if query.Status != "" {
+		dbQuery = dbQuery.Where("status = ?", query.Status)
+	}
+	if query.InvoiceType != "" {
+		dbQuery = dbQuery.Where("invoice_type = ?", query.InvoiceType)
+	}
+	return dbQuery
+
+}

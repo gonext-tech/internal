@@ -2,14 +2,16 @@ package server_views
 
 import (
 	"github.com/gonext-tech/internal/models"
+	"github.com/gonext-tech/internal/queries"
+	"github.com/gonext-tech/internal/views/components"
 	"github.com/gonext-tech/internal/views/layout"
 	"github.com/gonext-tech/internal/views/partials"
 	"strconv"
 )
 
-templ List(titlePage string, servers []models.MonitoredServer, meta models.Meta, params models.ParamResponse) {
+templ List(titlePage string, servers []models.MonitoredServer, meta models.Meta, queries queries.InvoiceQueryParams) {
 	<!-- component -->
-	<section id="result" class="container px-4 mx-auto">
+	<section id="server-table">
 		<div class="sm:flex sm:items-center sm:justify-between">
 			<div>
 				<div class="flex items-center gap-x-3">
@@ -62,40 +64,8 @@ templ List(titlePage string, servers []models.MonitoredServer, meta models.Meta,
 			</div>
 		</div>
 		<div class="mt-6 md:flex md:items-center md:justify-between">
-			<div>
-				@Status(params)
-			</div>
-			<div class="relative flex items-center mt-4 md:mt-0">
-				<span class="absolute">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke-width="1.5"
-						stroke="currentColor"
-						class="w-5 h-5 mx-3 text-gray-400 dark:text-gray-600"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-						></path>
-					</svg>
-				</span>
-				<input
-					type="text"
-					placeholder="Search"
-					name="searchTerm"
-					type="search"
-					value={ params.Search }
-					class=" w-full py-1.5 pr-5 text-gray-700 bg-white border border-gray-200 rounded-lg md:w-80 placeholder-gray-400/70 pl-11 rtl:pr-11 rtl:pl-5 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
-					hx-get="/server"
-					hx-include="#limit, #page, #status"
-					hx-push-url="true"
-					hx-trigger="input changed delay:500ms, search"
-					hx-target="#main-content"
-				/>
-			</div>
+			@Status(queries.Status)
+			@components.SearchInput(queries.SearchTerm, "server")
 		</div>
 		<div class="flex flex-col mt-6">
 			<div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -103,7 +73,7 @@ templ List(titlePage string, servers []models.MonitoredServer, meta models.Meta,
 					<div class="overflow-hidden border border-gray-200 dark:border-gray-700 md:rounded-lg">
 						<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
 							<thead class="bg-gray-50 dark:bg-gray-800">
-								@TableHeader(params)
+								@TableHeader(queries)
 							</thead>
 							<tbody id="search-results" class="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
 								@TableRows(servers)

@@ -2,83 +2,82 @@ package services
 
 import (
 	"errors"
+	"time"
 
 	"github.com/gonext-tech/internal/models"
+	"github.com/gonext-tech/internal/queries"
 	"gorm.io/gorm"
 )
 
 type ServerService struct {
-	Server models.MonitoredServer
-	DB     *gorm.DB
+	DB *gorm.DB
 }
 
 func NewServerService(p models.MonitoredServer, db *gorm.DB) *ServerService {
 	return &ServerService{
-		Server: p,
-		DB:     db,
+		DB: db,
 	}
 }
 
-func (ss *ServerService) GetALL(limit, page int, orderBy, sortBy, searchTerm, status string) ([]models.MonitoredServer, models.Meta, error) {
+func (ss *ServerService) GetALL(query queries.InvoiceQueryParams) ([]models.MonitoredServer, models.Meta, error) {
 	var servers []models.MonitoredServer
-	query := ss.DB
-	totalQuery := query
-	if searchTerm != "" {
-		searchTermWithWildcard := "%" + searchTerm + "%"
-		query = query.Where("name LIKE ?", searchTermWithWildcard)
-		totalQuery = query
-	}
+	var totalCount int64
 
-	if status != "" {
-		query = query.Where("status = ?", status)
-		totalQuery = totalQuery.Where("status = ?", status)
-	}
-	offset := (page - 1) * limit
-	query.Order(sortBy + " " + orderBy).Offset(offset).Limit(limit).Find(&servers)
-	totalRecords := int64(0)
-	totalQuery.Model(&ss.Server).Count(&totalRecords)
+	dbQuery := ss.buildInvoicesURL(query)
+	dbQuery.Session(&gorm.Session{}).Model(&models.Invoice{}).Count(&totalCount)
+	offset := (query.Page - 1) * query.Limit
+	dbQuery.Order(query.SortBy + " " + query.OrderBy).Offset(offset).Limit(query.Limit).Find(&servers)
 	lastPage := int64(0)
-	if limit > 0 {
-		lastPage = (totalRecords + int64(limit) - 1) / int64(limit)
+	if query.Limit > 0 {
+		lastPage = (totalCount + int64(query.Limit) - 1) / int64(query.Limit)
 	}
 	meta := models.Meta{
-		CurrentPage: page,
-		TotalCount:  int(totalRecords),
+		CurrentPage: query.Page,
+		TotalCount:  int(totalCount),
 		LastPage:    int(lastPage),
-		Limit:       limit,
+		Limit:       query.Limit,
 	}
 
 	return servers, meta, nil
 }
 
-func (ss *ServerService) GetID(id string) (models.MonitoredServer, error) {
+func (ss *ServerService) GetID(id string) (*models.MonitoredServer, error) {
 	var server models.MonitoredServer
 	if id == "0" || id == "" {
-		return ss.Server, errors.New("no id provided")
+		return nil, errors.New("no id provided")
 	}
 	if result := ss.DB.First(&server, id); result.Error != nil {
-		return ss.Server, result.Error
+		return nil, result.Error
 	}
-	return server, nil
+	return &server, nil
 }
 
-func (ss *ServerService) Create(server models.MonitoredServer) (models.MonitoredServer, error) {
-	if result := ss.DB.Create(&server); result.Error != nil {
-		return ss.Server, result.Error
-	}
-	return server, nil
+func (ss *ServerService) Create(server *models.MonitoredServer) error {
+	return ss.DB.Create(&server).Error
 }
 
-func (ss *ServerService) Update(server models.MonitoredServer) (models.MonitoredServer, error) {
-	if result := ss.DB.Model(&server).Updates(server); result.Error != nil {
-		return ss.Server, result.Error
-	}
-	return server, nil
+func (ss *ServerService) Update(server *models.MonitoredServer) error {
+	return ss.DB.Model(&server).Updates(server).Error
 }
 
-func (ss *ServerService) Delete(server models.MonitoredServer) error {
-	if result := ss.DB.Delete(&server); result.Error != nil {
-		return result.Error
+func (ss *ServerService) Delete(server *models.MonitoredServer) error {
+	now := time.Now()
+	server.DeletedAt = &now
+	server.Deleted = true
+	return ss.DB.Model(&server).Updates(server).Error
+}
+
+func (ss *ServerService) buildInvoicesURL(query queries.InvoiceQueryParams) *gorm.DB {
+	dbQuery := ss.DB
+
+	if query.SearchTerm != "" {
+		term := "%" + query.SearchTerm + "%"
+		dbQuery = dbQuery.Where("name LIKE ?", term)
 	}
-	return nil
+	if query.Status != "" {
+		dbQuery = dbQuery.Where("status = ?", query.Status)
+	}
+
+	return dbQuery
+
 }

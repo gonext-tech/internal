@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gonext-tech/internal/models"
+	"github.com/gonext-tech/internal/queries"
 	"github.com/gonext-tech/internal/views/components"
 	"github.com/gonext-tech/internal/views/membership_views"
 	"github.com/labstack/echo/v4"
@@ -121,7 +122,13 @@ func (mh *MembershipHandler) ViewPage(c echo.Context) error {
 func (mh *MembershipHandler) CreatePage(c echo.Context) error {
 	isError = false
 	titlePage := "Membership | Create"
-	projects, _, _ := mh.ProjectServices.GetALL(50, 1, "desc", "id", "", "ACTIVE")
+	projects, _, _ := mh.ProjectServices.GetALL(queries.InvoiceQueryParams{
+		Status:  "ACTIVE",
+		OrderBy: "desc",
+		SortBy:  "id",
+		Page:    1,
+		Limit:   50,
+	})
 	return renderView(c, membership_views.Index(
 		titlePage,
 		c.Get(email_key).(string),
@@ -160,7 +167,13 @@ func (mh *MembershipHandler) UpdatePage(c echo.Context) error {
 		setFlashmessages(c, "error", errorMsg)
 	}
 
-	projects, _, _ := mh.ProjectServices.GetALL(50, 1, "desc", "id", "", "ACTIVE")
+	projects, _, _ := mh.ProjectServices.GetALL(queries.InvoiceQueryParams{
+		Status:  "ACTIVE",
+		OrderBy: "desc",
+		SortBy:  "id",
+		Page:    1,
+		Limit:   50,
+	})
 	return renderView(c, membership_views.Index(
 		titlePage,
 		c.Get(email_key).(string),

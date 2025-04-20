@@ -25,10 +25,12 @@ type Project struct {
 	Lead            Admin           `form:"-" gorm:"foreignKey:LeadID"`
 	Status          string          `form:"status" gorm:"default:ACTIVE"`
 	UpdateCommands  string          `form:"commands" gorm:"type:text"`
+	Deleted         bool            `form:"-" gorm:"default:false"`
 	BackupAt        *time.Time      `form:"backup_at"`
 	LastBuildAt     *time.Time      `form:"last_build_at"`
 	CreatedAt       time.Time       `form:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt       time.Time       `form:"updated_at" gorm:"autoUpdateTime"`
+	DeletedAt       *time.Time      `form:"deleted_at"`
 }
 
 type GithubStats struct {

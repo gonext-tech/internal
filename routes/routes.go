@@ -2,7 +2,6 @@ package routes
 
 import (
 	"github.com/gonext-tech/internal/handlers"
-	//"github.com/gonext-tech/internal/manager"
 	"github.com/gonext-tech/internal/models"
 	"github.com/gonext-tech/internal/services"
 	"github.com/labstack/echo/v4"
@@ -13,17 +12,17 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 
 	// --> SERVICES INIT <--
 	referalService := services.NewReferalService(models.Referal{}, store)
-	clientService := services.NewClientService(models.Client{}, store)
+	clientService := services.NewClientService(store)
 	membershipService := services.NewMembershipService(projectStores)
 	shopService := services.NewShopService(projectStores)
 	projectService := services.NewProjectService(models.Project{}, store)
 	statsService := services.NewStatisticcServices(models.Stats{}, store)
-	invoiceService := services.NewInvoiceService(models.Invoice{}, store)
+	invoiceService := services.NewInvoiceService(store)
 	uploadService := services.NewUploadServices(store)
 	appointmentService := services.NewAppointmentService(projectStores)
 	serverService := services.NewServerService(models.MonitoredServer{}, store)
-	domainService := services.NewDomainService(models.Domain{}, store)
-	adminService := services.NewAdminService(models.Admin{}, store)
+	domainService := services.NewDomainService(store)
+	adminService := services.NewAdminService(store)
 
 	// --> HANDLERS INIT <--
 	appointmentHandler := handlers.NewAppointmentHandler(appointmentService)
@@ -82,9 +81,11 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 
 	// --> INVOICE ROUTES <--
 	protectedGroup.GET("invoice", invoiceHandler.ListPage)
-	protectedGroup.GET("invoice/view", invoiceHandler.ViewPage)
+	protectedGroup.GET("invoice/view/:id", invoiceHandler.ViewPage)
 	protectedGroup.GET("invoice/create", invoiceHandler.CreatePage)
 	protectedGroup.POST("invoice/create", invoiceHandler.CreateHandler)
+	protectedGroup.POST("invoice/pay/:id", invoiceHandler.PaidHandler)
+	protectedGroup.GET("invoice/pdf/:id", invoiceHandler.GenerateInvoicePDF)
 	protectedGroup.GET("invoice/edit/:id", invoiceHandler.UpdatePage)
 	protectedGroup.POST("invoice/edit/:id", invoiceHandler.UpdateHandler)
 	protectedGroup.DELETE("invoice/:id", invoiceHandler.DeleteHandler)
@@ -120,6 +121,7 @@ func SetupRoutes(e *echo.Echo, store *gorm.DB, projectStores []models.ProjectsDB
 
 	// --> CLIENT ROUTES <--
 	protectedGroup.GET("client", clientHandler.ListPage)
+	protectedGroup.GET("client/search", clientHandler.Search)
 	protectedGroup.GET("client/view/:id", clientHandler.ViewPage)
 	protectedGroup.GET("client/create", clientHandler.CreatePage)
 	protectedGroup.POST("client/create", clientHandler.CreateHandler)

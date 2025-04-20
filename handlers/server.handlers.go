@@ -2,21 +2,20 @@ package handlers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/gonext-tech/internal/models"
+	"github.com/gonext-tech/internal/queries"
 	"github.com/gonext-tech/internal/views/server_views"
 	"github.com/labstack/echo/v4"
 )
 
 type ServerService interface {
-	GetALL(limit, page int, orderBy, sortBy, searchTerm, status string) ([]models.MonitoredServer, models.Meta, error)
-	GetID(id string) (models.MonitoredServer, error)
-	Create(models.MonitoredServer) (models.MonitoredServer, error)
-	Update(models.MonitoredServer) (models.MonitoredServer, error)
-	Delete(models.MonitoredServer) error
+	GetALL(queries.InvoiceQueryParams) ([]models.MonitoredServer, models.Meta, error)
+	GetID(id string) (*models.MonitoredServer, error)
+	Create(*models.MonitoredServer) error
+	Update(*models.MonitoredServer) error
+	Delete(*models.MonitoredServer) error
 }
 
 type ServerHandler struct {
@@ -32,27 +31,15 @@ func NewServerHandler(ss ServerService, us UploadService) *ServerHandler {
 }
 
 func (sh *ServerHandler) ListPage(c echo.Context) error {
-	log.Println("did we enter here first!!")
 	isError = false
-	page, _ := strconv.Atoi(c.QueryParam("page"))
-	if page <= 0 {
-		page = 1
+	var query queries.InvoiceQueryParams
+	if err := c.Bind(&query); err != nil {
+		errorMsg = "can't read query params"
+		setFlashmessages(c, "error", errorMsg)
 	}
-	limit, _ := strconv.Atoi(c.QueryParam("limit"))
-	if limit <= 0 {
-		limit = 20
-	}
-	orderBy := c.QueryParam("orderBy")
-	if orderBy == "" {
-		orderBy = "desc"
-	}
-	sortBy := c.QueryParam("sortBy")
-	if sortBy == "" {
-		sortBy = "id"
-	}
-	status := c.QueryParam("status")
-	searchTerm := c.QueryParam("searchTerm")
-	servers, meta, err := sh.ServerServices.GetALL(limit, page, orderBy, sortBy, searchTerm, status)
+	query.SetDefaults()
+
+	servers, meta, err := sh.ServerServices.GetALL(query)
 	if err != nil {
 		isError = false
 		errorMsg = "can't fetch servers"
@@ -61,17 +48,15 @@ func (sh *ServerHandler) ListPage(c echo.Context) error {
 		setFlashmessages(c, "error", errorMsg)
 	}
 
-	var params models.ParamResponse
-	if searchTerm != "" {
-		params.Search = searchTerm
+	if c.Request().Header.Get("X-Partial-Content") == "true" {
+		// Return only the table content
+		return renderView(c, server_views.List(
+			fmt.Sprintf("Server List(%d)", meta.TotalCount),
+			servers,
+			meta,
+			query,
+		))
 	}
-	if status != "" {
-		params.Status = status
-	}
-	params.Page = page
-	params.Limit = limit
-	params.SortBy = sortBy
-	params.OrderBy = orderBy
 
 	titlePage := fmt.Sprintf(
 		"Server List(%d)", meta.TotalCount)
@@ -82,7 +67,7 @@ func (sh *ServerHandler) ListPage(c echo.Context) error {
 		isError,
 		getFlashmessages(c, "error"),
 		getFlashmessages(c, "success"),
-		server_views.List(titlePage, servers, meta, params),
+		server_views.List(titlePage, servers, meta, query),
 	))
 }
 
@@ -129,8 +114,7 @@ func (sh *ServerHandler) CreateHandler(c echo.Context) error {
 	if err := c.Bind(&server); err != nil {
 		return err
 	}
-	log.Println("serverrr", server)
-	_, err := sh.ServerServices.Create(server)
+	err := sh.ServerServices.Create(&server)
 	if err != nil {
 		return err
 	}
@@ -170,13 +154,13 @@ func (sh *ServerHandler) UpdateHandler(c echo.Context) error {
 		return sh.UpdatePage(c)
 	}
 
-	if err := c.Bind(&server); err != nil {
+	if err := c.Bind(server); err != nil {
 		errorMsg = err.Error()
 		setFlashmessages(c, "error", errorMsg)
 		return sh.UpdatePage(c)
 	}
 
-	server, err = sh.ServerServices.Update(server)
+	err = sh.ServerServices.Update(server)
 	if err != nil {
 		errorMsg = fmt.Sprintf("server with id %s not found", id)
 		setFlashmessages(c, "error", errorMsg)
