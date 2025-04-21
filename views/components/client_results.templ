@@ -6,16 +6,16 @@ import (
 "strconv"
 )
 
-templ SelectClient() {
+templ SelectClient(client models.Client) {
 <div class="w-full">
   <label for="client" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Client</label>
-  <input type="number" name="client_id" class="hidden" id="client_id" />
+  <input type="number" name="client_id" value={ fmt.Sprintf("%d", client.ID) } class="hidden" id="client_id" />
   <div class="dropdown w-full">
     <div tabindex="0" role="button" className="w-full">
-      <input hx-swap="transition:false" hx-trigger="load"
+      <input hx-swap="transition:false" value={ client.Name }
         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
         type="search" name="searchTerm" id="client-search-input" placeholder="Search by name..." hx-get="/client/search"
-        hx-trigger="input changed delay:500ms, search" hx-target="#client-results" autocomplete="off" />
+        hx-trigger="load, input changed delay:500ms, search" hx-target="#client-results" autocomplete="off" />
     </div>
     <ul tabindex="0" id="client-results"
       class="dropdown-content mt-2 z-[1] menu p-2 shadow bg-base-100 rounded-md  w-64">
@@ -45,7 +45,7 @@ for _, customer := range clients {
 }
 <script>
   function myFunction(event) {
-    const clickedElement = event.target; // Get the clicked element
+    const clickedElement = event.currentTarget; // Get the clicked element
     const owner_id = document.getElementById("client_id")
     const search_input = document.getElementById("client-search-input")
     search_input.value = clickedElement.dataset.name

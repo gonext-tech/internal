@@ -57,7 +57,10 @@ func (ps *ProjectService) Create(project *models.Project) error {
 }
 
 func (ps *ProjectService) Update(project *models.Project) error {
-	return ps.DB.Model(&project).Updates(project).Error
+	return ps.DB.Model(&models.Project{}).
+		Where("id = ?", project.ID).
+		Select("*").
+		Updates(project).Error
 }
 
 func (ps *ProjectService) Delete(project *models.Project) error {

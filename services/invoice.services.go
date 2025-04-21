@@ -57,7 +57,10 @@ func (is *InvoiceService) Create(invoice *models.Invoice) error {
 }
 
 func (is *InvoiceService) Update(invoice *models.Invoice) error {
-	return is.DB.Select("*").Save(&invoice).Error
+	return is.DB.Model(&models.Invoice{}).
+		Where("id = ?", invoice.ID).
+		Select("*").
+		Updates(invoice).Error
 }
 
 func (is *InvoiceService) Delete(invoice *models.Invoice) error {

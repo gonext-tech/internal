@@ -1,7 +1,6 @@
 package services
 
 import (
-	"log"
 	"sort"
 
 	"github.com/gonext-tech/internal/models"
@@ -111,7 +110,6 @@ func (ms *MembershipServices) GetID(id, dbName string) (models.Membership, error
 }
 
 func (ms *MembershipServices) Create(membership models.Membership) (models.Membership, error) {
-	log.Println("membershippppp", membership)
 	DB := utils.GetCurrentDB(membership.ProjectName, ms.STORES)
 	if result := DB.Table("memberships").Create(&membership); result.Error != nil {
 		return models.Membership{}, result.Error

@@ -63,3 +63,11 @@ func PrintName(name string) string {
 	}
 	return name
 }
+
+func FilterClass(condition bool) string {
+	class := "px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm dark:hover:bg-gray-800 dark:text-gray-300 hover:bg-gray-100"
+	if condition {
+		return fmt.Sprintf("%s bg-gray-100 dark:bg-gray-800 ", class)
+	}
+	return class
+}

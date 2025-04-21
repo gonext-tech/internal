@@ -1,22 +1,22 @@
 package admin_views
 
 import (
-	"github.com/gonext-tech/internal/queries"
-	"github.com/gonext-tech/internal/views/components"
+"github.com/gonext-tech/internal/queries"
+"github.com/gonext-tech/internal/views/components"
 )
 
 templ TableHeader(queries queries.InvoiceQueryParams) {
-	<tr>
-		<input type="hidden" class="hidden" value={ queries.SortBy } id="sortBy" name="sortBy"/>
-		<input type="hidden" class="hidden" value={ queries.OrderBy } id="orderBy" name="orderBy"/>
-		@components.SortedTH("name", "Name", "admin", queries)
-		@components.SortedTH("email", "Email", "admin", queries)
-		@components.SortedTH("phone", "Phone", "admin", queries)
-		@components.SortedTH("role", "Role", "admin", queries)
-		@components.TH("status")
-		@components.SortedTH("created_at", "Dates", "admin", queries)
-		<th scope="col" class="relative py-3.5 px-4">
-			<span class="sr-only">Edit</span>
-		</th>
-	</tr>
+<tr>
+  <input type="hidden" class="hidden" value={ queries.SortBy } id="sortBy" name="sortBy" />
+  <input type="hidden" class="hidden" value={ queries.OrderBy } id="orderBy" name="orderBy" />
+  @components.SortedTH("name", "Name", "admin", queries)
+  @components.SortedTH("email", "Email", "admin", queries)
+  @components.SortedTH("phone", "Phone", "admin", queries)
+  @components.SortedTH("role", "Role", "admin", queries)
+  @components.TH("status")
+  @components.SortedTH("created_at", "Dates", "admin", queries)
+  <th scope="col" class="relative py-3.5 px-4">
+    <span class="sr-only">Edit</span>
+  </th>
+</tr>
 }

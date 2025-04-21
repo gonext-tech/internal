@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 
 	"github.com/gonext-tech/internal/models"
@@ -51,7 +50,6 @@ func (ah *AppointmentHandler) ListPage(c echo.Context) error {
 	searchTerm := c.QueryParam("searchTerm")
 	apts, meta, err := ah.AppointmentServices.GetALL(limit, page, orderBy, sortBy, searchTerm, shopID, status)
 	if err != nil {
-		log.Println("apppointmnett-errr", err)
 		isError = false
 		errorMsg = "can't fetch appointments"
 	}

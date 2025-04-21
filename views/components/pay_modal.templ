@@ -4,8 +4,8 @@ import "fmt"
 
 templ PayModal(id uint, remaining float64, errorMsg string) {
 <div class="tooltip" data-tip="pay invoice">
-  <button class="btn btn-square btn-sm btn-accent  mt-2" _={ fmt.Sprintf("on click toggle .hidden on #pay-modal-%d", id)
-    }>
+  <button _={ fmt.Sprintf("on click toggle .hidden on #pay-modal-%d", id) }
+    class="btn btn-square btn-sm btn-accent  mt-2">
     <i class="fa-solid fa-money-bill"></i>
   </button>
 </div>

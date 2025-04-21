@@ -184,13 +184,12 @@ func (ih *InvoiceHandler) UpdateHandler(c echo.Context) error {
 		setFlashmessages(c, "error", errorMsg)
 		return ih.UpdatePage(c)
 	}
-
 	if err := c.Bind(invoice); err != nil {
-		log.Println("err", err)
 		errorMsg = "cannot parse the project body"
 		setFlashmessages(c, "error", errorMsg)
 		return ih.UpdatePage(c)
 	}
+	log.Println("invoice-clientttt", invoice.ClientID)
 
 	err = ih.InvoiceServices.Update(invoice)
 	if err != nil {

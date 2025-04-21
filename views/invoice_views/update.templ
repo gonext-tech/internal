@@ -34,7 +34,7 @@ templ Update(invoice *models.Invoice, projects []models.Project) {
           <label for="total" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Total amount</label>
           <input type="number" name="total" id="total"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 cursor-not-allowed"
-            value="0" required="" readonly value={ fmt.Sprintf("%.2f", invoice.Total) } />
+            required="" readonly value={ fmt.Sprintf("%.2f", invoice.Total) } />
         </div>
       </div>
       <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
@@ -59,6 +59,7 @@ templ Update(invoice *models.Invoice, projects []models.Project) {
             <option value="EXPENSES" selected?={ invoice.InvoiceType=="EXPENSES" }>Expenses</option>
           </select>
         </div>
+        @components.SelectClient(invoice.Client)
         <div>
           <label for="invoice_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
             Issue Date
@@ -94,7 +95,7 @@ templ Update(invoice *models.Invoice, projects []models.Project) {
           <input class="toggle toggle-primary" name="recurring" id="recurring" type="checkbox"
             onchange="checkboxChange(this)" checked?={ invoice.Recurring } />
         </div>
-        <div id="recurring_period_div" class={ "sm:col-span-2 hidden" }>
+        <div id="recurring_period_div" class={ " invisible" }>
           <label for="recurring_period" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
             Recurring Period
           </label>
@@ -153,9 +154,9 @@ templ Update(invoice *models.Invoice, projects []models.Project) {
   function checkboxChange(event) {
     const recurringPeriod = document.getElementById('recurring_period_div');
     if (event.checked) {
-      recurringPeriod.classList.remove('hidden');
+      recurringPeriod.classList.remove('invisible');
     } else {
-      recurringPeriod.classList.add('hidden')
+      recurringPeriod.classList.add('invisible')
     }
   };
   function handleAmount(event) {

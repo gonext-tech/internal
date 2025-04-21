@@ -56,7 +56,7 @@ templ Create(projects []models.Project) {
             <option value="Expenses">Expenses</option>
           </select>
         </div>
-        @components.SelectClient()
+        @components.SelectClient(models.Client{})
         <div>
           <label for="invoice_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
             Issue Date
